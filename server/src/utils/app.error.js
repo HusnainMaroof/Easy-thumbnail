@@ -44,3 +44,8 @@ export class UnauthorizedExceptions extends AppError {
     super(message, HTTPSTATUS.UNAUTHORIZED, errorCodes.ERR_UNAUTHORIZED);
   }
 }
+export class ForbiddenExceptions extends AppError {
+  constructor(message = "Access Expried") {
+    super(message, HTTPSTATUS.FORBIDDEN, errorCodes.ERR_FORBIDDEN);
+  }
+}

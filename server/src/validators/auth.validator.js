@@ -22,8 +22,23 @@ export const nameSchema = z
   .trim()
   .min(1, "Name cannot be empty");
 
+
 export const registerSchema = z.object({
-  name: nameSchema,
+  displayName: nameSchema,
   email: emailSchema,
   password: passwordSchema,
+});
+
+
+
+export const otpSchema = z
+  .string({
+    required_error: "OTP is required",
+    invalid_type_error: "OTP must be a string",
+  })
+  .trim()
+  .regex(/^\d{4}$/, "OTP must be exactly 4 digits");
+
+export const verifyOtpSchema = z.object({
+  otp: otpSchema,
 });

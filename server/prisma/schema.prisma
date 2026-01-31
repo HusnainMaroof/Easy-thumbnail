@@ -11,21 +11,35 @@ datasource db {
   provider = "postgresql"
 }
 
-
-// Example models
-
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+// Define ENUM first
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model User {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  password       String
+  displayName    String?
+  emailVerified  Boolean     @default(false)
+  status         UserStatus  @default(PENDING)  // <-- ENUM used here
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  userToken      String?
+  emailVerifications EmailVerification[]
+}
+
+model EmailVerification {
+  id           String   @id @default(uuid())
+  userId       String
+  code         String
+  expiresAt    DateTime
+  attemptCount Int      @default(0)
+  otpToken     String?
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

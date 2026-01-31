@@ -4,6 +4,7 @@ import { AppError, errorCodes } from "../utils/app.error.js";
 import { HTTPSTATUS } from "../config/http.config.js";
 
 export const errorHandler = (err, req, res, next) => {
+  // this is only for development 
   console.log(`Error occurred :${req.path}`.red, err);
 
   if (err instanceof z.ZodError) {

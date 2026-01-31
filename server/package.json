@@ -2,9 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "server": "nodemon src/index.js"
+    "server": "nodemon src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -15,11 +15,13 @@
     "@prisma/client": "^7.3.0",
     "@prisma/config": "^7.3.0",
     "colors": "^1.4.0",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "nodemon": "^3.1.11",
     "pg": "^8.17.2",
-    "redis": "^5.10.0"
+    "redis": "^5.10.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "prisma": "^7.3.0"

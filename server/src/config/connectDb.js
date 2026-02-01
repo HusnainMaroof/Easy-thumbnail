@@ -24,9 +24,11 @@ export const connectDB = async () => {
 
     console.log("-----------------------------------------------".gray);
     console.log(`✅ Database Host: ${"db.prisma.io".cyan}`);
-    console.log(
+   if (userCount) {
+     console.log(
       `📊 Cloud Status: ${"Online".green.bold} (${userCount} users found)`,
     );
+   }
     console.log("-----------------------------------------------".gray);
   } catch (error) {
     console.error("❌ Database Connection Error:".red.bold);

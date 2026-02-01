@@ -22,14 +22,11 @@ export const nameSchema = z
   .trim()
   .min(1, "Name cannot be empty");
 
-
 export const registerSchema = z.object({
   displayName: nameSchema,
   email: emailSchema,
   password: passwordSchema,
 });
-
-
 
 export const otpSchema = z
   .string({
@@ -41,4 +38,9 @@ export const otpSchema = z
 
 export const verifyOtpSchema = z.object({
   otp: otpSchema,
+});
+
+export const loginScheema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
 });

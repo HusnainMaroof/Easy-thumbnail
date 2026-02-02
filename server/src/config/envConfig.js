@@ -28,9 +28,15 @@ export const envConfig = {
     SESSION_SECRET: process.env.SESSION_SECRET,
   },
 
-
   // origin
-  ORIGINS:{
-    FRONTEND_ORIGIN_ONE:process.env.FRONTEND_ORIGIN_ONE
-  }
+  ORIGINS: {
+    FRONTEND_ORIGIN_ONE: process.env.FRONTEND_ORIGIN_ONE,
+  },
+
+  // Google O auth
+
+  GOOGLE_CONFIG: {
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRETS: process.env.GOOGLE_CLIENT_SECRETS,
+  },
 };

@@ -6,5 +6,11 @@ export const protectRoute = (req, res, next) => {
 
   req.user = {
     id: req.session.userId,
+    email: req.session.email,
+    userToken: req.session.userToken,
+    status: req.session.status,
+    emailVerified: req.session.emailVerified,
   };
+
+  next();
 };

@@ -10,6 +10,7 @@ import { errorHandler } from "./middleware/error.middleware.js";
 import { rootRouter } from "./routes/routes.js";
 import { connectRedis } from "./config/connectRedis.js";
 import { sessionsMiddleware } from "./middleware/sessions.middleware.js";
+import passport from "passport";
 const app = express();
 const PORT = envConfig.PORT;
 
@@ -38,6 +39,7 @@ app.use(express.json());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+app.use(passport.initialize());
 app.use(sessionsMiddleware);
 app.use(cookieParser());
 app.use("/api", rootRouter);

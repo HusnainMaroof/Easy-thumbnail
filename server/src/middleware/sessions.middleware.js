@@ -8,6 +8,9 @@ const redisStore = new RedisStore({
   prefix: "sess:",
 });
 
+
+// console.log(envConfig.SECRET.SESSION_SECRET.red);
+
 export const sessionsMiddleware = session({
   store: redisStore,
   secret: envConfig.SECRET.SESSION_SECRET,

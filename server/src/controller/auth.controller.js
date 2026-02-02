@@ -2,17 +2,20 @@ import {
   verifyOtpSchema,
   registerSchema,
   loginScheema,
+  verifyPassowrdScheema,
 } from "../validators/auth.validator.js";
 import { HTTPSTATUS } from "../config/http.config.js";
 import { asyncHandler } from "../middleware/asyncHandler.middleware.js";
 import {
   loginService,
+  passLinkService,
   registerService,
   reSentOtpService,
+  ressetPassService,
   sendOtpService,
   verifyOtpService,
 } from "../service/auth.service.js";
-import { BadRequestExceptions, NotFoundException } from "../utils/app.error.js";
+import { NotFoundException } from "../utils/app.error.js";
 // register User Controller
 export const regUser = asyncHandler(async (req, res) => {
   const body = registerSchema.parse(req.body);
@@ -48,16 +51,18 @@ export const verifyOtp = asyncHandler(async (req, res) => {
       console.error("Session Regeneration Error:", err);
       return;
     }
-    req.session.userId = verify.id;
-    req.session.userToken = verify.userToken;
-    req.session.email = verify.email;
 
+    req.session.userId = verify.id;
+    req.session.email = verify.email;
+    req.session.userToken = verify.userToken;
+    req.session.status = verify.status;
+    req.session.emailVerified = verify.emailVerified;
     req.session.save((saveErr) => {
       if (saveErr) {
         console.error("Session Save Error:", saveErr);
         return;
       }
-      console.log(req.session);
+      // console.log(req.session);
 
       return res
         .status(HTTPSTATUS.OK)
@@ -90,6 +95,8 @@ export const login = asyncHandler(async (req, res) => {
     req.session.userId = verify.id;
     req.session.email = verify.email;
     req.session.userToken = verify.userToken;
+    req.session.status = verify.status;
+    req.session.emailVerified = verify.emailVerified;
 
     req.session.save((saveErr) => {
       if (saveErr) {
@@ -127,4 +134,42 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
   let origin = req.headers.origin;
 
   let sendLink = await passLinkService(email, origin);
+
+  if (sendLink?.message === "Not Verifed") {
+    res.status(HTTPSTATUS.OK).json({
+      message: "Use Exist But Not Verifed",
+      date: sendLink?.data,
+    });
+    return;
+  }
+
+  res.status(HTTPSTATUS.OK).json({
+    message: "Reset Password Link Send Chek Your Email",
+    date: origin,
+  });
+});
+
+// reset Pass
+export const ressetPassword = asyncHandler(async (req, res) => {
+  const { password } = verifyPassowrdScheema.parse(req.body);
+  const PassToken = req.params.PassToken;
+
+  if (!PassToken) throw new NotFoundException("reset Pass token not provided");
+
+  const reset = await ressetPassService(password, PassToken);
+
+  res
+    .status(HTTPSTATUS.OK)
+    .json({ message: "password Reset Successfully", data: reset });
+});
+
+export const authMe = asyncHandler(async (req, res) => {
+  const  user  = req.user;
+
+  console.log(user);
+  
+  res.status(HTTPSTATUS.OK).json({
+    message: "verifed user",
+    date: user,
+  });
 });

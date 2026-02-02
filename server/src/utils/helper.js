@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import otpGenrator from "otp-generator";
 export const hashValueHelper = async (value) => {
-  let val = await bcrypt.hash(value, 10);
+  let val = await bcrypt.hash(value, 12);
   return val;
 };
 

@@ -1,5 +1,5 @@
 import prisma from "../lib/db.js";
-import { sendOtpEmail } from "../lib/sendEmails.js";
+import { sendOtpEmail, sendResetPassLinkEmail } from "../lib/sendEmails.js";
 import {
   BadRequestExceptions,
   ForbiddenExceptions,
@@ -138,7 +138,7 @@ export const reSentOtpService = async (userToken) => {
 export const passLinkService = async (email, origin) => {
   let allowedOrigin = [envConfig.ORIGINS.FRONTEND_ORIGIN_ONE];
 
-  if (!allowedOrigin.includesO(origin))
+  if (!allowedOrigin.includes(origin))
     throw new UnauthorizedExceptions("Unauthrized  Or Invalid Origin");
 
   const getUser = await prisma.user.findUnique({
@@ -147,7 +147,54 @@ export const passLinkService = async (email, origin) => {
 
   if (!getUser) throw new NotFoundException("User Does not Exist");
 
-  const resetToken = await crypto.randomBytes(32).toString();
+  if (getUser) {
+    if (getUser.status === "PENDING" || !getUser.emailVerified)
+      return { message: "Not Verifed", data: getUser.userToken };
+  }
 
+  let resetToken = await crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
+  let link = `${origin}/reset-password/${resetToken}`;
 
+  let mail = await sendResetPassLinkEmail(email, link, "Reset Pass Link");
+
+  if (mail === "email sended") {
+    const updatedUser = await prisma.user.updateMany({
+      where: { id: getUser.id },
+      data: {
+        resetPasswordToken: resetToken,
+        resetPasswordExpiresAt: expiresAt,
+      },
+    });
+
+    return updatedUser;
+  }
+};
+
+// reset Passowrd Service
+
+export const ressetPassService = async (password, PassToken) => {
+  console.log(PassToken);
+  
+  const getUser = await prisma.user.findFirst({
+    where: { resetPasswordToken: PassToken },
+  });
+  if (!getUser) throw new UnauthorizedExceptions("Unauthrized User");
+
+  let isExpried = new Date() > getUser.resetPasswordExpiresAt;
+
+  if (isExpried) throw new ForbiddenExceptions("Reset Password Link Expired");
+
+  let hashPass = await hashValueHelper(password);
+
+  let updatedUser = await prisma.user.updateMany({
+    where: { id: getUser.id },
+    data: {
+      password: hashPass,
+      resetPasswordToken: null,
+      resetPasswordExpiresAt: null,
+    },
+  });
+
+  return updatedUser;
 };

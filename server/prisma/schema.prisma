@@ -20,15 +20,21 @@ enum UserStatus {
 }
 
 model User {
-  id             String      @id @default(uuid())
-  email          String      @unique
-  password       String
-  displayName    String?
-  emailVerified  Boolean     @default(false)
-  status         UserStatus  @default(PENDING)  // <-- ENUM used here
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  userToken      String?     @unique
+  id                      String      @id @default(uuid())
+  email                   String      @unique
+  password                String
+  displayName             String?
+  emailVerified           Boolean     @default(false)
+  status                  UserStatus  @default(PENDING)   
+
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  userToken               String?     @unique 
+
+  resetPasswordToken      String?     @unique
+  resetPasswordExpiresAt  DateTime? 
+
+  google_id               String?     @unique
   emailVerifications EmailVerification[]
 }
 

@@ -16,6 +16,7 @@ import {
   verifyOtpService,
 } from "../service/auth.service.js";
 import { NotFoundException } from "../utils/app.error.js";
+import { envConfig } from "../config/envConfig.js";
 // register User Controller
 export const regUser = asyncHandler(async (req, res) => {
   const body = registerSchema.parse(req.body);
@@ -163,11 +164,27 @@ export const ressetPassword = asyncHandler(async (req, res) => {
     .json({ message: "password Reset Successfully", data: reset });
 });
 
+// logout
+
+export const logout = asyncHandler(async (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+
+    req.session.destroy(() => {
+      res.clearCookie(envConfig.NODE_ENV === "production" ? "__Host-authSessionId" : "sessionId",);
+      res
+        .status(HTTPSTATUS.OK)
+        .json({ message: "Logged out Successfully", });
+    });
+  });
+});
+
+// auth me
 export const authMe = asyncHandler(async (req, res) => {
-  const  user  = req.user;
+  const user = req.user;
 
   console.log(user);
-  
+
   res.status(HTTPSTATUS.OK).json({
     message: "verifed user",
     date: user,

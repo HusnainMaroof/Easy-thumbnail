@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+@layer components {
+  /* Base Brutal Button */
+  .main-btn {
+    @apply relative border-4 border-black font-black uppercase transition-all flex items-center gap-2;
+    box-shadow: 5px 5px 0px 0px #000000;
+  }
+
+  /* Interaction State */
+  .btn-brutal:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0px 0px #000000;
+  }
+
+  .btn-brutal:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0px 0px 0px 0px #000000;
+  }
+
+  /* Full Color Palette Variants */
+  .btn-yellow {
+    @apply bg-[#F4E041];
+  }
+  .btn-blue {
+    @apply bg-[#88AAEE];
+  }
+  .btn-red {
+    @apply bg-[#FF6B6B];
+  }
+  .btn-green {
+    @apply bg-[#A7F3D0];
+  }
+  .btn-pink {
+    @apply bg-[#FF7EB9];
+  }
+  .btn-orange {
+    @apply bg-[#FF9E64];
+  }
+  .btn-purple {
+    @apply bg-[#B197FC];
+  }
+  .btn-cyan {
+    @apply bg-[#72D5BA];
+  }
+  .btn-white {
+    @apply bg-white;
+  }
+  .btn-black {
+    @apply bg-black text-white;
+  }
+  .primary-var {
+    @apply bg-[#F4E041] hover:bg-[#ffe62d];
+  }
+  .secondary-var {
+    @apply bg-[#88AAEE] hover:bg-[#7799dd];
+  }
+  .outline-var {
+    @apply bg-white hover:bg-gray-50;
+  }
+  .ghost-var {
+    @apply bg-transparent border-transparent hover:border-black;
+  }
+}

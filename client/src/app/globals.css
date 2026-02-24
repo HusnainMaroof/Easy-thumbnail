@@ -42,6 +42,30 @@ body {
     box-shadow: 0px 0px 0px 0px #000000;
   }
 
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 10px;
+    height: 3px;
+    margin-block: 10px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+
+
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: #88aaee;
+    border-radius: 10px;
+    
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background-color: #6f91d8;
+    cursor: pointer;
+  }
+
   /* Full Color Palette Variants */
   .btn-yellow {
     @apply bg-[#F4E041];

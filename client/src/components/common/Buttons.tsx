@@ -6,7 +6,7 @@ import { motion, HTMLMotionProps } from "framer-motion";
 interface ButtonProps extends HTMLMotionProps<"button"> {
   children: ReactNode;
   className?: string;
-  variant?: "purple" | "white" | "google";
+  variant?: "purple" | "white" | "google" | "disabled";
 }
 
 export const MainButton = ({
@@ -19,6 +19,8 @@ export const MainButton = ({
     purple: "bg-[#B197FC] text-white hover:bg-[#a085ed]",
     white: "bg-white text-black hover:bg-gray-50",
     google: "bg-white text-black border-4 border-black hover:bg-gray-50",
+    disabled:
+      "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed shadow-none translate-x-0 translate-y-0",
   };
 
   return (

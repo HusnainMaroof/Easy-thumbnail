@@ -48,3 +48,6 @@ export const loginScheema = z.object({
 export const verifyPassowrdScheema = z.object({
   password: passwordSchema,
 });
+
+
+

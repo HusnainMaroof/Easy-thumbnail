@@ -18,13 +18,11 @@ import { useAuthContext } from "@/src/context/AuthContext";
 const MainHeroSection = () => {
   const [prompt, setPrompt] = useState<string>("");
   const { showAuthPopup, setShowAuthPopup } = useAuthContext();
-  console.log(prompt);
 
   const handleSubmit = () => {
     if (!prompt.trim()) return;
 
     setShowAuthPopup(true);
-    console.log("Prompt:", prompt);
   };
   const isDisabled = prompt.trim().length === 0;
   return (

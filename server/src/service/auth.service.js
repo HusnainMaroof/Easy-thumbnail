@@ -19,6 +19,7 @@ export const registerService = async (body) => {
       email: email,
     },
   });
+  console.log(userExist);
 
   if (userExist) {
     if (userExist?.status === "PENDING" || !userExist?.emailVerified)
@@ -175,7 +176,7 @@ export const passLinkService = async (email, origin) => {
 
 export const ressetPassService = async (password, PassToken) => {
   console.log(PassToken);
-  
+
   const getUser = await prisma.user.findFirst({
     where: { resetPasswordToken: PassToken },
   });

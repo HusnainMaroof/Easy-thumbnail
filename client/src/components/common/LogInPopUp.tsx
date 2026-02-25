@@ -24,8 +24,10 @@ import {
   loginAction,
 } from "@/src/actions/auth.actions";
 import { validateForm } from "@/src/validator/validate";
+import { useRouter } from "next/navigation";
 
 export const LogInPopUp = () => {
+   const router = useRouter();
   const { showLoginPopup, setShowLoginPopup, LoginView, setLoginView } =
     useAuthContext();
   type FormErrors = z.ZodFlattenedError<
@@ -100,13 +102,20 @@ export const LogInPopUp = () => {
   const IsDisabled: boolean =
     isPending || !email || !password || (!isLogin && !displayName);
 
-  console.log(state);
+  // console.log(state);
 
   useEffect(() => {
     if (!state.success) {
       setErrors({ email: [state.message] });
     }
+
+    if (state.success && state.message === "Otp sended") {
+      router.push(`/auth/verify-otp/${state.data.userToken}`)
+    }
   }, [state]);
+
+  console.log(state);
+  
 
   return (
     <AnimatePresence mode="wait">

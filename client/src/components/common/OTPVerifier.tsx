@@ -6,25 +6,45 @@ import React, {
   useEffect,
   ChangeEvent,
   KeyboardEvent,
+  useActionState,
+  startTransition,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ShieldCheck, RefreshCcw, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  RefreshCcw,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { MainButton } from "./Buttons";
+import { ActionResponse, verifyOtpAction } from "@/src/actions/auth.actions";
+import { useParams } from "next/navigation";
+import { ErrorState, VerifyOtpPayload } from "@/src/types/auth";
+import { div } from "framer-motion/client";
 
 /**
  * REUSABLE NEO-BRUTAL BUTTON
  */
 
 const OTPVerifier = () => {
+  const initialState: ActionResponse = {
+    success: true,
+    message: null,
+    data: null,
+  };
+
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState<number>(30);
   const [canResend, setCanResend] = useState<boolean>(false);
-  const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [email] = useState("creator@easythumbnail.com");
-
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [state, dispatcher, isPending] = useActionState<
+    ActionResponse,
+    VerifyOtpPayload
+  >(verifyOtpAction, initialState);
+  const token = useParams();
 
-  // Timer Logic
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (timer > 0 && !canResend) {
@@ -43,6 +63,12 @@ const OTPVerifier = () => {
     setCanResend(false);
     setOtp(["", "", "", "", "", ""]);
     inputRefs.current[0]?.focus();
+    let sender = "otp-resender";
+    const code = otp.join("").toString();
+    let userToken = token.token!?.toString();
+    startTransition(() => {
+      dispatcher({ code, userToken, sender });
+    });
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
@@ -70,11 +96,22 @@ const OTPVerifier = () => {
   };
 
   const handleVerify = () => {
-    const code = otp.join("");
+    const code = otp.join("").toString();
+    let userToken = token.token!?.toString();
     if (code.length < 6) return;
-    setIsVerifying(true);
-    setTimeout(() => setIsVerifying(false), 2000);
+    let sender = "otp-verifier";
+    startTransition(() => {
+      dispatcher({ code, userToken, sender });
+    });
+    console.log(state);
   };
+
+  const IsDisabled = isPending || otp.join("").length <= 5;
+
+  useEffect(() => {
+    console.log(state);
+    
+  }, [state]);
 
   return (
     <div className="min-h-screen bg-[#FDFDFF] flex items-center justify-center p-4 font-sans text-black">
@@ -108,7 +145,7 @@ const OTPVerifier = () => {
         </div>
 
         {/* OTP INPUTS */}
-        <div className="flex justify-between gap-2 mb-10">
+        <div className="flex justify-between gap-2 mb-3">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -126,14 +163,33 @@ const OTPVerifier = () => {
           ))}
         </div>
 
+        {!state.success && (
+          <>
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+              animate={{ height: "auto", opacity: 1, marginBottom: 16 }}
+              exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+              className="overflow-hidden "
+            >
+              <div className="bg-[#FF6B6B] border-[3px] border-black p-3 shadow-[4px_4px_0px_0px_#000] flex items-center gap-3">
+                <AlertCircle size={18} className="shrink-0" />
+                <span className="text-[11px] font-black uppercase tracking-tight leading-tight">
+                  {state.message}
+                </span>
+              </div>
+            </motion.div>
+          </>
+        )}
+
         {/* ACTIONS */}
-        <div className="space-y-6">
+        <div className="space-y-6 mt-3">
           <MainButton
             onClick={handleVerify}
-            disabled={otp.some((d) => d === "") || isVerifying}
-            className="cursor-pointer"
+            disabled={IsDisabled}
+            variant={IsDisabled ? "disabled" : "purple"}
+            className={IsDisabled ? "cursor-not-allowed" : "cursor-pointer"}
           >
-            {isVerifying ? "Verifying..." : "Confirm"}
+            {isPending ? "Verifying..." : "Confirm"}
           </MainButton>
 
           <div className="text-center">

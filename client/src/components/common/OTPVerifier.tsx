@@ -180,6 +180,23 @@ const OTPVerifier = () => {
             </motion.div>
           </>
         )}
+        {state.success && state.message === "Otp Verified" && (
+          <>
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+              animate={{ height: "auto", opacity: 1, marginBottom: 16 }}
+              exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+              className="overflow-hidden "
+            >
+              <div className="bg-[#72D5BA] border-[3px] border-black p-3 shadow-[4px_4px_0px_0px_#000] flex items-center gap-3">
+                <AlertCircle size={18} className="shrink-0" />
+                <span className="text-[11px] font-black uppercase tracking-tight leading-tight">
+                  {state.message}
+                </span>
+              </div>
+            </motion.div>
+          </>
+        )}
 
         {/* ACTIONS */}
         <div className="space-y-6 mt-3">

@@ -1,4 +1,3 @@
-
 type EmailConfig = {
   BREVO_SMTP_SDK_KEY?: string;
   EMAIL_FROM?: string;
@@ -18,6 +17,9 @@ type SecretConfig = {
 type GoogleConfig = {
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRETS?: string;
+};
+type ORIGINS = {
+  ORIGIN_ONE?: string;
 };
 
 export const envConfig = {
@@ -45,4 +47,8 @@ export const envConfig = {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRETS: process.env.GOOGLE_CLIENT_SECRETS,
   } satisfies GoogleConfig,
+
+  ORIGINS: {
+    ORIGIN_ONE: process.env.FRONTEND_ORIGIN_ONE,
+  } satisfies ORIGINS,
 };

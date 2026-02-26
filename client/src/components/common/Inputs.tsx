@@ -59,7 +59,7 @@ export const CustomInput = ({
           }
 `}
         />
-        {label === "Password" && (
+        {(label === "Password" || label === "New Password") &&  (
           <span className="text-black absolute right-4 top-1/2 -translate-y-1/2 z-100  ">
             {type === "password" ? (
               <Eye size={18} className="cursor-pointer" onClick={Click} />

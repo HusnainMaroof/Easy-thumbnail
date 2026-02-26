@@ -1,5 +1,6 @@
+import { envConfig } from "../config/envConfig";
 import prisma from "../lib/prisma";
-import { sendOtpEmail } from "../lib/sendMails";
+import { sendOtpEmail, sendResetPassEmail } from "../lib/sendMails";
 import { ForbiddenException, UnauthorizedException } from "../utils/app.error";
 import { catchErrors } from "../utils/errorWrapper";
 import {
@@ -13,9 +14,18 @@ interface RegisterForm {
   displayName: string;
   password: string;
 }
+interface EmailType {
+  email: string;
+  origin: string;
+}
+interface ResetFormType {
+  password: string;
+  token: string;
+}
 
 export type ServiceResponse = {
   success: boolean;
+  error: boolean;
   message?: any;
   data: any;
 };
@@ -35,7 +45,8 @@ export const registerService = async (
     if (userExist?.status === "PENDING" || !userExist?.emailVerified)
       return {
         success: false,
-        message: "Not Verified",
+        error: true,
+        message: "Your Email is rigester but Not Verified",
         data: userExist.userToken,
       };
 
@@ -54,7 +65,12 @@ export const registerService = async (
     },
   });
 
-  return { success: true, message: "USER_CREATED", data: newUser };
+  return {
+    success: true,
+    error: false,
+    message: "USER_CREATED",
+    data: newUser,
+  };
 };
 
 export const sendOtpService = async (
@@ -77,7 +93,8 @@ export const sendOtpService = async (
   });
 
   return {
-    success: mail.success,
+    success: true,
+    error: false,
     message: "Otp sended",
     data: { userToken },
   };
@@ -105,7 +122,7 @@ export const verifyOtpService = async (
     where: { id: checkRecored.id },
   });
 
-  return { success: true, message: "Otp Verified", data: "" };
+  return { success: true, error: false, message: "Otp Verified", data: "" };
 };
 
 export const reSendOtpService = async (
@@ -119,7 +136,7 @@ export const reSendOtpService = async (
   const otpExpirtesAt = new Date(Date.now() + 60 * 60 * 1000);
   await sendOtpEmail(findUser?.email!, otp, "Otp Verification");
 
- const updateUser = await prisma.emailVerification.updateMany({
+  const updateUser = await prisma.emailVerification.updateMany({
     where: { userId: findUser?.id! },
     data: {
       code: otp,
@@ -128,5 +145,62 @@ export const reSendOtpService = async (
     },
   });
 
-  return { success: true, message: "Otp Resended ", data: "" };
+  return { success: true, error: false, message: "Otp Resended ", data: "" };
+};
+
+export const passLinkService = async (
+  formdata: EmailType,
+): Promise<ServiceResponse> => {
+  const { email, origin } = formdata;
+
+  let allowedOrigin = [envConfig.ORIGINS.ORIGIN_ONE];
+
+  if (!allowedOrigin.includes(origin)) throw new UnauthorizedException();
+
+  const getUser = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!getUser) throw new Error("User Does not Exist");
+
+  let resetToken = await generateToken(32);
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+  let link = `${origin}/auth/reset-password/${resetToken}`;
+
+  let main = await sendResetPassEmail(email, link, "ReSet Password");
+
+
+  
+
+  return { success: true, error: false, message: "email sended", data: {} };
+};
+
+export const ResetPasswordService = async (
+  formData: ResetFormType,
+): Promise<ServiceResponse> => {
+
+  
+  const getUser = await prisma.user.findFirst({
+    where: { resetPasswordToken: formData.token },
+  });
+  console.log(getUser);
+  if (!getUser) throw new Error("Unauthrized User");
+
+  let isExpried = new Date() > getUser.resetPasswordExpiresAt!;
+
+  if (isExpried) throw new Error("Reset Password Link Expired");
+  let hashPass = await hashValueHelper(formData.password);
+
+
+   let updatedUser = await prisma.user.updateMany({
+      where: { id: getUser.id },
+      data: {
+        password: hashPass,
+        resetPasswordToken: null,
+        resetPasswordExpiresAt: null,
+      },
+    });
+  
+  return { success: true, error: false, message: "Password Reset Successfully", data: {} };
 };

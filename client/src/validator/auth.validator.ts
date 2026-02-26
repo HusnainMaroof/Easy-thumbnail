@@ -35,6 +35,10 @@ export const loginSchema = z.object({
 
 export const verifyPasswordSchema = z.object({
   password: passwordSchema,
+  newPassword: passwordSchema,
+});
+export const verifyEmailSchema = z.object({
+  email: emailSchema,
 });
 
 // ✅ THIS is the TypeScript conversion

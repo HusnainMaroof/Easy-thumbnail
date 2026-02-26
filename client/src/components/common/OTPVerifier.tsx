@@ -16,6 +16,8 @@ import {
   RefreshCcw,
   CheckCircle2,
   AlertCircle,
+  Ticket,
+  Check,
 } from "lucide-react";
 import { MainButton } from "./Buttons";
 import { ActionResponse, verifyOtpAction } from "@/src/actions/auth.actions";
@@ -30,6 +32,7 @@ import { div } from "framer-motion/client";
 const OTPVerifier = () => {
   const initialState: ActionResponse = {
     success: true,
+    error: false,
     message: null,
     data: null,
   };
@@ -110,7 +113,6 @@ const OTPVerifier = () => {
 
   useEffect(() => {
     console.log(state);
-    
   }, [state]);
 
   return (
@@ -163,7 +165,7 @@ const OTPVerifier = () => {
           ))}
         </div>
 
-        {!state.success && (
+        {state.error && (
           <>
             <motion.div
               initial={{ height: 0, opacity: 0, marginBottom: 0 }}
@@ -189,7 +191,7 @@ const OTPVerifier = () => {
               className="overflow-hidden "
             >
               <div className="bg-[#72D5BA] border-[3px] border-black p-3 shadow-[4px_4px_0px_0px_#000] flex items-center gap-3">
-                <AlertCircle size={18} className="shrink-0" />
+                <Check size={18} className="shrink-0" />
                 <span className="text-[11px] font-black uppercase tracking-tight leading-tight">
                   {state.message}
                 </span>

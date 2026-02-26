@@ -11,6 +11,7 @@ import {
   Chrome,
   Unlock,
   Form,
+  Verified,
 } from "lucide-react";
 import { useAuthContext } from "@/src/context/AuthContext";
 import { CustomInput } from "./Inputs";
@@ -27,15 +28,23 @@ import { validateForm } from "@/src/validator/validate";
 import { useRouter } from "next/navigation";
 
 export const LogInPopUp = () => {
-   const router = useRouter();
-  const { showLoginPopup, setShowLoginPopup, LoginView, setLoginView } =
-    useAuthContext();
+  const router = useRouter();
+  const {
+    showLoginPopup,
+    setShowLoginPopup,
+    LoginView,
+    setLoginView,
+    showEmailPopUp,
+    setshowEmailPopUp,
+    setEmailVeriferAction
+  } = useAuthContext();
   type FormErrors = z.ZodFlattenedError<
     z.infer<typeof registerSchema>
   >["fieldErrors"];
 
   const initialState: ActionResponse = {
     success: false,
+    error: false,
     message: null,
     data: null,
   };
@@ -85,11 +94,7 @@ export const LogInPopUp = () => {
     setDisplayName("");
     setShowPass(false);
     setErrors({});
-  }, [LoginView]);
-
-  useEffect(() => {
-    setErrors({});
-  }, [showLoginPopup]);
+  }, [showLoginPopup, LoginView]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -102,20 +107,15 @@ export const LogInPopUp = () => {
   const IsDisabled: boolean =
     isPending || !email || !password || (!isLogin && !displayName);
 
-  // console.log(state);
-
   useEffect(() => {
-    if (!state.success) {
+    if (state.error) {
       setErrors({ email: [state.message] });
     }
 
     if (state.success && state.message === "Otp sended") {
-      router.push(`/auth/verify-otp/${state.data.userToken}`)
+      router.push(`/auth/verify-otp/${state.data.userToken}`);
     }
   }, [state]);
-
-  console.log(state);
-  
 
   return (
     <AnimatePresence mode="wait">
@@ -127,7 +127,7 @@ export const LogInPopUp = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowLoginPopup(false)}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-size-[40px_40px] bg-black/40 backdrop-blur-sm"
           />
 
           {/* MODAL CONTENT */}
@@ -173,7 +173,7 @@ export const LogInPopUp = () => {
             {/* FORM FIELDS */}
 
             <form action={handleFormAction} noValidate>
-              <motion.div layout className="space-y-4 mb-8">
+              <motion.div layout className="space-y-2 mb-4 w-full">
                 <AnimatePresence mode="popLayout">
                   {!isLogin && (
                     <motion.div
@@ -206,7 +206,37 @@ export const LogInPopUp = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-
+                {state.error && (
+                  <>
+                    <motion.div
+                      initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                      animate={{ height: "auto", opacity: 1, marginBottom: 16 }}
+                      exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                      className="overflow-hidden "
+                    >
+                      <div className="bg-[#FF6B6B] border-[3px] border-black p-3 shadow-[4px_4px_0px_0px_#000] flex items-center gap-3">
+                        <Verified size={18} className="shrink-0" />
+                        <span className="text-[11px] font-black uppercase tracking-tight leading-tight">
+                          Verify Your Email
+                          <span
+                            onClick={() => {
+                              setEmail("");
+                              setPassword("");
+                              setDisplayName("");
+                              setShowPass(false);
+                              setErrors({});
+                              setShowLoginPopup(false);
+                              setshowEmailPopUp(true);
+                            }}
+                            className="underline text-green-300 pl-1 cursor-pointer"
+                          >
+                            click Here
+                          </span>
+                        </span>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
                 <CustomInput
                   err={errors?.password?.[0] ?? ""}
                   name="password"
@@ -218,6 +248,22 @@ export const LogInPopUp = () => {
                   type={showPass ? "text" : "password"}
                   Click={() => setShowPass((prev) => !prev)}
                 />
+
+                <span
+                  onClick={() => {
+                    setEmail("");
+                    setPassword("");
+                    setDisplayName("");
+                    setShowPass(false);
+                    setErrors({});
+                    setShowLoginPopup(false);
+                    setshowEmailPopUp(true);
+                    setEmailVeriferAction("reset-pass")
+                  }}
+                  className=" cursor-pointer text-right block underline text-[#88AAEE] hover:text-[#7799dd]"
+                >
+                  Forgot Password
+                </span>
               </motion.div>
               <motion.div layout className="space-y-4">
                 <div>

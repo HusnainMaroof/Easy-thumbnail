@@ -11,7 +11,7 @@ export const getCurrentUser = async () => {
   if (!auth_sessionId) return;
 
   const session = await setRedis.get(`auth_session:${auth_sessionId}`);
-  console.log(session);
+  // console.log(session);
   
   if (!session) return null;
 

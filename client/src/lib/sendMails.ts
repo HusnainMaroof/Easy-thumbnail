@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+
 import { sendEmail } from "../config/brevo";
 import { ServiceResponse } from "../service/auth.service";
 

@@ -1,3 +1,4 @@
+import { LogoutButton } from "@/src/components/common/Logout";
 import { getCurrentUser } from "@/src/lib/auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { redirect } from "next/navigation";
@@ -5,7 +6,7 @@ import { redirect } from "next/navigation";
 const page = async () => {
   const user = await getCurrentUser();
 
-  console.log(user);
+  // console.log(user);
 
   if (!user) {
     console.log("un authrozied");
@@ -27,6 +28,8 @@ const page = async () => {
             <br /> Pajee
           </h1>
         </div>
+
+        <LogoutButton />
       </div>
     </div>
   );

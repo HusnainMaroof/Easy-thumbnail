@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import prisma from "../lib/prisma";
-import  setRedis  from "../lib/redis";
+import setRedis from "../lib/redis";
 import { sendOtpEmail } from "../lib/sendMails";
 import {
   loginService,
@@ -16,6 +16,8 @@ import {
 import { reSentOtpPayload, VerifyOtpPayload } from "../types/authType";
 import { catchErrors } from "../utils/errorWrapper";
 import { generateOtpHelper, generateToken } from "../utils/helper";
+import { envConfig } from "../config/envConfig";
+import { revalidatePath } from "next/cache";
 
 export type ActionResponse = {
   success: boolean;
@@ -81,19 +83,25 @@ export const verifyOtpAction = catchErrors(
       email: res?.data?.email!,
       displayName: res?.data?.displayName,
     };
-   
 
     console.log(data);
-    
 
     const cookieStore = await cookies();
     const sessionId = await generateToken(32);
-    await setRedis.set(`auth_session:${sessionId}`, JSON.stringify(data));
+    let expiresAt = 60 * 60 * 24 * 7;
+    await setRedis.set(
+      `auth_session:${sessionId}`,
+      JSON.stringify(data),
+      "EX",
+      expiresAt,
+    );
 
     cookieStore.set("auth_sessionId", sessionId, {
       httpOnly: true,
-      secure: true,
+      secure: envConfig.NODE_ENV === "production",
+      sameSite: envConfig.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
+      maxAge: expiresAt,
     });
     return {
       success: true,
@@ -128,12 +136,20 @@ export const loginAction = catchErrors(
       displayName: login?.data?.displayName,
     };
 
-    await setRedis.set(`auth_session:${sessionId}`, JSON.stringify(data));
+    let expiresAt = 60 * 60 * 24 * 7;
+    await setRedis.set(
+      `auth_session:${sessionId}`,
+      JSON.stringify(data),
+      "EX",
+      expiresAt,
+    );
 
     cookieStore.set("auth_sessionId", sessionId, {
       httpOnly: true,
-      secure: true,
+      secure: envConfig.NODE_ENV === "production",
+      sameSite: envConfig.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
+      maxAge: expiresAt,
     });
     return {
       success: login.success,
@@ -215,6 +231,37 @@ export const EmailVerifierAction = catchErrors(
       error: false,
       message: "Otp email sended",
       data: getUser.userToken,
+    };
+  },
+);
+
+export const logoutAction = catchErrors(
+  async (
+    prevState: ActionResponse,
+    formData: FormData,
+  ): Promise<ActionResponse> => {
+    const cookieStore = await cookies();
+    const sessionId = cookieStore.get("auth_sessionId")?.value;
+    console.log("from server");
+    console.log(sessionId);
+
+    if (sessionId) {
+      await setRedis.del(`auth_session:${sessionId}`);
+    }
+    cookieStore.set({
+      name: "session_id",
+      value: "",
+      path: "/",
+      httpOnly: true,
+      maxAge: 0,
+    });
+
+    revalidatePath("/");
+    return {
+      success: false,
+      error: false,
+      message: "logout successfully",
+      data: {},
     };
   },
 );

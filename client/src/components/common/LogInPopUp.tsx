@@ -129,6 +129,10 @@ export const LogInPopUp = () => {
     }
   }, [regState, loginState]);
 
+  const handelGoogle = async () => {
+    window.location.href = "/api/auth/google";
+  };
+
   return (
     <AnimatePresence mode="wait">
       {showLoginPopup && (
@@ -304,7 +308,12 @@ export const LogInPopUp = () => {
                   <div className="grow border-t-2 border-gray-100"></div>
                 </div>
 
-                <MainButton variant="google" className="cursor-pointer">
+                <MainButton
+                  onClick={handelGoogle}
+                  type="button"
+                  variant="google"
+                  className="cursor-pointer"
+                >
                   Continue with Google
                 </MainButton>
                 <div className="text-center font-bold text-xs text-gray-400 pt-4">

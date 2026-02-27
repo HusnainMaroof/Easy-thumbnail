@@ -21,8 +21,8 @@ import {
 } from "lucide-react";
 import { MainButton } from "./Buttons";
 import { ActionResponse, verifyOtpAction } from "@/src/actions/auth.actions";
-import { useParams } from "next/navigation";
-import { ErrorState, VerifyOtpPayload } from "@/src/types/auth";
+import { redirect, useParams } from "next/navigation";
+import { ErrorState, VerifyOtpPayload } from "@/src/types/authType";
 import { div } from "framer-motion/client";
 
 /**
@@ -106,13 +106,19 @@ const OTPVerifier = () => {
     startTransition(() => {
       dispatcher({ code, userToken, sender });
     });
-    console.log(state);
   };
-
+  
   const IsDisabled = isPending || otp.join("").length <= 5;
-
+  
+  let message;
+  
   useEffect(() => {
+    if (state.success && state.message === "Otp Verified") {
+      redirect("/dashboard/home")
+    }
+    
     console.log(state);
+  
   }, [state]);
 
   return (
@@ -147,7 +153,7 @@ const OTPVerifier = () => {
         </div>
 
         {/* OTP INPUTS */}
-        <div className="flex justify-between gap-2 mb-3">
+        <div className="flex justify-between gap-2 mb-4">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -182,26 +188,28 @@ const OTPVerifier = () => {
             </motion.div>
           </>
         )}
-        {state.success && state.message === "Otp Verified" && (
-          <>
-            <motion.div
-              initial={{ height: 0, opacity: 0, marginBottom: 0 }}
-              animate={{ height: "auto", opacity: 1, marginBottom: 16 }}
-              exit={{ height: 0, opacity: 0, marginBottom: 0 }}
-              className="overflow-hidden "
-            >
-              <div className="bg-[#72D5BA] border-[3px] border-black p-3 shadow-[4px_4px_0px_0px_#000] flex items-center gap-3">
-                <Check size={18} className="shrink-0" />
-                <span className="text-[11px] font-black uppercase tracking-tight leading-tight">
-                  {state.message}
-                </span>
-              </div>
-            </motion.div>
-          </>
-        )}
+        {state.success &&
+          (state.message === "Otp Verified" ||
+            state.message === "Otp Resended") && (
+            <>
+              <motion.div
+                initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                animate={{ height: "auto", opacity: 1, marginBottom: 16 }}
+                exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                className="overflow-hidden rounded-lg"
+              >
+                <div className="bg-[#72D5BA] border-[3px] border-black p-3 shadow-[4px_4px_0px_0px_#000] flex items-center gap-3 rounded-lg">
+                  <Check size={18} className="shrink-0" />
+                  <span className="text-[11px] font-black uppercase tracking-tight leading-tight">
+                    {state.message}
+                  </span>
+                </div>
+              </motion.div>
+            </>
+          )}
 
         {/* ACTIONS */}
-        <div className="space-y-6 mt-3">
+        <div className="space-y-6 ">
           <MainButton
             onClick={handleVerify}
             disabled={IsDisabled}

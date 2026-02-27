@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { envConfig } from "../config/envConfig";
 import prisma from "../lib/prisma";
 import { sendOtpEmail, sendResetPassEmail } from "../lib/sendMails";
@@ -8,10 +9,16 @@ import {
   generateToken,
   hashValueHelper,
 } from "../utils/helper";
+import bcrypt from "bcryptjs";
 
 interface RegisterForm {
   email: string;
   displayName: string;
+  password: string;
+}
+interface LoginForm {
+  email: string;
+
   password: string;
 }
 interface EmailType {
@@ -46,10 +53,9 @@ export const registerService = async (
       return {
         success: false,
         error: true,
-        message: "Your Email is rigester but Not Verified",
-        data: userExist.userToken,
+        message: "Not Verified",
+        data: userExist?.userToken!,
       };
-
     throw new Error("user already exist");
   }
 
@@ -145,7 +151,7 @@ export const reSendOtpService = async (
     },
   });
 
-  return { success: true, error: false, message: "Otp Resended ", data: "" };
+  return { success: true, error: false, message: "Otp Resended", data: "" };
 };
 
 export const passLinkService = async (
@@ -170,17 +176,12 @@ export const passLinkService = async (
 
   let main = await sendResetPassEmail(email, link, "ReSet Password");
 
-
-  
-
   return { success: true, error: false, message: "email sended", data: {} };
 };
 
 export const ResetPasswordService = async (
   formData: ResetFormType,
 ): Promise<ServiceResponse> => {
-
-  
   const getUser = await prisma.user.findFirst({
     where: { resetPasswordToken: formData.token },
   });
@@ -192,15 +193,49 @@ export const ResetPasswordService = async (
   if (isExpried) throw new Error("Reset Password Link Expired");
   let hashPass = await hashValueHelper(formData.password);
 
+  let updatedUser = await prisma.user.updateMany({
+    where: { id: getUser.id },
+    data: {
+      password: hashPass,
+      resetPasswordToken: null,
+      resetPasswordExpiresAt: null,
+    },
+  });
 
-   let updatedUser = await prisma.user.updateMany({
-      where: { id: getUser.id },
-      data: {
-        password: hashPass,
-        resetPasswordToken: null,
-        resetPasswordExpiresAt: null,
-      },
-    });
-  
-  return { success: true, error: false, message: "Password Reset Successfully", data: {} };
+  return {
+    success: true,
+    error: false,
+    message: "Password Reset Successfully",
+    data: {},
+  };
+};
+
+export const loginService = async (
+  formData: LoginForm,
+): Promise<ServiceResponse> => {
+  const { email, password } = formData;
+  const userExist = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!userExist) throw new Error("User Not Found");
+
+  if (userExist?.status === "PENDING" || !userExist?.emailVerified)
+    return {
+      success: false,
+      error: true,
+      message: "Not Verified",
+      data: userExist.userToken,
+    };
+
+  let checkPass = await bcrypt.compare(password, userExist.password);
+
+  if (!checkPass) throw new Error("Inncorect Password");
+
+  return {
+    success: true,
+    error: false,
+    message: "login Successfully",
+    data: userExist,
+  };
 };

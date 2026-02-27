@@ -38,12 +38,17 @@ const EmailPopUp = () => {
     z.infer<typeof verifyEmailSchema>
   >["fieldErrors"];
 
-  let actions =
-    emailVeriferAction === "reset-pass" ? PassLinkActions : EmailVerifierAction;
-  const [state, dispatcher, isPending] = useActionState<
+  const [passstate, passdispatcher, passisPending] = useActionState<
     ActionResponse,
     FormData
-  >(actions, initialState);
+  >(PassLinkActions, initialState);
+  const [emailVerifystate, emailVerifydispatcher, emailVerifyisPending] =
+    useActionState<ActionResponse, FormData>(EmailVerifierAction, initialState);
+
+  let isPending =
+    emailVeriferAction === "reset-pass" ? passisPending : emailVerifyisPending;
+  let state =
+    emailVeriferAction === "reset-pass" ? passstate : emailVerifystate;
 
   const [errors, setErrors] = useState<FormErrors>();
   const [email, setEmail] = useState("");
@@ -59,11 +64,11 @@ const EmailPopUp = () => {
       return;
     }
 
-    // ✅ append origin into FormData
     formData.append("origin", origin);
 
     startTransition(() => {
-      dispatcher(formData);
+      if (emailVeriferAction === "reset-pass") return passdispatcher(formData);
+      else return emailVerifydispatcher(formData);
     });
   };
 
@@ -82,7 +87,6 @@ const EmailPopUp = () => {
       router.push(`/auth/verify-otp/${state.data}`);
     }
   }, [state]);
-  console.log(state);
 
   return (
     <AnimatePresence mode="wait">

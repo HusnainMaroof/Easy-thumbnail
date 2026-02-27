@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useActionState, useEffect, useState } from "react";
+import React, { useActionState, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -36,7 +36,7 @@ export const LogInPopUp = () => {
     setLoginView,
     showEmailPopUp,
     setshowEmailPopUp,
-    setEmailVeriferAction
+    setEmailVeriferAction,
   } = useAuthContext();
   type FormErrors = z.ZodFlattenedError<
     z.infer<typeof registerSchema>
@@ -55,11 +55,16 @@ export const LogInPopUp = () => {
   const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const isLogin = LoginView === "login";
-  const actions = isLogin ? loginAction : regUserAction;
-  const [state, formAction, isPending] = useActionState<
+  const [loginState, loginFormAction, loginIsPending] = useActionState<
     ActionResponse,
     FormData
-  >(actions, initialState);
+  >(loginAction, initialState);
+  const [regState, regFormAction, regIsPending] = useActionState<
+    ActionResponse,
+    FormData
+  >(regUserAction, initialState);
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleFormAction = async (formData: FormData) => {
     setErrors({});
@@ -85,7 +90,8 @@ export const LogInPopUp = () => {
 
     setErrors({});
 
-    return formAction(formData);
+    if (isLogin) return loginFormAction(formData);
+    else return regFormAction(formData);
   };
 
   useEffect(() => {
@@ -105,17 +111,23 @@ export const LogInPopUp = () => {
   }, []);
 
   const IsDisabled: boolean =
-    isPending || !email || !password || (!isLogin && !displayName);
+    regIsPending ||
+    loginIsPending ||
+    !email ||
+    !password ||
+    (!isLogin && !displayName);
 
+  const state = isLogin ? loginState : regState;
+  const IsPending = isLogin ? loginIsPending : regIsPending;
   useEffect(() => {
     if (state.error) {
       setErrors({ email: [state.message] });
     }
 
-    if (state.success && state.message === "Otp sended") {
-      router.push(`/auth/verify-otp/${state.data.userToken}`);
+    if (regState.success && regState.message === "Otp sended") {
+      router.push(`/auth/verify-otp/${regState.data.userToken}`);
     }
-  }, [state]);
+  }, [regState, loginState]);
 
   return (
     <AnimatePresence mode="wait">
@@ -172,7 +184,7 @@ export const LogInPopUp = () => {
 
             {/* FORM FIELDS */}
 
-            <form action={handleFormAction} noValidate>
+            <form ref={formRef} action={handleFormAction} noValidate>
               <motion.div layout className="space-y-2 mb-4 w-full">
                 <AnimatePresence mode="popLayout">
                   {!isLogin && (
@@ -206,7 +218,7 @@ export const LogInPopUp = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {state.error && (
+                {state.error && state.message === "Not Verified" && (
                   <>
                     <motion.div
                       initial={{ height: 0, opacity: 0, marginBottom: 0 }}
@@ -258,7 +270,7 @@ export const LogInPopUp = () => {
                     setErrors({});
                     setShowLoginPopup(false);
                     setshowEmailPopUp(true);
-                    setEmailVeriferAction("reset-pass")
+                    setEmailVeriferAction("reset-pass");
                   }}
                   className=" cursor-pointer text-right block underline text-[#88AAEE] hover:text-[#7799dd]"
                 >
@@ -275,7 +287,7 @@ export const LogInPopUp = () => {
                       IsDisabled ? "cursor-not-allowed" : "cursor-pointer"
                     }
                   >
-                    {isPending
+                    {IsPending
                       ? isLogin
                         ? "Signing In..." // Login is pending
                         : "Creating Account..." // Signup is pending

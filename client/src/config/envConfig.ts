@@ -8,6 +8,7 @@ type RedisConfig = {
   REDIS_PORT?: string;
   REDIS_USERNAME?: string;
   REDIS_PASSWORD?: string;
+  REDIS_URL?: string;
 };
 
 type SecretConfig = {
@@ -37,6 +38,7 @@ export const envConfig = {
     REDIS_PORT: process.env.REDIS_PORT,
     REDIS_USERNAME: process.env.REDIS_USERNAME,
     REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+    REDIS_URL: process.env.REDIS_URL,
   } satisfies RedisConfig,
 
   SECRET: {

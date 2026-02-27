@@ -7,6 +7,8 @@ export const hashValueHelper = async (value: string) => {
   return val;
 };
 
+
+
 export const generateOtpHelper = async () => {
   let otp = otpGenrator.generate(6, {
     upperCaseAlphabets: false,

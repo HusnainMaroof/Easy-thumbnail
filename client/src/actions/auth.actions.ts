@@ -1,8 +1,11 @@
 "use server";
 
+import { cookies } from "next/headers";
 import prisma from "../lib/prisma";
+import  setRedis  from "../lib/redis";
 import { sendOtpEmail } from "../lib/sendMails";
 import {
+  loginService,
   passLinkService,
   registerService,
   reSendOtpService,
@@ -10,9 +13,9 @@ import {
   sendOtpService,
   verifyOtpService,
 } from "../service/auth.service";
-import { reSentOtpPayload, VerifyOtpPayload } from "../types/auth";
+import { reSentOtpPayload, VerifyOtpPayload } from "../types/authType";
 import { catchErrors } from "../utils/errorWrapper";
-import { generateOtpHelper } from "../utils/helper";
+import { generateOtpHelper, generateToken } from "../utils/helper";
 
 export type ActionResponse = {
   success: boolean;
@@ -32,6 +35,8 @@ export const regUserAction = catchErrors(
       password: string;
     };
 
+    console.log("log from regestration u adfafaefaq");
+
     const createUser = await registerService(payload);
     if (!createUser.success) {
       return createUser;
@@ -43,15 +48,11 @@ export const regUserAction = catchErrors(
       createUser.data.userToken,
     );
 
-    if (sendOtp.success) {
-      return sendOtp;
-    }
-
     return {
-      success: true,
-      error: false,
-      message: "good",
-      data: null,
+      success: sendOtp.success,
+      error: sendOtp.error,
+      message: sendOtp.message,
+      data: sendOtp.data,
     };
   },
 );
@@ -73,16 +74,27 @@ export const verifyOtpAction = catchErrors(
       };
     }
 
-    if (payload.sender === "otp-verifier") {
-      let res = await verifyOtpService(payload.code, payload.userToken);
-      return {
-        success: res.success,
-        message: res.message,
-        error: res.error,
-        data: res.data,
-      };
-    }
+    let res = await verifyOtpService(payload.code, payload.userToken);
 
+    let data = {
+      userToken: res?.data?.userToken!,
+      email: res?.data?.email!,
+      displayName: res?.data?.displayName,
+    };
+   
+
+    console.log(data);
+    
+
+    const cookieStore = await cookies();
+    const sessionId = await generateToken(32);
+    await setRedis.set(`auth_session:${sessionId}`, JSON.stringify(data));
+
+    cookieStore.set("auth_sessionId", sessionId, {
+      httpOnly: true,
+      secure: true,
+      path: "/",
+    });
     return {
       success: true,
       message: "Otp Verified",
@@ -99,11 +111,35 @@ export const loginAction = catchErrors(
   ): Promise<ActionResponse> => {
     console.log("from login action");
 
+    const payload = Object.fromEntries(formData) as {
+      email: string;
+
+      password: string;
+    };
+
+    const login = await loginService(payload);
+
+    const cookieStore = await cookies();
+    const sessionId = await generateToken(32);
+
+    let data = {
+      userToken: login?.data?.userToken!,
+      email: login?.data?.email!,
+      displayName: login?.data?.displayName,
+    };
+
+    await setRedis.set(`auth_session:${sessionId}`, JSON.stringify(data));
+
+    cookieStore.set("auth_sessionId", sessionId, {
+      httpOnly: true,
+      secure: true,
+      path: "/",
+    });
     return {
-      success: true,
-      error: false,
-      message: "good",
-      data: null,
+      success: login.success,
+      error: login.error,
+      message: login.message,
+      data: login.data,
     };
   },
 );
@@ -161,22 +197,18 @@ export const EmailVerifierAction = catchErrors(
     });
 
     if (!getUser) throw new Error("Unauthrozied");
-     let otp = await generateOtpHelper();
-  const otpExpirtesAt = new Date(Date.now() + 60 * 60 * 1000);
-  await sendOtpEmail(getUser?.email!, otp, "Otp Verification");
+    let otp = await generateOtpHelper();
+    const otpExpirtesAt = new Date(Date.now() + 60 * 60 * 1000);
+    await sendOtpEmail(getUser?.email!, otp, "Otp Verification");
 
-  const updateUser = await prisma.emailVerification.updateMany({
-    where: { userId: getUser?.id! },
-    data: {
-      code: otp,
-      expiresAt: otpExpirtesAt,
-      attemptCount: { increment: 1 },
-    },
-  });
-
-
-console.log(getUser.userToken);
-
+    const updateUser = await prisma.emailVerification.updateMany({
+      where: { userId: getUser?.id! },
+      data: {
+        code: otp,
+        expiresAt: otpExpirtesAt,
+        attemptCount: { increment: 1 },
+      },
+    });
 
     return {
       success: true,

@@ -37,6 +37,12 @@ export async function GET(req: Request) {
   let expiresAt = 60 * 60 * 24 * 7;
 
   if (userExist) {
+    if (userExist.status === "ACTIVE") {
+      const updateStatus = await prisma.user.update({
+        where: { id: userExist.id },
+        data: { status: "ACTIVE", emailVerified: true },
+      });
+    }
     await setRedis.set(
       `auth_session:${sessionId}`,
       JSON.stringify(user),
@@ -57,8 +63,6 @@ export async function GET(req: Request) {
     return res;
   }
 
-
-  
   const createUser = await prisma.user.create({
     data: {
       email: user.email,

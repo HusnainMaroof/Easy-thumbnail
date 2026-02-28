@@ -1,7 +1,14 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+type UserType = {
+  userToken: string;
+  displayName: string;
+  email: string;
+} | null;
+
 type AuthContextType = {
+  user: UserType;
   showAuthPopup: boolean;
   setShowAuthPopup: React.Dispatch<React.SetStateAction<boolean>>;
   showLoginPopup: boolean;
@@ -16,7 +23,13 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({
+  children,
+  user,
+}: {
+  children: ReactNode;
+  user: UserType;
+}) => {
   const [showAuthPopup, setShowAuthPopup] = React.useState(false);
   const [showLoginPopup, setShowLoginPopup] = React.useState(false);
   const [LoginView, setLoginView] = useState("login");
@@ -26,6 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
+        user,
         showAuthPopup,
         setShowAuthPopup,
         showLoginPopup,

@@ -28,6 +28,7 @@ export async function GET(req: Request) {
     { headers: { Authorization: `Bearer ${access_token}` } },
   );
   const user = userInfoResponse.data;
+  
   const userExist = await prisma.user.findUnique({
     where: {
       email: user.email,
@@ -43,9 +44,16 @@ export async function GET(req: Request) {
         data: { status: "ACTIVE", emailVerified: true },
       });
     }
+
+
+     let UserData = {
+      userToken: userExist.userToken!,
+      email: userExist.email!,
+      displayName: userExist.displayName!,
+    };
     await setRedis.set(
       `auth_session:${sessionId}`,
-      JSON.stringify(user),
+      JSON.stringify(UserData),
       "EX",
       expiresAt,
     );
@@ -74,7 +82,11 @@ export async function GET(req: Request) {
       google_id: access_token,
     },
   });
-
+  let UserData = {
+      userToken: createUser.userToken!,
+      email: createUser.email!,
+      displayName: createUser.displayName!,
+    };
   await setRedis.set(
     `auth_session:${sessionId}`,
     JSON.stringify(user),

@@ -1,6 +1,7 @@
 "use client";
 
 import { ActionResponse, logoutAction } from "@/src/actions/auth.actions";
+import { LogOut } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useActionState, useEffect } from "react";
 
@@ -21,14 +22,17 @@ export const LogoutButton = () => {
       redirect("/");
     }
 
-    console.log(state);
+    // console.log(state);
   }, [state]);
   return (
     <form action={dispatcher}>
       <button
         type="submit"
-        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+        className=" cursor-pointer w-full flex items-center gap-3 p-3 font-black text-xs uppercase hover:bg-[#FF6B6B] hover:text-white transition-colors rounded-lg group mt-1"
       >
+        <span className="p-1.5 border-2 border-black bg-white group-hover:bg-white text-black rounded-md">
+          <LogOut size={16} />
+        </span>
         Logout
       </button>
     </form>

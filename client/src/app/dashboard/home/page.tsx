@@ -1,3 +1,4 @@
+import Dashboard from "@/src/components/common/Dashboard";
 import { LogoutButton } from "@/src/components/common/Logout";
 import MainHeroSection from "@/src/components/common/MainHeroSection";
 import Navbar from "@/src/components/common/Navbar";
@@ -17,7 +18,7 @@ const page = async () => {
     <>
       <div className="w-full h-screen ">
         <Navbar />
-        <MainHeroSection/>
+        <Dashboard/>
       </div>
     </>
   );

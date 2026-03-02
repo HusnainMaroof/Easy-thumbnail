@@ -21,7 +21,7 @@ import {
 import { useAuthContext } from "@/src/context/AuthContext";
 import { LogoutButton } from "./Logout";
 
-export const ProfileDropdown = ({}) => {
+export const ProfileDropdown = () => {
   const { user } = useAuthContext();
 
   const [isOpen, setIsOpen] = useState(false);

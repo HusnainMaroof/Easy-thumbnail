@@ -45,7 +45,7 @@ const Navbar = () => {
     }
   }, [isOpen]);
 
-  console.log(scrolled);
+  // console.log(scrolled);
 
   return (
     <nav

@@ -1,11 +1,11 @@
 export type GenrateFormType = {
-  niche: "gaming" | "finance" | "tech" | "vlog" | "";
-  emotion: "shock" | "curiosity" | "fear" | "";
-  style: "viral" | "news" | "";
+  niche: "gaming" | "finance" | "tech" | "vlog" | "" | string;
+  emotion: "shock" | "curiosity" | "fear" | "" | string;
+  style: "viral" | "news" | "" | string;
 
-  subjectType: "upload" | "ai" | "none" | "";
-  placement: "left" | "right" | "center" | "auto" | "";
-  textIntensity: "minimal" | "bold" | "aggressive" | "";
+  subjectType: "upload" | "ai" | "none" | "" | string;
+  placement: "left" | "right" | "center" | "auto" | "" | string;
+  textIntensity: "minimal" | "bold" | "aggressive" | "" | string;
   highlight:
     | "money"
     | "laptop"
@@ -13,10 +13,12 @@ export type GenrateFormType = {
     | "game-item"
     | "arrow-circle"
     | "none"
-    | "";
-  background: "solid" | "gradient" | "blur" | "real" | "abstract" | "";
-  platform: "youtube" | "tiktok" | "instagram" | ""; 
+    | ""
+    | string;
+  background: "solid" | "gradient" | "blur" | "real" | "abstract" | "" | string;
+  platform: "youtube" | "tiktok" | "instagram" | "" | string;
   title: string;
   aiHook: boolean;
   extraPrompt: string;
+  uploadedImage: File | null;
 };

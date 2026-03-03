@@ -44,6 +44,7 @@ export const AuthProvider = ({
   const [showEmailPopUp, setshowEmailPopUp] = useState(false);
   const [emailVeriferAction, setEmailVeriferAction] = useState("");
   const [generateForm, setGenerateForm] = useState<GenrateFormType>({
+    uploadedImage: null,
     extraPrompt: "",
     platform: "",
     title: "",
@@ -58,7 +59,7 @@ export const AuthProvider = ({
     background: "",
   });
 
-  const [dashboardSideBar, setDashboardSideBar] = useState(false);
+  const [dashboardSideBar, setDashboardSideBar] = useState(true);
   const [dashboardActiveTab, setDashboardActiveTab] = useState<
     "generate" | "review"
   >("generate");

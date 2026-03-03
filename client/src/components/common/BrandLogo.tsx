@@ -12,7 +12,7 @@ const BrandLogo = () => {
               className="flex flex-col group cursor-pointer"
             >
               <div className="flex items-center">
-                <span className="text-lg lg:text-2xl  font-black uppercase tracking-tighter leading-none text-black">
+                <span className="text-sm sm:text-lg lg:text-2xl  font-black uppercase tracking-tighter leading-none text-black">
                   EASY
                 </span>
                 <div className="relative ml-1">

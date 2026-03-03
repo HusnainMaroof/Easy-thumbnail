@@ -1,23 +1,23 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronsUpDown, Check, Plus } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuthContext } from "@/src/context/AuthContext";
 import { GenrateFormType } from "@/src/types/dashboard.type";
 
-// Dropdown fields: all string fields except title/extraPrompt
-type DropdownField = {
-  [K in keyof GenrateFormType]: GenrateFormType[K] extends string ? K : never;
-}[keyof GenrateFormType];
-type StrictDropdownField = Exclude<DropdownField, "title" | "extraPrompt">;
+type StrictDropdownField = keyof Omit<GenrateFormType, "title" | "extraPrompt">;
 
 type DashboardDropdownProps<K extends StrictDropdownField> = {
   label: string;
   field: K;
-  options: { label: string; value: GenrateFormType[K] }[];
+  options: {
+    label: string;
+    value: GenrateFormType[K];
+  }[];
   icon?: LucideIcon;
+  allowCustom?: boolean;
 };
 
 export function DashboardDropdown<K extends StrictDropdownField>({
@@ -25,10 +25,16 @@ export function DashboardDropdown<K extends StrictDropdownField>({
   field,
   options,
   icon: Icon,
+  allowCustom = true,
 }: DashboardDropdownProps<K>) {
   const { generateForm, setGenerateForm } = useAuthContext();
-  const value = generateForm[field];
+
+  const value = generateForm[field] as GenrateFormType[K];
+
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [customOptions, setCustomOptions] = useState(options);
+
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -40,76 +46,132 @@ export function DashboardDropdown<K extends StrictDropdownField>({
         setIsOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedOption = options.find((opt) => opt.value === value);
+  const filteredOptions = useMemo(() => {
+    return customOptions.filter((opt) =>
+      opt.label.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [search, customOptions]);
 
-  const updateField = (val: GenrateFormType[K]) => {
+  const showAddOption =
+    allowCustom &&
+    search.trim() !== "" &&
+    !customOptions.some(
+      (opt) => opt.label.toLowerCase() === search.toLowerCase(),
+    );
+
+  const handleSelect = (val: GenrateFormType[K]) => {
     setGenerateForm((prev) => ({
       ...prev,
       [field]: val,
     }));
+    setIsOpen(false);
+    setSearch("");
   };
 
+  const handleAddCustom = () => {
+    const newOption = {
+      label: search,
+      value: search as GenrateFormType[K],
+    };
+
+    setCustomOptions((prev) => [...prev, newOption]);
+    handleSelect(newOption.value);
+  };
+
+  const selectedOption = customOptions.find((opt) => opt.value === value);
+
+  console.log(value);
+  
   return (
-    <div className="relative w-full" ref={dropdownRef}>
-      <label className="text-[9px] font-black text-black uppercase tracking-widest block mb-2 opacity-50 ml-1">
+    <div className="relative w-full group" ref={dropdownRef}>
+      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
         {label}
       </label>
 
-      <button
+      <motion.button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between p-4 border-2 rounded-xl transition-all duration-200 bg-white
-          ${isOpen ? "border-black shadow-[4px_4px_0px_0px_#000] -translate-y-1" : "border-zinc-200 hover:border-zinc-400 shadow-sm"}`}
+        whileTap={{ scale: 0.98 }}
+        className={`relative w-full flex items-center justify-between px-4 py-3.5 border-2 ${value ? "border-black" : "border-zinc-400"} rounded-xl bg-white  cursor-pointer`}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 overflow-hidden">
           {Icon && (
-            <Icon
-              size={16}
-              className={value ? "text-[#88AAEE]" : "text-zinc-300"}
-            />
+            <div className="p-1.5 rounded-md bg-zinc-100 text-zinc-400">
+              <Icon size={16} strokeWidth={2.5} />
+            </div>
           )}
-          <span
-            className={`text-[10px] md:text-[11px] font-black uppercase tracking-tight ${value ? "text-black" : "text-zinc-400"}`}
-          >
+
+          <span className={`text-[11px] font-black uppercase tracking-tight truncate ${value ? "text-black" : "text-zinc-500"} `}>
             {selectedOption ? selectedOption.label : `Select ${label}`}
+            
           </span>
         </div>
 
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-          <ChevronDown size={16} />
+          {isOpen ? <ChevronDown size={18} /> : <ChevronsUpDown size={16} />}
         </motion.div>
-      </button>
+      </motion.button>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 5, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 5, scale: 0.98 }}
-            className="absolute z-[100] left-0 right-0 mt-2 bg-white border-2 border-black rounded-xl shadow-[8px_8px_0px_0px_#000] overflow-hidden"
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 8, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            className="absolute z-100 top-full left-0 right-0 bg-white border-2 border-black rounded-xl shadow-lg mt-1"
           >
-            <div className="max-h-60 overflow-y-auto custom-scrollbar">
-              {options.map((opt) => (
-                <motion.button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => {
-                    updateField(opt.value);
-                    setIsOpen(false);
-                  }}
-                  whileHover={{ backgroundColor: "#f0f0f0" }}
-                  transition={{ duration: 0.2 }}
-                  className={`w-full text-left px-5 py-4 text-[10px] font-black uppercase flex items-center justify-between border-b border-zinc-100 last:border-0
-                    ${value === opt.value ? "bg-[#F4E041] text-black" : "text-zinc-600"}`}
-                >
-                  {opt.label}
-                  {value === opt.value && <CheckCircle2 size={14} />}
-                </motion.button>
-              ))}
+            <div className="p-2">
+              {/* Search Input */}
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={`Search ${label}`}
+                className="w-full px-3 py-2 text-xs border-2 rounded-md mb-2 outline-none focus:border-black  text-black font-semibold"
+              />
+
+              <div className="max-h-52 overflow-y-auto flex flex-col gap-1">
+                {filteredOptions.map((opt) => {
+                  const isSelected = value === opt.value;
+
+                  return (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => handleSelect(opt.value)}
+                      className={`w-full text-left px-4 py-3 rounded-lg text-xs font-black uppercase flex items-center duration-100 transition-all justify-between cursor-pointer hover:bg-blue-100
+                        ${
+                          isSelected
+                            ? "bg-[#F4E041] text-black"
+                            : "hover:bg-blue-100"
+                        }`}
+                    >
+                      <span className="truncate">{opt.label}</span>
+
+                      {isSelected && (
+                        <div className="bg-black text-[#F4E041] rounded-full p-0.5">
+                          <Check size={12} strokeWidth={4} />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+
+                {showAddOption && (
+                  <button
+                    type="button"
+                    onClick={handleAddCustom}
+                    className="w-full text-left px-4 py-3 rounded-lg text-xs font-black uppercase flex items-center gap-2 bg-zinc-50 hover:bg-blue-100 cursor-pointer"
+                  >
+                    <Plus size={14} />
+                    Add "{search}"
+                  </button>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

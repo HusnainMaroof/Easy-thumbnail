@@ -16,13 +16,7 @@ import { useAuthContext } from "@/src/context/AuthContext";
 import { ProfileDropdown } from "./ProfileDropdown";
 
 const DashboardNavBar = () => {
-  const {
-    user,
-    dashboardSideBar,
-    setDashboardSideBar,
-    dashboardActiveTab,
-    setDashboardActiveTab,
-  } = useAuthContext();
+  const { user } = useAuthContext();
 
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -48,7 +42,7 @@ const DashboardNavBar = () => {
   return (
     <nav
       ref={navRef}
-      className={`w-full sticky top-0 z-50 transition-all duration-300 pt-1 bg-white`}
+      className={`w-full  top-0 z-110 transition-all duration-300 pt-1 bg-white`}
     >
       <div className="mx-auto px-2 lg:px-6 flex justify-between items-center h-16">
         {/* LEFT: Brand & Sidebar Toggle */}
@@ -56,23 +50,20 @@ const DashboardNavBar = () => {
           <div className="w-fit rounded-lg sm:p-2 sm:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
             <BrandLogo />
           </div>
-
-       
         </div>
 
         {/* RIGHT: Profile & Mobile Menu */}
         <div className="flex items-center gap-4">
           {user && <ProfileDropdown />}
-          
 
           {/* Mobile toggle */}
           <motion.button
             whileHover={{ scale: 1.0 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 border-4 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-0.5 transition-all duration-150 rounded-lg"
+            className="p-2 border-4 cursor-pointer text-black border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-0.5 transition-all duration-150 rounded-lg"
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X size={24} className=" " /> : <Menu size={24} />}
           </motion.button>
         </div>
       </div>
@@ -85,7 +76,7 @@ const DashboardNavBar = () => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 top-16 z-50 bg-white flex flex-col p-6 border-t-4 border-black overflow-y-auto"
+            className="fixed inset-0 top-16 z-110 bg-white flex flex-col p-6 border-t-4 border-black overflow-y-auto"
           >
             <p className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-4">
               Navigation

@@ -1,5 +1,4 @@
 export type GenrateFormType = {
-  platform: "youtube" | "tiktok" | "instagram" | "";
   niche: "gaming" | "finance" | "tech" | "vlog" | "";
   emotion: "shock" | "curiosity" | "fear" | "";
   style: "viral" | "news" | "";
@@ -16,6 +15,8 @@ export type GenrateFormType = {
     | "none"
     | "";
   background: "solid" | "gradient" | "blur" | "real" | "abstract" | "";
+  platform: "youtube" | "tiktok" | "instagram" | ""; 
   title: string;
   aiHook: boolean;
+  extraPrompt: string;
 };

@@ -1,7 +1,6 @@
 import Dashboard from "@/src/components/common/Dashboard";
-import { LogoutButton } from "@/src/components/common/Logout";
+import DashboardNavBar from "@/src/components/common/DashboardNav";
 import MainHeroSection from "@/src/components/common/MainHeroSection";
-import Navbar from "@/src/components/common/Navbar";
 import { getCurrentUser } from "@/src/lib/auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { redirect } from "next/navigation";
@@ -16,9 +15,9 @@ const page = async () => {
 
   return (
     <>
-      <div className="w-full h-screen ">
-        <Navbar />
-        <Dashboard/>
+      <div className="w-full h-screen  bg-white">
+        <DashboardNavBar />
+        <Dashboard />
       </div>
     </>
   );

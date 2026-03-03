@@ -7,6 +7,7 @@ type UserType = {
   displayName: string;
   email: string;
 } | null;
+type DashboardTab = "generate" | "review";
 
 type AuthContextType = {
   user: UserType;
@@ -22,6 +23,10 @@ type AuthContextType = {
   setEmailVeriferAction: React.Dispatch<React.SetStateAction<string>>;
   generateForm: GenrateFormType;
   setGenerateForm: React.Dispatch<React.SetStateAction<GenrateFormType>>;
+  dashboardSideBar: boolean;
+  setDashboardSideBar: React.Dispatch<React.SetStateAction<boolean>>;
+  dashboardActiveTab: DashboardTab;
+  setDashboardActiveTab: React.Dispatch<React.SetStateAction<DashboardTab>>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -39,6 +44,7 @@ export const AuthProvider = ({
   const [showEmailPopUp, setshowEmailPopUp] = useState(false);
   const [emailVeriferAction, setEmailVeriferAction] = useState("");
   const [generateForm, setGenerateForm] = useState<GenrateFormType>({
+    extraPrompt: "",
     platform: "",
     title: "",
     aiHook: false,
@@ -52,9 +58,18 @@ export const AuthProvider = ({
     background: "",
   });
 
+  const [dashboardSideBar, setDashboardSideBar] = useState(false);
+  const [dashboardActiveTab, setDashboardActiveTab] = useState<
+    "generate" | "review"
+  >("generate");
+
   return (
     <AuthContext.Provider
       value={{
+        dashboardActiveTab,
+        setDashboardActiveTab,
+        dashboardSideBar,
+        setDashboardSideBar,
         generateForm,
         setGenerateForm,
         user,

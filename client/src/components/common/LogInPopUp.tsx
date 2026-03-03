@@ -311,7 +311,7 @@ export const LogInPopUp = () => {
                 <MainButton
                   onClick={handelGoogle}
                   type="button"
-                  variant="google"
+                  variant="green"
                   className="cursor-pointer"
                 >
                   Continue with Google

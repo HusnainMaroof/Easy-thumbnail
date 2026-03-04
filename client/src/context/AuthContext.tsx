@@ -44,20 +44,33 @@ export const AuthProvider = ({
   const [showEmailPopUp, setshowEmailPopUp] = useState(false);
   const [emailVeriferAction, setEmailVeriferAction] = useState("");
   const [generateForm, setGenerateForm] = useState<GenrateFormType>({
-    uploadedImage: null,
-    extraPrompt: "",
     platform: "",
     title: "",
-    aiHook: false,
+    extraPrompt: "",
     niche: "",
+    contentType: "",
     emotion: "",
     style: "",
-    subjectType: "",
+    subjectSource: "",
+    subjectPresence: "",
+    expressionLevel: "",
     placement: "",
-    textIntensity: "",
-    highlight: "",
-    background: "",
+    composition: "",
+    textDensity: "",
+    textStyle: "",
+    faceFraming:"",
+    numberStyle: "",
+    highlightType: "",
+    highlightTarget: "",
+    backgroundType: "",
+    backgroundStyle: "",
+    colorMode: "",
+    brandPrimaryColor: "",
+    brandSecondaryColor: "",
+    effectsLevel: "",
+    uploadedImage: null,
   });
+console.log(generateForm);
 
   const [dashboardSideBar, setDashboardSideBar] = useState(true);
   const [dashboardActiveTab, setDashboardActiveTab] = useState<

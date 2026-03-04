@@ -69,11 +69,11 @@ const DashboardPreview = () => {
               </div>
 
               {/* MOCK SUBJECT HIGHLIGHT */}
-              {generateForm.subjectType !== "none" && (
+              {/* {generateForm.subjectType !== "none" && (
                 <div className="absolute right-0 bottom-0 w-1/2 h-[80%] bg-zinc-800/50 border-l-4px border-black flex items-center justify-center backdrop-blur-sm">
                   <User size={64} className="text-white/20" />
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         </div>

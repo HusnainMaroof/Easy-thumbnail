@@ -21,7 +21,7 @@ const DashboardSideBar = ({ updateField }: SidebarProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 z-40 lg:hidden text-black"
+            className="fixed inset-0 z-110 bg-black/40  lg:hidden text-black"
             onClick={() => setDashboardSideBar(false)}
           />
         )}
@@ -33,18 +33,13 @@ const DashboardSideBar = ({ updateField }: SidebarProps) => {
           width: dashboardSideBar ? 300 : 0,
           opacity: dashboardSideBar ? 1 : 0,
         }}
-        className="absolute lg:relative z-100 h-full shrink-0 border-r-2 border-zinc-200 bg-white overflow-hidden shadow-2xl lg:shadow-none"
+        className="absolute lg:relative z-110 h-full shrink-0 border-r-2 border-zinc-200 bg-white overflow-hidden shadow-2xl lg:shadow-none rounded-2xl"
       >
         <div className="w-75 p-6 space-y-8 h-full overflow-y-auto custom-scrollbar">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Zap size={14} className="text-[#88AAEE]" />
-              <span className="text-[9px] font-black uppercase tracking-widest opacity-50">
-                Intelligence Lab
-              </span>
-            </div>
+            
             <button
-              className="lg:hidden p-1 bg-zinc-100 rounded-md cursor-pointer"
+              className="lg:hidden p-1 bg-zinc-100 rounded-md cursor-pointer "
               onClick={() => setDashboardSideBar(false)}
             >
               <X size={14} />
@@ -61,15 +56,7 @@ const DashboardSideBar = ({ updateField }: SidebarProps) => {
               onChange={(e) => updateField("extraPrompt", e.target.value, null)}
             />
           </section>
-          <section className="space-y-3">
-            <label className="text-[9px] font-black uppercase text-black opacity-50">
-              Contrast Boost
-            </label>
-            <input
-              type="range"
-              className="w-full accent-black h-1 bg-zinc-200 rounded-lg appearance-none cursor-pointer"
-            />
-          </section>
+         
           <div className="pt-6 border-t border-zinc-100">
             <button className="w-full py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-[9px] font-black uppercase hover:bg-zinc-100 hover:border-black transition-all">
               <Save size={12} className="inline mr-2" /> Save Configuration

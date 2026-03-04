@@ -36,7 +36,10 @@ import { MainButton } from "./Buttons";
 import { DashboardDropdown } from "./DashboardDropdown";
 import DashboardPreview from "./DashboardPreview";
 import { useAuthContext } from "@/src/context/AuthContext";
-import { GenrateFormType } from "@/src/types/dashboard.type";
+import {
+  Generated_Form_Options,
+  GenrateFormType,
+} from "@/src/types/dashboard.type";
 import DashboardSideBar from "./DashboardSideBar";
 import { PhotoUploader } from "./PhotoUploader";
 
@@ -64,7 +67,7 @@ const FormStep = ({
       transition={{ duration: 0.4, ease: "easeOut" }}
       // Crucial Fix: Higher steps get lower z-index so previous dropdowns overlay properly
       style={{ zIndex: 50 - step }}
-      className={`mb-10 relative transition-all duration-500`}
+      className={`mb-10 relative transition-all duration-500  ${isCompleted ? "bg-blue-100" : isActive ? "bg-gray-200" : null}   p-2 rounded-xl`}
     >
       <div className="flex items-center gap-4 mb-5">
         <div
@@ -118,15 +121,38 @@ const Dashboard = () => {
   const isStep2Done =
     isStep1Done &&
     generateForm.niche &&
-    generateForm.emotion &&
-    generateForm.style;
+    generateForm.contentType &&
+    generateForm.emotion;
   const isStep3Done =
     isStep2Done &&
-    generateForm.subjectType &&
-    generateForm.placement &&
-    generateForm.textIntensity;
+    generateForm.subjectSource &&
+    generateForm.subjectPresence &&
+    generateForm.faceFraming &&
+    generateForm.expressionLevel;
+  const isStep4Done =
+    isStep3Done && generateForm.placement && generateForm.composition;
+  const isStep5Done =
+    isStep4Done &&
+    generateForm.textDensity &&
+    generateForm.textStyle &&
+    generateForm.numberStyle &&
+    generateForm.highlightType;
+  const isStep6Done =
+    isStep5Done &&
+    generateForm.style &&
+    generateForm.backgroundType &&
+    generateForm.backgroundStyle &&
+    generateForm.colorMode &&
+    generateForm.effectsLevel;
 
-  const stepsDone = [isStep1Done, isStep2Done, isStep3Done];
+  const stepsDone = [
+    isStep1Done,
+    isStep2Done,
+    isStep3Done,
+    isStep4Done,
+    isStep5Done,
+    isStep6Done,
+  ];
 
   const currentStep =
     stepsDone.findIndex((done) => !done) + 1 || stepsDone.length + 1;
@@ -135,13 +161,20 @@ const Dashboard = () => {
     "platform",
     "title",
     "niche",
+    "contentType",
     "emotion",
     "style",
-    "subjectType",
+    "expressionLevel",
+    "subjectSource",
+    "subjectPresence",
+    "composition",
     "placement",
-    "textIntensity",
-    "highlight",
-    "background",
+    "textDensity",
+    "textStyle",
+    "highlightType",
+    "backgroundType",
+    "colorMode",
+    "effectsLevel",
   ];
 
   const filledFields = requiredFields.filter(
@@ -164,14 +197,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden">
+    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden relative">
       {/* 1. TOP NAVIGATION */}
 
       <div className="flex flex-1 overflow-hidden relative">
         <DashboardSideBar updateField={updateField} />
 
-        <div className="flex-1 overflow-y-auto  bg-[#FAFAFA] custom-scrollbar relative">
-          <div className="flex items-center justify-between">
+        <div className="flex-1 overflow-y-auto  custom-scrollbar relative ">
+          <div className="flex items-center justify-between  border-b-2 sticky top-0 z-50 bg-white ">
             <button
               onClick={() => setDashboardSideBar(!dashboardSideBar)}
               className="p-2 hover:bg-zinc-50 rounded-lg border border-zinc-100 transition-colors sticky top-0"
@@ -211,251 +244,292 @@ const Dashboard = () => {
           </div>
           <AnimatePresence mode="wait">
             {dashboardActiveTab === "generate" ? (
-              <motion.div
-                key="generate"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="max-w-2xl mx-auto py-8 px-4 md:px-6  relative"
-              >
-                {/* Section 1: Core Configuration */}
-                <FormStep
-                  step={1}
-                  currentStep={currentStep}
-                  title="Core Configuration"
+              <div className="w-full relative">
+                <div
+                  className="absolute inset-0 z-0 opacity-[0.05] h-full "
+                  style={{
+                    backgroundImage: `linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)`,
+                    backgroundSize: "40px 40px",
+                  }}
+                ></div>
+
+                <motion.div
+                  key="generate"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className=" max-w-2xl  mx-auto py-8 px-4 md:px-6  relative"
                 >
-                  <div className="space-y-6">
-                    <div>
-                      <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
-                        Platform
-                      </span>
-                      <div className="grid grid-cols-3 gap-3 md:gap-4">
-                        {[
-                          { id: "youtube", label: "YouTube", icon: Monitor },
-                          { id: "tiktok", label: "TikTok", icon: Smartphone },
-                          {
-                            id: "instagram",
-                            label: "Instagram",
-                            icon: Square,
-                          },
-                        ].map((p) => (
-                          <button
-                            key={p.id}
-                            onClick={() => updateField("platform", p.id)}
-                            className={`group p-5 border-2 rounded-xl transition-all flex flex-col items-center gap-2 cursor-pointer hover:text-white  ${
-                              generateForm.platform === p.id
-                                ? "border-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 bg-white"
-                                : "border-zinc-200 bg-white hover:bg-[#88AAEE] "
-                            }`}
-                          >
-                            <p.icon
-                              size={20}
-                              className={
-                                generateForm.platform === p.id
-                                  ? "text-black"
-                                  : "text-zinc-400 group-hover:text-white"
-                              }
-                            />
-                            <div
-                              className={`text-xs font-black ${generateForm.platform === p.id ? "text-black" : "text-zinc-400 group-hover:text-white"}`}
-                            >
-                              {p.label}
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="relative mt-4">
-                      <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
-                        Title & Hook
-                      </span>
-                      <input
-                        type="text"
-                        placeholder="Enter Viral Hook / Video Title..."
-                        className="w-full border-2 border-black rounded-xl p-4 pr-12 font-bold text-sm md:text-lg outline-none bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,0.05)] focus:shadow-[4px_4px_0px_0px_#B197FC] transition-all"
-                        value={generateForm.title}
-                        onChange={(e) => updateField("title", e.target.value)}
-                      />
-                      <button
-                        onClick={() =>
-                          updateField("aiHook", !generateForm.aiHook)
-                        }
-                        className={`absolute right-3 top-9.5 p-2 rounded-lg transition-all ${
-                          generateForm.aiHook
-                            ? "bg-[#B197FC] text-white"
-                            : "bg-[#B197FC]/10 text-[#B197FC] hover:bg-[#B197FC] hover:text-white"
-                        }`}
-                        title="Toggle AI Hook Generation"
-                      >
-                        <Wand2 size={18} />
-                      </button>
-                    </div>
-                  </div>
-                </FormStep>
-
-                {/* Section 2: Creative Direction */}
-                <FormStep
-                  step={2}
-                  currentStep={currentStep}
-                  title="Creative Direction"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <DashboardDropdown
-                      label="Niche"
-                      field="niche"
-                      options={[
-                        { label: "Gaming", value: "gaming" },
-                        { label: "Finance", value: "finance" },
-                        { label: "Tech", value: "tech" },
-                        { label: "Vlog", value: "vlog" },
-                      ]}
-                    />
-                    <DashboardDropdown
-                      label="Emotion"
-                      field="emotion"
-                      options={[
-                        { label: "Shock", value: "shock" },
-                        { label: "Curiosity", value: "curiosity" },
-                        { label: "Fear", value: "fear" },
-                      ]}
-                    />
-                    <div className="md:col-span-2 mt-2">
-                      <DashboardDropdown
-                        label="Style"
-                        field="style"
-                        options={[
-                          { label: "High-Energy Viral", value: "viral" },
-                          { label: "Clean & Minimal News", value: "news" },
-                        ]}
-                      />
-                    </div>
-                  </div>
-                </FormStep>
-
-                {/* Section 3: Subject & Layout */}
-                <FormStep
-                  step={3}
-                  currentStep={currentStep}
-                  title="Subject & Layout"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
-                      <DashboardDropdown
-                        label="Subject Type"
-                        field="subjectType"
-                        options={[
-                          { label: "Upload Own", value: "upload" },
-                          { label: "AI Generated", value: "ai" },
-                          { label: "None", value: "none" },
-                        ]}
-                      />
-
-                      {generateForm.subjectType === "upload" && (
-                        <PhotoUploader
-                          value={generateForm.uploadedImage ?? null}
-                          onChange={(file) =>
-                            setGenerateForm((prev) => ({
-                              ...prev,
-                              uploadedImage: file,
-                            }))
-                          }
-                        />
-                      )}
-                    </div>
-                    <DashboardDropdown
-                      label="Placement"
-                      field="placement"
-                      options={[
-                        { label: "Left", value: "left" },
-                        { label: "Center", value: "center" },
-                        { label: "Right", value: "right" },
-                        { label: "Auto", value: "auto" },
-                      ]}
-                    />
-                    <DashboardDropdown
-                      label="Text Intensity"
-                      field="textIntensity"
-                      options={[
-                        { label: "Minimal", value: "minimal" },
-                        { label: "Bold", value: "bold" },
-                        { label: "Aggressive", value: "aggressive" },
-                      ]}
-                    />
-                  </div>
-                </FormStep>
-
-                {/* Section 4: Environmental Detail */}
-                <FormStep
-                  step={4}
-                  currentStep={currentStep}
-                  title="Environmental Detail"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-60">
-                    <DashboardDropdown
-                      label="Highlight"
-                      field="highlight"
-                      options={[
-                        { label: "Money", value: "money" },
-                        { label: "Laptop", value: "laptop" },
-                        { label: "Graph", value: "graph" },
-                        { label: "Game Item", value: "game-item" },
-                        { label: "Arrow Circle", value: "arrow-circle" },
-                        { label: "None", value: "none" },
-                      ]}
-                    />
-                    <DashboardDropdown
-                      label="Background"
-                      field="background"
-                      options={[
-                        { label: "Solid", value: "solid" },
-                        { label: "Gradient", value: "gradient" },
-                        { label: "Blur", value: "blur" },
-                        { label: "Real", value: "real" },
-                        { label: "Abstract", value: "abstract" },
-                      ]}
-                    />
-                  </div>
-                </FormStep>
-
-                {/* STICKY FOOTER */}
-                <div className="sticky  bottom-0   flex justify-center pointer-events-none z-100   ">
-                  <motion.div
-                    initial={{ y: -50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="bg-white border-2 border-zinc-200 p-3 md:p-4 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex items-center gap-4 md:gap-8 pointer-events-auto max-w-2xl w-full"
+                  {/* Section 1: Core Configuration */}
+                  <FormStep
+                    step={1}
+                    currentStep={currentStep}
+                    title="Core Configuration"
                   >
-                    <div className="flex-1 pl-2 md:pl-4">
-                      <p className="text-[8px] md:text-[9px] font-black uppercase text-zinc-400 tracking-widest mb-1">
-                        Readiness
-                      </p>
-                      <div className="flex items-center gap-2 md:gap-3">
-                        <span className="text-[10px] md:text-xs font-black italic">
-                          {completionPercentage}%
+                    <div className="space-y-6">
+                      <div>
+                        <span className="text-[12px] font-bold underline text-black uppercase tracking-widest block mb-2 ml-1">
+                          Platform
                         </span>
-                        <div className="flex-1 h-1.5 md:h-2 bg-zinc-100 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full bg-[#A7F3D0]"
-                            animate={{ width: `${completionPercentage}%` }}
-                            transition={{ ease: "easeInOut", duration: 0.5 }}
-                          />
+                        <div className="grid grid-cols-3 gap-3 md:gap-4">
+                          {[
+                            { id: "youtube", label: "YouTube", icon: Monitor },
+                            { id: "tiktok", label: "TikTok", icon: Smartphone },
+                            {
+                              id: "instagram",
+                              label: "Instagram",
+                              icon: Square,
+                            },
+                          ].map((p) => (
+                            <button
+                              key={p.id}
+                              onClick={() => updateField("platform", p.id)}
+                              className={`group p-5 border-2 rounded-xl transition-all flex flex-col items-center gap-2 cursor-pointer hover:text-white  ${
+                                generateForm.platform === p.id
+                                  ? "border-black  shadow-[4px_4px_0px_0px_#000] -translate-y-1 bg-white"
+                                  : " border border-olive-500 bg-white hover:bg-[#88AAEE] "
+                              }`}
+                            >
+                              <p.icon
+                                size={20}
+                                className={
+                                  generateForm.platform === p.id
+                                    ? "text-black"
+                                    : "text-zinc-400 group-hover:text-white"
+                                }
+                              />
+                              <div
+                                className={`text-xs font-black ${generateForm.platform === p.id ? "text-black" : "text-zinc-400 group-hover:text-white"}`}
+                              >
+                                {p.label}
+                              </div>
+                            </button>
+                          ))}
                         </div>
                       </div>
+
+                      <div className="relative mt-4">
+                        <span className="text-[12px] font-bold underline text-black uppercase tracking-widest block mb-2 ml-1">
+                          Title & Hook
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Enter Viral Hook / Video Title..."
+                          className="w-full border-2 border-black rounded-xl p-4 pr-12 font-bold text-sm md:text-lg outline-none bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,0.05)] focus:shadow-[4px_4px_0px_0px_#000] transition-all"
+                          value={generateForm.title}
+                          onChange={(e) => updateField("title", e.target.value)}
+                        />
+                      </div>
                     </div>
-                    <MainButton
-                      onClick={handleGenerate}
-                      disabled={completionPercentage < 100}
-                      variant="yellow"
+                  </FormStep>
+
+                  {/* Section 2: Content Basics (WHAT the thumbnail is about) */}
+                  <FormStep
+                    step={2}
+                    currentStep={currentStep}
+                    title="Content Strategy"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <DashboardDropdown
+                        label="Niche"
+                        field="niche"
+                        options={Generated_Form_Options.niche}
+                      />
+                      <DashboardDropdown
+                        label="Type"
+                        field="contentType"
+                        options={Generated_Form_Options.contentType}
+                      />
+                      <div className="md:col-span-2">
+                        <DashboardDropdown
+                          label="Emotion"
+                          field="emotion"
+                          options={Generated_Form_Options.emotion}
+                        />
+                      </div>
+                    </div>
+                  </FormStep>
+
+                  {/* Section 3: Subject & Layout */}
+                  <FormStep
+                    step={3}
+                    currentStep={currentStep}
+                    title="Subject / Focus"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div
+                        className={`flex flex-col gap-2  ${generateForm.subjectSource === "user-upload" && "md:col-span-2"} `}
+                      >
+                        <DashboardDropdown
+                          label="Character / Subject"
+                          field="subjectSource"
+                          options={Generated_Form_Options.subjectSource}
+                        />
+                        {generateForm.subjectSource === "user-upload" && (
+                          <PhotoUploader
+                            value={generateForm.uploadedImage ?? null}
+                            onChange={(file) =>
+                              setGenerateForm((prev) => ({
+                                ...prev,
+                                uploadedImage: file,
+                              }))
+                            }
+                          />
+                        )}
+                      </div>
+                      <DashboardDropdown
+                        label="Presence"
+                        field="subjectPresence"
+                        options={Generated_Form_Options.subjectPresence}
+                      />
+                      <DashboardDropdown
+                        label="Framing"
+                        field="faceFraming"
+                        options={Generated_Form_Options.faceFraming}
+                      />
+                      <DashboardDropdown
+                        label="Expression"
+                        field="expressionLevel"
+                        options={Generated_Form_Options.expressionLevel}
+                      />
+                    </div>
+                  </FormStep>
+                  {/* Section 4: Environmental Detail */}
+                  <FormStep
+                    step={4}
+                    currentStep={currentStep}
+                    title="Layout / Composition"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <DashboardDropdown
+                        label="Placement"
+                        field="placement"
+                        options={Generated_Form_Options.placement}
+                      />
+                      <DashboardDropdown
+                        label="Composition"
+                        field="composition"
+                        options={Generated_Form_Options.composition}
+                      />
+                    </div>
+                  </FormStep>
+
+                  {/* 5. TEXT / EMPHASIS */}
+                  <FormStep
+                    step={5}
+                    currentStep={currentStep}
+                    title="Text / Emphasis"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <DashboardDropdown
+                        label="Text Intensity"
+                        field="textDensity"
+                        options={Generated_Form_Options.textDensity}
+                      />
+                      <DashboardDropdown
+                        label="Text Style"
+                        field="textStyle"
+                        options={Generated_Form_Options.textStyle}
+                      />
+
+                      <DashboardDropdown
+                        label="Highlight"
+                        field="highlightType"
+                        options={Generated_Form_Options.highlightType}
+                      />
+                      {generateForm.highlightType &&
+                        generateForm.highlightType !== "none" && (
+                          <div className=" relative">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+                              Highlight Target
+                            </span>
+                            <input
+                              type="text"
+                              placeholder="What to highlight?"
+                              className="w-full border-2 border-zinc-400 rounded-xl px-4 py-3 text-xs font-black outline-none bg-white focus:border-black transition-all h-[46px]"
+                              value={generateForm.highlightTarget || ""}
+                              onChange={(e) =>
+                                updateField("highlightTarget", e.target.value)
+                              }
+                            />
+                          </div>
+                        )}
+                    </div>
+                  </FormStep>
+                  {/* 6. STYLE / EFFECTS */}
+                  <FormStep
+                    step={6}
+                    currentStep={currentStep}
+                    title="Style / Effects"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <DashboardDropdown
+                        label="Visual Style"
+                        field="style"
+                        options={Generated_Form_Options.style}
+                      />
+                      <DashboardDropdown
+                        label="Effects Level"
+                        field="effectsLevel"
+                        options={Generated_Form_Options.effectsLevel}
+                      />
+                      <DashboardDropdown
+                        label="Background"
+                        field="backgroundType"
+                        options={Generated_Form_Options.backgroundType}
+                      />
+                      <DashboardDropdown
+                        label="Background Style"
+                        field="backgroundStyle"
+                        options={Generated_Form_Options.backgroundStyle}
+                      />
+                      <div className="md:col-span-2">
+                        <DashboardDropdown
+                          label="Color Mode"
+                          field="colorMode"
+                          options={Generated_Form_Options.colorMode}
+                        />
+                      </div>
+                    </div>
+                  </FormStep>
+                  {/* STICKY FOOTER */}
+                  <div className="sticky  bottom-10  flex justify-center pointer-events-none z-100   ">
+                    <motion.div
+                      initial={{ y: -50, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className="bg-white border-2 border-black p-3 md:p-4 rounded-3xl  flex items-center gap-4 md:gap-8 pointer-events-auto max-w-2xl w-full italic shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                     >
-                      {isGenerating ? "Synthesizing..." : "Render Concept"}
-                    </MainButton>
-                  </motion.div>
-                </div>
-              </motion.div>
-            ) : (
-              <div className="flex-1 flex items-center justify-center min-h-[50vh] text-zinc-400 font-bold">
-                Review Tab Content Mock
+                      <div className="flex-1 pl-2 md:pl-4">
+                        <p className="text-[8px] md:text-[9px] font-black uppercase text-zinc-400 tracking-widest mb-1">
+                          Readiness
+                        </p>
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <span className="text-[10px] md:text-xs font-black italic">
+                            {completionPercentage}%
+                          </span>
+                          <div className="flex-1 h-1.5 md:h-2 bg-zinc-100 rounded-full overflow-hidden">
+                            <motion.div
+                              className="h-full bg-[#A7F3D0]"
+                              animate={{ width: `${completionPercentage}%` }}
+                              transition={{ ease: "easeInOut", duration: 0.5 }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <MainButton
+                        onClick={handleGenerate}
+                        disabled={completionPercentage < 100}
+                        variant="yellow"
+                        className="cursor-pointer max-w-fit px-10"
+                      >
+                        {isGenerating ? "Synthesizing..." : "Render Concept"}
+                      </MainButton>
+                    </motion.div>
+                  </div>
+                </motion.div>
               </div>
+            ) : (
+              <DashboardPreview />
             )}
           </AnimatePresence>
         </div>

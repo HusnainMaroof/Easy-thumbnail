@@ -89,7 +89,7 @@ export function DashboardDropdown<K extends StrictDropdownField>({
   
   return (
     <div className="relative w-full group" ref={dropdownRef}>
-      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+      <label className="text-[12px] font-bold underline text-black uppercase tracking-widest block mb-2 ml-1">
         {label}
       </label>
 
@@ -123,14 +123,14 @@ export function DashboardDropdown<K extends StrictDropdownField>({
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 8, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            className="absolute z-100 top-full left-0 right-0 bg-white border-2 border-black rounded-xl shadow-lg mt-1"
+            className="absolute z-100 top-full left-0 right-0 bg-white border-2 border-black rounded-xl  mt-1 shadow-[4px_4px_0px_0px_#000]"
           >
             <div className="p-2">
               {/* Search Input */}
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={`Search ${label}`}
+                placeholder={`Search ${label} OR Add`}
                 className="w-full px-3 py-2 text-xs border-2 rounded-md mb-2 outline-none focus:border-black  text-black font-semibold"
               />
 

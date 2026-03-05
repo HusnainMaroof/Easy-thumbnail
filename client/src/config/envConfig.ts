@@ -18,6 +18,7 @@ type SecretConfig = {
 type GoogleConfig = {
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRETS?: string;
+  GOOGLE_NANO_API_KEY?: string;
 };
 type ORIGINS = {
   ORIGIN_ONE?: string;
@@ -48,6 +49,7 @@ export const envConfig = {
   GOOGLE_CONFIG: {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRETS: process.env.GOOGLE_CLIENT_SECRETS,
+    GOOGLE_NANO_API_KEY: process.env.GOOGLE_NANO_API_KEY,
   } satisfies GoogleConfig,
 
   ORIGINS: {

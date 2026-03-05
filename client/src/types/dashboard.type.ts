@@ -1,61 +1,59 @@
 export type GenrateFormType = {
+  // Core
   platform: string;
+  aspectRatio: string;
   title: string;
   extraPrompt?: string;
+
+  // Strategy
   niche: string;
   contentType: string;
   emotion: string;
-  style: string;
-  expressionLevel: string;
+  goal: string;
+  hookType: string;
+  audienceLevel: string;
+
+  // Subject
   subjectSource: string;
   subjectPresence: string;
+  expressionLevel: string;
+  facialEmotion: string;
   faceFraming: string;
+
+  // Layout
   placement: string;
   composition: string;
+
+  // Text
   textDensity: string;
   textStyle: string;
   numberStyle: string;
+
+  // Highlight
   highlightType: string;
   highlightTarget?: string;
+
+  // Visual
+  style: string;
+  visualComplexity: string;
   backgroundType: string;
   backgroundStyle?: string;
+
+  // Color
   colorMode: string;
+  contrastGoal: string;
   brandPrimaryColor?: string;
   brandSecondaryColor?: string;
-  effectsLevel: string;
-  uploadedImage: File | null;
-};
 
-export const Generated_Form_Options: {
-  platform: { label: string; value: GenrateFormType["platform"] }[];
-  niche: { label: string; value: GenrateFormType["niche"] }[];
-  contentType: { label: string; value: GenrateFormType["contentType"] }[];
-  emotion: { label: string; value: GenrateFormType["emotion"] }[];
-  style: { label: string; value: GenrateFormType["style"] }[];
-  expressionLevel: {
-    label: string;
-    value: GenrateFormType["expressionLevel"];
-  }[];
-  subjectSource: { label: string; value: GenrateFormType["subjectSource"] }[];
-  subjectPresence: {
-    label: string;
-    value: GenrateFormType["subjectPresence"];
-  }[];
-  faceFraming: { label: string; value: GenrateFormType["faceFraming"] }[];
-  placement: { label: string; value: GenrateFormType["placement"] }[];
-  composition: { label: string; value: GenrateFormType["composition"] }[];
-  textDensity: { label: string; value: GenrateFormType["textDensity"] }[];
-  textStyle: { label: string; value: GenrateFormType["textStyle"] }[];
-  numberStyle: { label: string; value: GenrateFormType["numberStyle"] }[];
-  highlightType: { label: string; value: GenrateFormType["highlightType"] }[];
-  backgroundType: { label: string; value: GenrateFormType["backgroundType"] }[];
-  backgroundStyle: {
-    label: string;
-    value: GenrateFormType["backgroundStyle"];
-  }[];
-  colorMode: { label: string; value: GenrateFormType["colorMode"] }[];
-  effectsLevel: { label: string; value: GenrateFormType["effectsLevel"] }[];
-} = {
+  // Effects
+  effectsLevel: string;
+  avoidElements?: string[];
+
+  // Media
+  uploadedImage: File | null;
+  aiAutoAdjust?: boolean;
+};
+export const Generated_Form_Options = {
   platform: [
     { label: "YouTube", value: "youtube" },
     { label: "TikTok", value: "tiktok" },
@@ -165,7 +163,7 @@ export const Generated_Form_Options: {
     { label: "No Face", value: "no-face" },
     { label: "Half Body", value: "half-body" },
     { label: "Close Up", value: "close-up" },
-    { label: "Animated", value: "extreme-close-up" },
+    { label: "Extreme Close Up", value: "extreme-close-up" },
   ],
   subjectSource: [
     { label: "Upload Own", value: "user-upload" },
@@ -256,5 +254,58 @@ export const Generated_Form_Options: {
     { label: "Low", value: "low" },
     { label: "Medium", value: "medium" },
     { label: "High", value: "high" },
+  ],
+  aspectRatio: [
+    { label: "Auto", value: "" },
+    { label: "16:9 (YouTube)", value: "16:9" },
+    { label: "9:16 (Vertical)", value: "9:16" },
+    { label: "1:1 (Square)", value: "1:1" },
+  ],
+  goal: [
+    { label: "Maximize Clicks", value: "maximize-clicks" },
+    { label: "Build Authority", value: "build-authority" },
+    { label: "Brand Awareness", value: "brand-awareness" },
+    { label: "Sales", value: "sales" },
+    { label: "Engagement", value: "engagement" },
+    { label: "None", value: "" },
+  ],
+  hookType: [
+    { label: "Curiosity Gap", value: "curiosity-gap" },
+    { label: "Number List", value: "number-list" },
+    { label: "Warning", value: "warning" },
+    { label: "Promise", value: "promise" },
+    { label: "Controversy", value: "controversy" },
+    { label: "Before / After", value: "before-after" },
+    { label: "Secret", value: "secret" },
+    { label: "Mistake", value: "mistake" },
+    { label: "None", value: "" },
+  ],
+  audienceLevel: [
+    { label: "Kids", value: "kids" },
+    { label: "Teenager", value: "teenager" },
+    { label: "Adults", value: "Adults" },
+    { label: "Elders", value: "Elders" },
+    { label: "None", value: "" },
+  ],
+  facialEmotion: [
+    { label: "Happy", value: "happy" },
+    { label: "Angry", value: "angry" },
+    { label: "Surprised", value: "surprised" },
+    { label: "Confused", value: "confused" },
+    { label: "Serious", value: "serious" },
+    { label: "Fearful", value: "fearful" },
+    { label: "None", value: "" },
+  ],
+  contrastGoal: [
+    { label: "Maximum CTR", value: "maximum-ctr" },
+    { label: "Balanced", value: "balanced" },
+    { label: "Brand Safe", value: "brand-safe" },
+    { label: "None", value: "" },
+  ],
+  visualComplexity: [
+    { label: "Minimal", value: "minimal" },
+    { label: "Balanced", value: "balanced" },
+    { label: "Busy", value: "busy" },
+    { label: "None", value: "" },
   ],
 };

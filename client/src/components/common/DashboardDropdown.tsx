@@ -103,8 +103,8 @@ export function DashboardDropdown<K extends StrictDropdownField>({
   const selectedOption = customOptions.find((opt) => opt.value === value);
 
   return (
-    <div className="relative w-full group" ref={dropdownRef}>
-      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+    <div className="relative w-full group " ref={dropdownRef}>
+      <label className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
         {label}
       </label>
       <motion.button
@@ -113,7 +113,7 @@ export function DashboardDropdown<K extends StrictDropdownField>({
         whileTap={{ scale: 0.98 }}
         className={`relative w-full flex items-center justify-between px-4 py-3.5 border-2 ${
           value ? "border-black" : "border-zinc-400"
-        } rounded-xl bg-white cursor-pointer hover:border-black transition-colors`}
+        } rounded-xl bg-white cursor-pointer hover:border-black transition-colors `}
       >
         <div className="flex items-center gap-3 overflow-hidden">
           {Icon && (
@@ -138,7 +138,7 @@ export function DashboardDropdown<K extends StrictDropdownField>({
             initial={{ opacity: 0, y: -10, scale: 0.98 }}
             animate={{ opacity: 1, y: 8, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            className="absolute z-100 top-full left-0 right-0 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-1"
+            className="absolute z-100 top-full left-0 right-0 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-1 "
           >
             <div className="p-2">
               <input

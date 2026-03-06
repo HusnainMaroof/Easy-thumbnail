@@ -65,8 +65,8 @@ export const DashboardCard = ({
         ))}
       </div>
 
-      <div className="bg-white border-2 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex-1 flex flex-col overflow-hidden mb-24">
-        <div className="p-6 md:p-8 flex-1 overflow-y-auto custom-scrollbar">
+      <div className="bg-white border-2 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex-1 flex flex-col overflow-hidden ">
+        <div className="p-6 md:p-8 flex-1 bg- overflow-y-auto custom-scrollbar">
           <div className="flex items-center gap-3 mb-8 pb-4 border-b-2 border-zinc-100">
             <div className="w-8 h-8 bg-[#F4E041] border-2 border-black rounded-lg flex items-center justify-center font-black text-xs shadow-[2px_2px_0px_0px_#000]">
               {currentIndex + 1}
@@ -93,7 +93,7 @@ export const DashboardCard = ({
           <button
             onClick={() => onIndexChange(Math.max(0, currentIndex - 1))}
             disabled={currentIndex === 0}
-            className={`px-4 py-2 flex items-center gap-2 font-black text-xs uppercase tracking-widest rounded-xl transition-all ${
+            className={`px-4 py-2 cursor-pointer flex items-center gap-2 font-black text-xs uppercase tracking-widest rounded-xl transition-all ${
               currentIndex === 0
                 ? "text-zinc-300 cursor-not-allowed"
                 : "text-black hover:bg-zinc-200 border-2 border-transparent hover:border-black"
@@ -109,7 +109,7 @@ export const DashboardCard = ({
                   Math.min(WIZARD_STEPS.length - 1, currentIndex + 1),
                 )
               }
-              className="px-6 py-2.5 bg-black text-white flex items-center gap-2 font-black text-xs uppercase tracking-widest rounded-xl transition-all hover:bg-zinc-800 shadow-[4px_4px_0px_0px_#B197FC] active:translate-y-1 active:shadow-none"
+              className="px-6 py-2.5 cursor-pointer bg-black text-white flex items-center gap-2 font-black text-xs uppercase tracking-widest rounded-xl transition-all hover:bg-zinc-800 shadow-[4px_4px_0px_0px_#B197FC] active:translate-y-1 active:shadow-none"
             >
               Next Step <ArrowRight size={16} />
             </button>

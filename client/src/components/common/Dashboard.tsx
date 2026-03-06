@@ -84,12 +84,7 @@ const Dashboard = () => {
     "thumbnailText",
     "colorMode",
   ];
-  const handlePlatformClick = (platformId: string) => {
-    updateField("platform", platformId);
-    if (platformId === "youtube") updateField("aspectRatio", "16:9");
-    if (platformId === "tiktok") updateField("aspectRatio", "9:16");
-    if (platformId === "instagram") updateField("aspectRatio", "1:1");
-  };
+  
 
   const filledFields = requiredFields.filter(
     (field) => generateForm[field] !== "",
@@ -103,196 +98,82 @@ const Dashboard = () => {
   };
 
   const handleGenerate = () => {
-    console.log(generateForm);
-    let prompt = "s"
-    
-    //     const prompt = `You are a world-class social media thumbnail designer and visual marketing strategist.
+    // console.log(generateForm);
+  const thumbnailPrompt = `
+You are a world-class social media thumbnail designer who understands click psychology, cinematic composition, and high-CTR thumbnails.
 
-    // Your task is to create a HIGH-CONVERSION, platform-optimized thumbnail image.
+Your task is to generate a highly clickable thumbnail.
 
-    // ==================================================
-    // PLATFORM & FORMAT
-    // ==================================================
+THUMBNAIL SPECIFICATIONS
+Platform: ${generateForm.platform}
+Aspect Ratio: ${generateForm.aspectRatio}
+Style: ${generateForm.thumbnailStyle}
+Visual Energy: ${generateForm.visualEnergy}
+Scene Complexity: ${generateForm.sceneComplexity}
 
-    // Platform: ${generateForm.platform}
-    // Aspect Ratio: ${generateForm.aspectRatio}
+VIDEO CONTEXT
+Title: ${generateForm.title}
+Category: ${generateForm.category}
+Story Context: ${generateForm.thumbnailStory}
 
-    // ${
-    //   generateForm.platform === "youtube"
-    //     ? `
-    // Platform is YouTube:
-    // - Optimize for homepage CTR competition
-    // - Thumbnail must be readable at very small mobile size
-    // - Limit visible text to maximum 3–4 powerful words
-    // - Use dramatic emotion and bold contrast
-    // `
-    //     : ""
-    // }
+VISUAL STORY
+Create a cinematic scene that visually represents the topic rather than repeating the title literally.
 
-    // ${
-    //   generateForm.platform === "instagram"
-    //     ? `
-    // Platform is Instagram:
-    // - Optimize for aesthetic scroll appeal
-    // - Maintain modern, premium, clean composition
-    // - Text must feel integrated and not overpowering
-    // - Focus on brand harmony and visual balance
-    // `
-    //     : ""
-    // }
+MAIN SUBJECTS
+People Count: ${generateForm.peopleCount}
+Subject Source: ${generateForm.subjectSource}
+Facial Emotion Level: ${generateForm.facialEmotionLevel}
+Camera Framing: ${generateForm.cameraFraming}
 
-    // ${
-    //   generateForm.platform === "tiktok"
-    //     ? `
-    // Platform is TikTok:
-    // - Optimize for vertical dominance (9:16)
-    // - Ensure bold central composition
-    // - Text must be large and instantly readable
-    // - Emotion should be strong and exaggerated
-    // `
-    //     : ""
-    // }
+OBJECTS TO INCLUDE
+Main Object: ${generateForm.mainObject}
+Highlighted Objects: ${generateForm.highlightTarget}
 
-    // ==================================================
-    // CONTENT FOUNDATION
-    // ==================================================
+BACKGROUND
+Scene Environment: ${generateForm.backgroundScene}
+Viewer Focus Area: ${generateForm.viewerFocus}
 
-    // Niche: ${generateForm.niche}
-    // Content Type: ${generateForm.contentType}
-    // Title Context Or Hook: ${generateForm.title}
-    // Goal of Thumbnail: ${generateForm.goal}
-    // Target Audience Level: ${generateForm.audienceLevel}
+VISUAL CONTRAST
+Contrast Type: ${generateForm.visualContrastType}
+Contrast Target: ${generateForm.contrastTarget}
+Comparison Target: ${generateForm.comparisonTarget}
 
-    // Create a visual concept that supports this goal clearly and instantly.
+EMOTIONAL HOOK
+Hook Type: ${generateForm.hookType}
+Desired Viewer Emotion: ${generateForm.desiredEmotion}
 
-    // ==================================================
-    // PSYCHOLOGICAL TRIGGER STRATEGY
-    // ==================================================
+EXTRA CREATIVE DIRECTION
+${generateForm.extraPrompt}
 
-    // Primary Emotion to Trigger: ${generateForm.emotion}
-    // Hook Type: ${generateForm.hookType}
-    // Expression Intensity Level: ${generateForm.expressionLevel}
-    // Facial Emotion: ${generateForm.facialEmotion}
+TEXT OVERLAY
+Thumbnail Text: "${generateForm.thumbnailText}"
+Text Style: ${generateForm.textStyle}
 
-    // Emotion must be visually obvious even at small screen sizes.
-    // Exaggerate slightly for clarity if needed.
+COLOR & BRANDING
+Color Mode: ${generateForm.colorMode}
+Primary Brand Color: ${generateForm.brandPrimaryColor}
+Secondary Brand Color: ${generateForm.brandSecondaryColor}
 
-    // ==================================================
-    // SUBJECT & FRAMING
-    // ==================================================
+DESIGN RULES
+• Faces must be large and expressive
+• High contrast lighting
+• Strong cinematic composition
+• Important objects highlighted clearly
+• Easy to understand even at small size
+• Balanced layout
+• No overlapping elements
 
-    // Subject Source: ${generateForm.subjectSource}
-    // Subject Presence: ${generateForm.subjectPresence}
-    // Face Framing: ${generateForm.faceFraming}
-    // Placement in Frame: ${generateForm.placement}
-    // Composition Style: ${generateForm.composition}
+NEGATIVE RULES
+Avoid: ${generateForm.avoidElements}
 
-    // Ensure strong subject-background separation.
-    // Maintain clear visual hierarchy.
+OUTPUT
+Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum click-through rate on ${generateForm.platform}.
+`;
+    console.log(thumbnailPrompt);
 
-    // ==================================================
-    // TEXT & TYPOGRAPHY STRATEGY
-    // ==================================================
-
-    // Text Density: ${generateForm.textDensity}
-    // Text Style: ${generateForm.textStyle}
-    // Number Style: ${generateForm.numberStyle}
-    // Highlight Type: ${generateForm.highlightType}
-    // Highlight Target: ${generateForm.highlightTarget}
-
-    // Text must be:
-    // - High contrast
-    // - Bold and readable
-    // - Clean and uncluttered
-    // - Optimized for small mobile preview
-
-    // If textDensity is low:
-    // Use 1–3 impactful words only.
-
-    // ==================================================
-    // VISUAL STYLE & COMPLEXITY
-    // ==================================================
-
-    // Overall Style: ${generateForm.style}
-    // Visual Complexity: ${generateForm.visualComplexity}
-    // Effects Level: ${generateForm.effectsLevel}
-
-    // Avoid clutter.
-    // Maintain strong focus on subject.
-    // Use depth of field where appropriate.
-
-    // ==================================================
-    // BACKGROUND DESIGN
-    // ==================================================
-
-    // Background Type: ${generateForm.backgroundType}
-    // Background Style: ${generateForm.backgroundStyle}
-
-    // Background must not overpower subject.
-    // Use blur or gradient if needed to enhance contrast.
-
-    // ==================================================
-    // COLOR STRATEGY
-    // ==================================================
-
-    // Color Mode: ${generateForm.colorMode}
-    // Contrast Goal: ${generateForm.contrastGoal}
-    // Primary Brand Color: ${generateForm.brandPrimaryColor}
-    // Secondary Brand Color: ${generateForm.brandSecondaryColor}
-
-    // Ensure strong color contrast between:
-    // - Text and background
-    // - Subject and background
-
-    // ==================================================
-    // RESTRICTIONS
-    // ==================================================
-
-    // Avoid these elements:
-    // ${generateForm.avoidElements?.join(", ")}
-
-    // ==================================================
-    // AUTO-OPTIMIZATION
-    // ==================================================
-
-    // If aiAutoAdjust is true:
-    // - Increase contrast slightly
-    // - Enhance emotional clarity
-    // - Reduce unnecessary elements
-    // - Improve lighting for dramatic effect
-    // - Ensure mobile readability
-
-    // ==================================================
-    // EXTRA CREATIVE INSTRUCTIONS
-    // ==================================================
-
-    // Additional Prompt Context:
-    // ${generateForm.extraPrompt}
-
-    // ==================================================
-    // FINAL OUTPUT REQUIREMENTS
-    // ==================================================
-
-    // Generate a detailed, cinematic visual description optimized for AI image generation.
-
-    // Be extremely specific about:
-    // - Camera angle
-    // - Lighting direction and intensity
-    // - Facial expression details
-    // - Text placement
-    // - Color contrast
-    // - Emotional intensity
-    // - Depth and focus
-
-    // Do NOT explain your reasoning.
-    // Return only the final image generation description.
-    // `;
-
-    console.log(prompt);
-
-    startTransition(() => {
-      dispatcher({ prompt, aspect_ratio: generateForm.aspectRatio });
-    });
+    // startTransition(() => {
+    //   dispatcher({ prompt, aspect_ratio: generateForm.aspectRatio });
+    // });
   };
 
   useEffect(() => {
@@ -367,7 +248,7 @@ const Dashboard = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="max-w-3xl mx-auto py-6 px-4 md:px-6 relative flex flex-col min-h-[80vh]"
+                  className="max-w-3xl mx-auto py-6 px-4 md:px-6 relative flex flex-col "
                 >
                   {/* JUST CALL IT ONCE */}
                   <DashboardCard
@@ -382,11 +263,11 @@ const Dashboard = () => {
                       className="bg-white border-2 border-black p-3 md:p-4 rounded-3xl flex items-center gap-4 md:gap-8 pointer-events-auto max-w-2xl w-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                     >
                       <div className="flex-1 pl-2 md:pl-4">
-                        <p className="text-[12px] md:text-[9px] font-black uppercase text-black tracking-widest mb-1">
+                        <p className="text-[9px] md:text-[12px] whitespace-nowrap font-black uppercase text-black tracking-widest mb-1">
                           Readiness Target
                         </p>
                         <div className="flex items-center gap-2 md:gap-3">
-                          <span className="text-lg! md:text-xs font-black italic">
+                          <span className="text-xs md:text-lg font-black italic">
                             {completionPercentage}%
                           </span>
                           <div className="flex-1 h-1.5 md:h-2  bg-gray-300 rounded-full overflow-hidden">
@@ -400,9 +281,9 @@ const Dashboard = () => {
                       </div>
                       <MainButton
                         onClick={handleGenerate}
-                        // disabled={completionPercentage < 100}
+                        disabled={completionPercentage < 100}
                         variant="blue"
-                        className="max-w-fit px-6 cursor-pointer "
+                        className="max-w-fit  px-2 md:px-6  cursor-pointer "
                       >
                         {Ispending ? "Synthesizing..." : "Render Concept"}
                       </MainButton>

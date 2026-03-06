@@ -45,79 +45,50 @@ export const Step1Platform = () => {
       {/* PLATFORM SELECTION */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">
+          <span className="text-[14px] font-black text-black uppercase tracking-widest ml-1">
             1. Select Platform
           </span>
         </div>
         <div className="grid grid-cols-3 gap-3 md:gap-4">
           {[
-            { id: "youtube", label: "YouTube", icon: Monitor },
-            { id: "tiktok", label: "TikTok", icon: Smartphone },
-            { id: "instagram", label: "Instagram", icon: Square },
+            { id: "youtube", label: "YouTube", icon: Monitor , aspectRatio:"16:9"},
+            { id: "tiktok", label: "TikTok", icon: Smartphone , aspectRatio:"9:16"},
+            { id: "instagram", label: "Instagram", icon: Square , aspectRatio:"1:1"},
           ].map((p) => (
-            <button
-              key={p.id}
-              onClick={() => handlePlatformClick(p.id)}
-              className={`group p-4 md:p-6 border-2 rounded-2xl transition-all flex flex-col items-center gap-3 cursor-pointer hover:border-black ${
-                generateForm.platform === p.id
-                  ? "border-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 bg-[#F4E041]"
-                  : "border-zinc-200 bg-zinc-50 hover:bg-white"
-              }`}
-            >
-              <p.icon
-                size={26}
-                strokeWidth={2.5}
-                className={
+            <div className=" text-center ">
+              <button
+                key={p.id}
+                onClick={() => handlePlatformClick(p.id)}
+                className={`group  p-4 md:p-6 border-2 rounded-2xl transition-all flex flex-col items-center gap-3 cursor-pointer hover:border-black  w-full h-full ${
                   generateForm.platform === p.id
-                    ? "text-black"
-                    : "text-zinc-400 group-hover:text-black transition-colors"
-                }
-              />
-              <div
-                className={`text-xs md:text-sm font-black uppercase tracking-wider ${generateForm.platform === p.id ? "text-black" : "text-zinc-500 group-hover:text-black transition-colors"}`}
+                    ? "border-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 bg-[#F4E041]"
+                    : "border-zinc-200 bg-zinc-50 hover:bg-white"
+                }`}
               >
-                {p.label}
-              </div>
-            </button>
+                <p.icon
+                  size={26}
+                  strokeWidth={2.5}
+                  className={
+                    generateForm.platform === p.id
+                      ? "text-black"
+                      : "text-zinc-400 group-hover:text-black transition-colors"
+                  }
+                />
+                <div
+                  className={`text-xs md:text-sm font-black uppercase tracking-wider ${generateForm.platform === p.id ? "text-black" : "text-zinc-500 group-hover:text-black transition-colors"}`}
+                >
+                  {p.label}
+                </div>
+              </button>
+              <span
+                className={`text-xs  md:text-sm font-black uppercase tracking-wider ${generateForm.platform === p.id ? "text-black" : "text-zinc-500 group-hover:text-black transition-colors"}`}
+              >{p.aspectRatio}</span>
+            </div>
           ))}
         </div>
       </div>
 
       {/* VISUAL THUMBNAIL PRESETS */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1 flex items-center gap-1">
-            2. Creator Vibe (Optional){" "}
-            <Sparkles size={10} className="text-[#B197FC]" />
-          </span>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {VISUAL_PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              onClick={() => updateField("thumbnailPreset", preset.id)}
-              className={`relative overflow-hidden rounded-xl border-2 transition-all p-3 text-left group cursor-pointer ${
-                (generateForm as any).thumbnailPreset === preset.id // Type cast added as workaround
-                  ? "border-black bg-[#B197FC] text-white shadow-[3px_3px_0px_0px_#000] -translate-y-0.5"
-                  : `${preset.border} hover:border-black`
-              } bg-linear-to-br ${preset.gradient}`}
-            >
-              <div className="flex flex-col gap-1 relative z-10">
-                <span className="text-xl md:text-2xl mb-1">{preset.emoji}</span>
-                <span className="text-[11px] md:text-xs font-black uppercase tracking-wider">
-                  {preset.name}
-                </span>
-              </div>
-              {/* Selection Indicator */}
-              {generateForm.thumbnailPreset === preset.id && (
-                <div className="absolute top-2 right-2 bg-black text-white rounded-full p-0.5 z-10">
-                  <Check size={12} strokeWidth={4} />
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
@@ -128,9 +99,9 @@ export const Step2VideoTopic = () => {
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 ">
       <div className="relative">
-        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+        <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
           Video Title / Topic
         </span>
         <input
@@ -151,7 +122,7 @@ export const Step2VideoTopic = () => {
       </div>
 
       <div className="relative">
-        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+        <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
           Thumbnail Story (What's happening?)
         </span>
         <textarea
@@ -163,12 +134,12 @@ export const Step2VideoTopic = () => {
       </div>
 
       <div className="relative">
-        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+        <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
           Visual Details (Optional)
         </span>
         <textarea
           placeholder="e.g. Add a glowing neon outline to the subject..."
-          className="w-full border-2 border-zinc-300 focus:border-black rounded-xl p-4 font-bold text-sm outline-none bg-white transition-all h-16 resize-none custom-scrollbar"
+          className="w-full border-2 border-zinc-300 focus:border-black rounded-xl p-4 font-bold text-sm outline-none bg-white transition-all h-20 md:h-16 resize-none custom-scrollbar"
           value={generateForm.extraPrompt || ""}
           onChange={(e) => updateField("extraPrompt", e.target.value)}
         />
@@ -183,7 +154,7 @@ export const Step3ClickHook = () => {
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="space-y-6 pb-40">
+    <div className="space-y-6 min-h-fit pb-40">
       {" "}
       {/* pb-40 ensures space for dropdowns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -213,7 +184,7 @@ export const Step3ClickHook = () => {
               animate={{ opacity: 1, height: "auto" }}
               className="md:col-span-2 relative mt-2"
             >
-              <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+              <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
                 Contrast Target (Example)
               </span>
               <input
@@ -304,7 +275,7 @@ export const Step5Focus = () => {
             animate={{ opacity: 1, height: "auto" }}
             className="relative"
           >
-            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+            <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
               Comparison Target
             </span>
             <input
@@ -354,7 +325,7 @@ export const Step6Style = () => {
         />
 
         <div className="md:col-span-2 relative mt-2">
-          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+          <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
             Avoid Elements (Optional)
           </span>
           <textarea
@@ -390,7 +361,7 @@ export const Step7Highlight = () => {
               animate={{ opacity: 1, height: "auto" }}
               className="relative mt-2"
             >
-              <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+              <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
                 Highlight Target
               </span>
               <input
@@ -415,7 +386,7 @@ export const Step8Text = () => {
   return (
     <div className="space-y-6 pb-40">
       <div className="relative">
-        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+        <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
           Thumbnail Text (Short & Punchy)
         </span>
         <input
@@ -464,7 +435,7 @@ export const Step9Colors = () => {
 
         {/* QUICK PALETTE SELECTION */}
         <div className="mt-2">
-          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest  mb-2 ml-1 flex items-center gap-1">
+          <span className="text-[14px] font-black text-black uppercase tracking-widest  mb-2 ml-1 flex items-center gap-1">
             Quick Palettes <Palette size={10} />
           </span>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -494,7 +465,7 @@ export const Step9Colors = () => {
 
         <div className="grid grid-cols-2 gap-4 mt-4 p-4 border-2 border-zinc-100 rounded-2xl bg-zinc-50">
           <div className="relative">
-            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+            <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
               Primary Color
             </span>
             <div className="flex border-2 border-zinc-300 focus-within:border-black rounded-xl overflow-hidden h-11.5 bg-white transition-all">
@@ -517,7 +488,7 @@ export const Step9Colors = () => {
             </div>
           </div>
           <div className="relative">
-            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
+            <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
               Secondary Color
             </span>
             <div className="flex border-2 border-zinc-300 focus-within:border-black rounded-xl overflow-hidden h-11.5 bg-white transition-all">

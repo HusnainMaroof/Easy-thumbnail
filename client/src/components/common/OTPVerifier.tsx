@@ -110,7 +110,6 @@ const OTPVerifier = () => {
   
   const IsDisabled = isPending || otp.join("").length <= 5;
   
-  let message;
   
   useEffect(() => {
     if (state.success && state.message === "Otp Verified") {

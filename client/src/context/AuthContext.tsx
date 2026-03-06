@@ -27,6 +27,8 @@ type AuthContextType = {
   setDashboardSideBar: React.Dispatch<React.SetStateAction<boolean>>;
   dashboardActiveTab: DashboardTab;
   setDashboardActiveTab: React.Dispatch<React.SetStateAction<DashboardTab>>;
+  thumbnail: string;
+  setThumnail: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -46,37 +48,35 @@ export const AuthProvider = ({
   const [generateForm, setGenerateForm] = useState<GenrateFormType>({
     platform: "",
     aspectRatio: "",
+    thumbnailPreset: "none",
     title: "",
+    category: "",
+    thumbnailStory: "",
     extraPrompt: "",
-    niche: "",
-    contentType: "",
-    emotion: "",
-    goal: "",
     hookType: "",
-    audienceLevel: "",
+    desiredEmotion: "",
+    visualContrastType: "",
+    contrastTarget: "",
     subjectSource: "",
-    subjectPresence: "",
-    expressionLevel: "",
-    facialEmotion: "",
-    faceFraming: "",
-    placement: "",
-    composition: "",
-    textDensity: "",
-    textStyle: "",
-    numberStyle: "",
+    peopleCount: "1",
+    mainObject: "",
+    facialEmotionLevel: "",
+    cameraFraming: "",
+    uploadedImage: null,
+    viewerFocus: "",
+    comparisonTarget: "",
+    visualEnergy: "",
+    thumbnailStyle: "",
+    backgroundScene: "",
+    sceneComplexity: "",
+    avoidElements: "",
     highlightType: "",
     highlightTarget: "",
-    style: "",
-    visualComplexity: "",
-    backgroundType: "",
-    backgroundStyle: "",
+    thumbnailText: "",
+    textStyle: "",
     colorMode: "",
-    contrastGoal: "",
-    brandPrimaryColor: "",
-    brandSecondaryColor: "",
-    effectsLevel: "",
-    avoidElements: [],
-    uploadedImage: null,
+    brandPrimaryColor: "#000000",
+    brandSecondaryColor: "#ffffff",
     aiAutoAdjust: true,
   });
 
@@ -84,10 +84,13 @@ export const AuthProvider = ({
   const [dashboardActiveTab, setDashboardActiveTab] = useState<
     "generate" | "review"
   >("generate");
+  const [thumbnail, setThumnail] = useState("");
 
   return (
     <AuthContext.Provider
       value={{
+        thumbnail,
+        setThumnail,
         dashboardActiveTab,
         setDashboardActiveTab,
         dashboardSideBar,

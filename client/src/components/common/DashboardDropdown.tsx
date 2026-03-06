@@ -26,14 +26,18 @@ import { useAuthContext } from "@/src/context/AuthContext";
 type StrictDropdownField = keyof Omit<
   GenrateFormType,
   | "title"
+  | "thumbnailStory"
   | "extraPrompt"
-  | "aiHook"
-  | "aiAutoAdjust"
-  | "uploadedImage"
+  | "contrastTarget"
+  | "comparisonTarget"
+  | "avoidElements"
+  | "highlightTarget"
+  | "thumbnailText"
   | "brandPrimaryColor"
   | "brandSecondaryColor"
-  | "highlightTarget"
-  | "avoidElements"
+  | "uploadedImage"
+  | "aiAutoAdjust"
+  | "thumbnailPreset"
 >;
 
 type DashboardDropdownProps<K extends StrictDropdownField> = {

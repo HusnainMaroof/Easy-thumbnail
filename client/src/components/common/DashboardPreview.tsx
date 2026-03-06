@@ -13,9 +13,10 @@ import {
   User,
 } from "lucide-react";
 import { useAuthContext } from "@/src/context/AuthContext";
+import Image from "next/image";
 
 const DashboardPreview = () => {
-  const { generateForm } = useAuthContext();
+  const { generateForm, thumbnail } = useAuthContext();
 
   return (
     <div>
@@ -48,32 +49,29 @@ const DashboardPreview = () => {
           <div className="bg-white border-2 border-zinc-100 rounded-4xl md:rounded-[3rem] p-4 md:p-10 flex-1 flex items-center justify-center min-h-100">
             {/* DYNAMIC ASPECT RATIO CONTAINER */}
             <div
-              className={`w-full bg-zinc-950 border-[6px] md:border-8 border-black rounded-2xl md:rounded-[2.5rem] overflow-hidden relative shadow-[15px_15px_40px_-15px_rgba(0,0,0,0.3)] transition-all duration-700
+              className={`w-full   
                         ${generateForm.platform === "youtube" ? "aspect-9/16 max-h-150 h-full mx-auto" : generateForm.platform === "instagram" ? "aspect-square max-w-125 mx-auto" : "aspect-video w-[95%]"}`}
             >
-              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent p-6 md:p-12 flex flex-col justify-end">
-                <motion.h1
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-3xl md:text-5xl font-black text-white uppercase italic leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,1)]"
-                >
-                  {generateForm.title || "STUDIO GENERATED"}
-                </motion.h1>
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="origin-left h-6 md:h-8 bg-[#F4E041] w-2/3 border-2 border-black mt-4 shadow-[2px_2px_0px_0px_#000]"
-                />
-              </div>
-
-              {/* MOCK SUBJECT HIGHLIGHT */}
-              {/* {generateForm.subjectType !== "none" && (
-                <div className="absolute right-0 bottom-0 w-1/2 h-[80%] bg-zinc-800/50 border-l-4px border-black flex items-center justify-center backdrop-blur-sm">
-                  <User size={64} className="text-white/20" />
+              {thumbnail ? (
+                <Image src={`${thumbnail!}`} alt="thumbnail" />
+              ) : (
+                <div className="h-full rounded-2xl inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent p-6 md:p-12 flex flex-col justify-end">
+                  <motion.h1
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-3xl md:text-5xl font-black text-white uppercase italic leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,1)]"
+                  >
+                    Your Thumnail
+                  </motion.h1>
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="origin-left h-6 md:h-8 bg-[#F4E041] w-2/3 border-2 border-black mt-4 shadow-[2px_2px_0px_0px_#000]"
+                  />
                 </div>
-              )} */}
+              )}
             </div>
           </div>
         </div>

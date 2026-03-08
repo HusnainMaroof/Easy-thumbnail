@@ -51,13 +51,27 @@ export const Step1Platform = () => {
         </div>
         <div className="grid grid-cols-3 gap-3 md:gap-4">
           {[
-            { id: "youtube", label: "YouTube", icon: Monitor , aspectRatio:"16:9"},
-            { id: "tiktok", label: "TikTok", icon: Smartphone , aspectRatio:"9:16"},
-            { id: "instagram", label: "Instagram", icon: Square , aspectRatio:"1:1"},
+            {
+              id: "youtube",
+              label: "YouTube",
+              icon: Monitor,
+              aspectRatio: "16:9",
+            },
+            {
+              id: "tiktok",
+              label: "TikTok",
+              icon: Smartphone,
+              aspectRatio: "9:16",
+            },
+            {
+              id: "instagram",
+              label: "Instagram",
+              icon: Square,
+              aspectRatio: "1:1",
+            },
           ].map((p) => (
-            <div className=" text-center ">
+            <div key={p.id} className=" text-center ">
               <button
-                key={p.id}
                 onClick={() => handlePlatformClick(p.id)}
                 className={`group  p-4 md:p-6 border-2 rounded-2xl transition-all flex flex-col items-center gap-3 cursor-pointer hover:border-black  w-full h-full ${
                   generateForm.platform === p.id
@@ -82,7 +96,9 @@ export const Step1Platform = () => {
               </button>
               <span
                 className={`text-xs  md:text-sm font-black uppercase tracking-wider ${generateForm.platform === p.id ? "text-black" : "text-zinc-500 group-hover:text-black transition-colors"}`}
-              >{p.aspectRatio}</span>
+              >
+                {p.aspectRatio}
+              </span>
             </div>
           ))}
         </div>

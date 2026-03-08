@@ -16,17 +16,18 @@ import {
   X,
   Wand2,
   ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { MainButton } from "./Buttons";
 import DashboardPreview from "./DashboardPreview";
 import { useAuthContext } from "@/src/context/AuthContext";
 import { GenrateFormType, thumpnailPayload } from "@/src/types/dashboard.type";
-import DashboardSideBar from "./DashboardSideBar";
 import { DashboardCard } from "./DashboardCard";
 import {
   ActionResponse,
   generateThumnailAction,
 } from "@/src/actions/dashboard.actions";
+import { DashboardSideBar } from "./DashboardSideBar";
 
 const Dashboard = () => {
   const initialState: ActionResponse = {
@@ -84,7 +85,6 @@ const Dashboard = () => {
     "thumbnailText",
     "colorMode",
   ];
-  
 
   const filledFields = requiredFields.filter(
     (field) => generateForm[field] !== "",
@@ -99,7 +99,7 @@ const Dashboard = () => {
 
   const handleGenerate = () => {
     // console.log(generateForm);
-  const thumbnailPrompt = `
+    const thumbnailPrompt = `
 You are a world-class social media thumbnail designer who understands click psychology, cinematic composition, and high-CTR thumbnails.
 
 Your task is to generate a highly clickable thumbnail.
@@ -187,11 +187,11 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
     }
   }, [state]);
   return (
-    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden relative">
+    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden ">
       {/* 1. TOP NAVIGATION */}
 
       <div className="flex flex-1 overflow-hidden relative">
-        <DashboardSideBar updateField={updateField} />
+        <DashboardSideBar />
 
         <div className="flex-1 overflow-y-auto  custom-scrollbar relative ">
           <div className="flex items-center justify-between  border-b-2 sticky top-0 z-50 bg-white ">
@@ -234,7 +234,7 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
           </div>
           <AnimatePresence mode="wait">
             {dashboardActiveTab === "generate" ? (
-              <div className="w-full relative">
+              <div className="min-h-full relative pb-40 ">
                 <div
                   className="absolute inset-0 z-0 opacity-[0.05]"
                   style={{
@@ -242,50 +242,39 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
                     backgroundSize: "40px 40px",
                   }}
                 ></div>
-
+                ;
                 <motion.div
                   key="generate"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="max-w-3xl mx-auto py-6 px-4 md:px-6 relative flex flex-col "
+                  className="max-w-3xl mx-auto py-4 md:py-6 px-3 md:px-6 relative flex flex-col h-full"
                 >
-                  {/* JUST CALL IT ONCE */}
                   <DashboardCard
                     currentIndex={currentCardIndex}
                     onIndexChange={setCurrentCardIndex}
                   />
 
-                  <div className="sticky bottom-6 left-0 right-0 flex justify-center pointer-events-none z-100 px-4">
+                   <div className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl px-3 md:px-4 z-100 pointer-events-none flex justify-center">
                     <motion.div
                       initial={{ y: 50, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
-                      className="bg-white border-2 border-black p-3 md:p-4 rounded-3xl flex items-center gap-4 md:gap-8 pointer-events-auto max-w-2xl w-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                      className="pointer-events-auto w-full bg-white border-2 border-black p-3 md:p-4 rounded-2xl md:rounded-3xl flex items-center gap-3 md:gap-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                     >
-                      <div className="flex-1 pl-2 md:pl-4">
-                        <p className="text-[9px] md:text-[12px] whitespace-nowrap font-black uppercase text-black tracking-widest mb-1">
-                          Readiness Target
+                      <div className="flex-1 pl-1 md:pl-4">
+                        <p className="text-[8px] md:text-[9px] font-black uppercase text-zinc-400 tracking-widest mb-1 flex items-center gap-1">
+                          Readiness Target <Sparkles size={10} className="text-[#B197FC]" />
                         </p>
                         <div className="flex items-center gap-2 md:gap-3">
-                          <span className="text-xs md:text-lg font-black italic">
-                            {completionPercentage}%
-                          </span>
-                          <div className="flex-1 h-1.5 md:h-2  bg-gray-300 rounded-full overflow-hidden">
-                            <motion.div
-                              className="h-full bg-blue-400"
-                              animate={{ width: `${completionPercentage}%` }}
-                              transition={{ ease: "easeInOut", duration: 0.5 }}
-                            />
+                          <span className="text-[10px] md:text-xs font-black italic">{completionPercentage}%</span>
+                          <div className="flex-1 h-1.5 md:h-2 bg-zinc-100 rounded-full overflow-hidden">
+                            <motion.div className="h-full bg-[#A7F3D0]" animate={{ width: `${completionPercentage}%` }} transition={{ ease: "easeInOut", duration: 0.5 }} />
                           </div>
                         </div>
                       </div>
-                      <MainButton
-                        onClick={handleGenerate}
-                        disabled={completionPercentage < 100}
-                        variant="blue"
-                        className="max-w-fit  px-2 md:px-6  cursor-pointer "
-                      >
-                        {Ispending ? "Synthesizing..." : "Render Concept"}
+                      <MainButton onClick={handleGenerate} disabled={completionPercentage < 100} variant="yellow" className="max-w- px-4">
+                        {Ispending ? "Rendering..." : <span className="hidden sm:inline">Generate Thumbnail</span>}
+                        {!Ispending && <span className="sm:hidden">Generate</span>}
                       </MainButton>
                     </motion.div>
                   </div>

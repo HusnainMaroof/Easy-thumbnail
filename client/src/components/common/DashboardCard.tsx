@@ -48,8 +48,8 @@ export const DashboardCard = ({
   const CurrentStepComponent = WIZARD_STEPS[currentIndex].component;
 
   return (
-    <>
-      <div className="flex gap-2 mb-6 px-2">
+    <div className="h-fit">
+      <div className="flex gap-2 mb-6 px-2 ">
         {WIZARD_STEPS.map((_, idx) => (
           <div
             key={idx}
@@ -65,7 +65,7 @@ export const DashboardCard = ({
         ))}
       </div>
 
-      <div className="bg-white border-2 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex-1 flex flex-col overflow-hidden ">
+      <div className="bg-white border-2 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex-1 flex flex-col overflow-hidden  h-fit">
         <div className="p-6 md:p-8 flex-1 bg- overflow-y-auto custom-scrollbar">
           <div className="flex items-center gap-3 mb-8 pb-4 border-b-2 border-zinc-100">
             <div className="w-8 h-8 bg-[#F4E041] border-2 border-black rounded-lg flex items-center justify-center font-black text-xs shadow-[2px_2px_0px_0px_#000]">
@@ -120,6 +120,6 @@ export const DashboardCard = ({
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

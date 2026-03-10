@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 
 const page = async () => {
   const user = await getCurrentUser();
-  if (!user) {
+  if (!user || !user.isOnboard) {
     console.log("un authrozied");
 
     redirect("/");
@@ -17,9 +17,8 @@ const page = async () => {
   return (
     <>
       <div className="w-full h-screen  bg-white">
-        {/* <DashboardNavBar />
-        <Dashboard /> */}
-        <Onboarding/>
+        <DashboardNavBar />
+        <Dashboard />
       </div>
     </>
   );

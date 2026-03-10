@@ -185,3 +185,9 @@ export interface thumpnailPayload {
   prompt: string;
   aspect_ratio: string;
 }
+
+export interface onBoardPayload {
+  platform: string;
+  contentType: string;
+  style: string;
+}

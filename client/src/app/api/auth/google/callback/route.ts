@@ -28,42 +28,60 @@ export async function GET(req: Request) {
     { headers: { Authorization: `Bearer ${access_token}` } },
   );
   const user = userInfoResponse.data;
-  
-  const userExist = await prisma.user.findUnique({
-    where: {
-      email: user.email,
-    },
-  });
-  let sessionId = await generateToken(32);
+
+  let userExist;
+  userExist = await redisClient?.get(`auth_session:${user.sub}`);
+
+  if (userExist) {
+    userExist = JSON.parse(userExist);
+  } else {
+    userExist = await prisma.user.findUnique({
+      where: {
+        email: user.email,
+      },
+    });
+  }
+
   let expiresAt = 60 * 60 * 24 * 7;
 
   if (userExist) {
-    if (userExist.status === "ACTIVE") {
+    if (userExist?.status === "PENDING") {
       const updateStatus = await prisma.user.update({
         where: { id: userExist.id },
         data: { status: "ACTIVE", emailVerified: true },
       });
     }
-
-
-     let UserData = {
+    let UserData = {
+      userId: userExist.userId,
       userToken: userExist.userToken!,
       email: userExist.email!,
       displayName: userExist.displayName!,
+      SubPlans: userExist.subscriptionPlan,
+      isOnboard: userExist.is_Onboard,
+      credits: userExist.credits,
     };
     await setRedis.set(
-      `auth_session:${sessionId}`,
+      `auth_session:${userExist.userToken!}`,
       JSON.stringify(UserData),
       "EX",
       expiresAt,
     );
-    const cookie = serialize("auth_sessionId", sessionId, {
+    const cookie = serialize("auth_sessionId", userExist.userToken!, {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: expiresAt,
     });
+
+    if (!userExist.is_Onboard) {
+      const res = NextResponse.redirect(
+        `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/onboarding`,
+      );
+      res.headers.set("Set-cookie", cookie);
+      return res;
+    }
+
     const res = NextResponse.redirect(
       `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/home`,
     );
@@ -75,34 +93,38 @@ export async function GET(req: Request) {
     data: {
       email: user.email,
       displayName: user.name,
-      userToken: sessionId,
+      userToken: user.sub,
       status: "ACTIVE",
       emailVerified: true,
       password: "",
-      google_id: access_token,
+      google_id: user.sub,
     },
   });
   let UserData = {
-      userToken: createUser.userToken!,
-      email: createUser.email!,
-      displayName: createUser.displayName!,
-    };
+    userId: createUser.id,
+    userToken: createUser.userToken!,
+    email: createUser.email!,
+    displayName: createUser.displayName!,
+    SubPlans: createUser.subscriptionPlan,
+    isOnboard: createUser.is_Onboard,
+    credits: createUser.credits,
+  };
   await setRedis.set(
-    `auth_session:${sessionId}`,
-    JSON.stringify(user),
+    `auth_session:${createUser.userToken!}`,
+    JSON.stringify(UserData),
     "EX",
     expiresAt,
   );
-  const cookie = serialize("auth_sessionId", sessionId, {
+  const cookie = serialize("auth_sessionId", createUser.userToken!, {
     path: "/",
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24, // 1 day
+    maxAge: expiresAt,
   });
 
   const res = NextResponse.redirect(
-    `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/home`,
+    `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/onboarding`,
   );
   res.headers.set("Set-cookie", cookie);
   return res;

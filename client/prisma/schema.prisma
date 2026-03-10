@@ -23,9 +23,11 @@ model User {
   resetPasswordToken     String?             @unique
   google_id              String?             @unique
   is_Onboard             Boolean             @default(false)
-  credits                Int                 @default(0)                   
+  credits                Int                 @default(0)    
+  subscriptionPlan       SubPlans            @default(FREE)        
   emailVerifications     EmailVerification[]
   UserProfile           UserProfile[]
+  CreditTransaction      CreditTransaction[]
 }
 
 model EmailVerification {
@@ -66,4 +68,10 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   DELETED
+}
+enum SubPlans {
+  FREE
+  BASIC
+  PRO
+  CUSTOM
 }

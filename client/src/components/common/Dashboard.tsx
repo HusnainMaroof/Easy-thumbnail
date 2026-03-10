@@ -255,7 +255,7 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
                     onIndexChange={setCurrentCardIndex}
                   />
 
-                   <div className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl px-3 md:px-4 z-100 pointer-events-none flex justify-center">
+                  <div className="fixed bottom-4  left-1/2 -translate-x-1/2 w-full max-w-3xl px-3 md:px-4 z-100 pointer-events-none flex justify-center">
                     <motion.div
                       initial={{ y: 50, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
@@ -263,18 +263,38 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
                     >
                       <div className="flex-1 pl-1 md:pl-4">
                         <p className="text-[8px] md:text-[9px] font-black uppercase text-zinc-400 tracking-widest mb-1 flex items-center gap-1">
-                          Readiness Target <Sparkles size={10} className="text-[#B197FC]" />
+                          Readiness Target{" "}
+                          <Sparkles size={10} className="text-[#B197FC]" />
                         </p>
                         <div className="flex items-center gap-2 md:gap-3">
-                          <span className="text-[10px] md:text-xs font-black italic">{completionPercentage}%</span>
+                          <span className="text-[10px] md:text-xs font-black italic">
+                            {completionPercentage}%
+                          </span>
                           <div className="flex-1 h-1.5 md:h-2 bg-zinc-100 rounded-full overflow-hidden">
-                            <motion.div className="h-full bg-[#A7F3D0]" animate={{ width: `${completionPercentage}%` }} transition={{ ease: "easeInOut", duration: 0.5 }} />
+                            <motion.div
+                              className="h-full bg-[#A7F3D0]"
+                              animate={{ width: `${completionPercentage}%` }}
+                              transition={{ ease: "easeInOut", duration: 0.5 }}
+                            />
                           </div>
                         </div>
                       </div>
-                      <MainButton onClick={handleGenerate} disabled={completionPercentage < 100} variant="yellow" className="max-w- px-4">
-                        {Ispending ? "Rendering..." : <span className="hidden sm:inline">Generate Thumbnail</span>}
-                        {!Ispending && <span className="sm:hidden">Generate</span>}
+                      <MainButton
+                        onClick={handleGenerate}
+                        disabled={completionPercentage < 100}
+                        variant="yellow"
+                        className="max-w- px-4"
+                      >
+                        {Ispending ? (
+                          "Rendering..."
+                        ) : (
+                          <span className="hidden sm:inline">
+                            Generate Thumbnail
+                          </span>
+                        )}
+                        {!Ispending && (
+                          <span className="sm:hidden">Generate</span>
+                        )}
                       </MainButton>
                     </motion.div>
                   </div>

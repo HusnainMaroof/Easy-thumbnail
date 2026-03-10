@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {
+  startTransition,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MonitorPlay,
@@ -21,7 +26,11 @@ import {
   Newspaper,
   Clapperboard,
   PartyPopper,
+  UserPen,
 } from "lucide-react";
+import { ActionResponse, onBoardAction } from "@/src/actions/dashboard.actions";
+import { onBoardPayload } from "@/src/types/dashboard.type";
+import { redirect } from "next/navigation";
 
 // ==========================================
 // 1. DATA & OPTIONS
@@ -99,7 +108,7 @@ const StepPlatform = ({
           <button
             key={p.id}
             onClick={() => onSelect(p.id)}
-            className={`group p-6 border-2 rounded-2xl transition-all flex flex-col items-center gap-4 cursor-pointer text-center ${
+            className={`group p-4 md:p-6 border-2 rounded-2xl transition-all flex flex-col items-center gap-4 cursor-pointer text-center ${
               isSelected
                 ? "border-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 bg-[#F4E041]"
                 : "border-zinc-200 bg-zinc-50 hover:bg-white hover:border-black"
@@ -165,7 +174,7 @@ const StepContentType = ({
           <button
             key={n.id}
             onClick={() => onSelect(n.id)}
-            className={`group p-4 md:p-5 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-3 cursor-pointer text-center ${
+            className={`group p-2  md:p-5 border-2 rounded-xl transition-all flex flex-col items-center justify-center gap-3 cursor-pointer text-center ${
               isSelected
                 ? "border-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 bg-[#F4E041]"
                 : "border-zinc-200 bg-white hover:border-black"
@@ -214,12 +223,12 @@ const StepContentType = ({
 );
 
 const StepStyle = ({ formData, onSelect }: any) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div className="grid grid-cols-2  gap-4">
     {STYLES.map((s) => (
       <button
         key={s.id}
         onClick={() => onSelect("style", s.id)}
-        className={`group p-5 border-2 rounded-2xl transition-all flex items-center gap-4 cursor-pointer text-left ${
+        className={`group p-3 sm:p-5 border-2 rounded-2xl transition-all flex items-center gap-1 cursor-pointer flex-col sm:text-left ${
           formData.style === s.id
             ? "border-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 bg-[#F4E041]"
             : "border-zinc-200 bg-white hover:border-black"
@@ -241,7 +250,13 @@ const StepStyle = ({ formData, onSelect }: any) => (
   </div>
 );
 
-const StepFinish = ({ onComplete }: { onComplete: () => void }) => (
+const StepFinish = ({
+  onComplete,
+  isPending,
+}: {
+  onComplete: () => void;
+  isPending: boolean;
+}) => (
   <div className="text-center py-10 px-4">
     <div className="w-24 h-24 bg-[#A7F3D0] border-2 border-black rounded-full mx-auto flex items-center justify-center shadow-[4px_4px_0px_0px_#000] mb-8">
       <PartyPopper size={40} strokeWidth={2} className="text-black" />
@@ -256,7 +271,17 @@ const StepFinish = ({ onComplete }: { onComplete: () => void }) => (
       onClick={onComplete}
       className="px-8 py-4 bg-black text-[#F4E041] text-sm font-black uppercase tracking-widest rounded-xl transition-all shadow-[6px_6px_0px_0px_#B197FC] hover:-translate-y-1 hover:shadow-[6px_8px_0px_0px_#B197FC] active:translate-y-1 active:shadow-none inline-flex items-center gap-3 cursor-pointer"
     >
-      Generate Thumbnail <Sparkles size={18} strokeWidth={2.5} />
+      {isPending ? (
+        <>
+          {" "}
+          On Boarding <UserPen size={18} strokeWidth={2.5} />
+        </>
+      ) : (
+        <>
+          {" "}
+          Generate Thumbnail <Sparkles size={18} strokeWidth={2.5} />
+        </>
+      )}
     </button>
   </div>
 );
@@ -333,9 +358,20 @@ const OnboardingFooter = ({ step, isStepComplete, onNext, onPrev }: any) => {
 // ==========================================
 // 4. MAIN CONTAINER
 // ==========================================
-
+const initialState: ActionResponse = {
+  success: false,
+  error: false,
+  message: null,
+  data: null,
+};
 export default function Onboarding() {
+  const [state, dispatcher, isPending] = useActionState<
+    ActionResponse,
+    onBoardPayload
+  >(onBoardAction, initialState);
+
   const [step, setStep] = useState(0);
+
   const [direction, setDirection] = useState(1);
 
   // Clean Form Data
@@ -363,9 +399,17 @@ export default function Onboarding() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // complete
   const handleComplete = () => {
-    console.log("Onboarding Complete:", formData);
-    alert("Redirecting to the Dashboard Generator...");
+    if (!formData.contentType || !formData.platform || !formData.style) return;
+
+    startTransition(() => {
+      dispatcher({
+        contentType: formData.contentType,
+        platform: formData.platform,
+        style: formData.style,
+      });
+    });
   };
 
   const slideVariants = {
@@ -393,6 +437,14 @@ export default function Onboarding() {
 
   const isStepComplete = checkStepComplete();
   const progressPercentage = (step / 4) * 100;
+
+  useEffect(() => {
+    if (state.success && state.message === "Onboard Successfully") {
+      redirect("/dashboard/home")
+    }
+
+    console.log(state);
+  }, [state]);
 
   return (
     <div className="min-h-screen bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -488,7 +540,12 @@ export default function Onboarding() {
                 {step === 3 && (
                   <StepStyle formData={formData} onSelect={handleSelect} />
                 )}
-                {step === 4 && <StepFinish onComplete={handleComplete} />}
+                {step === 4 && (
+                  <StepFinish
+                    onComplete={handleComplete}
+                    isPending={isPending}
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
           </div>

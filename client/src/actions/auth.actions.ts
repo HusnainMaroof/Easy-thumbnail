@@ -78,20 +78,24 @@ export const verifyOtpAction = catchErrors(
 
     let res = await verifyOtpService(payload.code, payload.userToken);
 
-    let data = {
-      userToken: res?.data?.userToken!,
-      email: res?.data?.email!,
-      displayName: res?.data?.displayName,
+    let UserData = {
+      userId: res.data.id,
+      userToken: res.data.userToken!,
+      email: res.data.email!,
+      displayName: res.data.displayName!,
+      SubPlans: res.data.subscriptionPlan,
+      isOnboard: res.data.is_Onboard,
+      credits: res.data.credits,
     };
 
-    console.log(data);
+    console.log(UserData);
 
     const cookieStore = await cookies();
     const sessionId = await generateToken(32);
     let expiresAt = 60 * 60 * 24 * 7;
     await setRedis.set(
       `auth_session:${sessionId}`,
-      JSON.stringify(data),
+      JSON.stringify(UserData),
       "EX",
       expiresAt,
     );
@@ -130,16 +134,20 @@ export const loginAction = catchErrors(
     const cookieStore = await cookies();
     const sessionId = await generateToken(32);
 
-    let data = {
-      userToken: login?.data?.userToken!,
-      email: login?.data?.email!,
-      displayName: login?.data?.displayName,
+    let UserData = {
+      userId: login.data.id,
+      userToken: login.data.userToken!,
+      email: login.data.email!,
+      displayName: login.data.displayName!,
+      SubPlans: login.data.subscriptionPlan,
+      isOnboard: login.data.is_Onboard,
+      credits: login.data.credits,
     };
 
     let expiresAt = 60 * 60 * 24 * 7;
     await setRedis.set(
       `auth_session:${sessionId}`,
-      JSON.stringify(data),
+      JSON.stringify(UserData),
       "EX",
       expiresAt,
     );

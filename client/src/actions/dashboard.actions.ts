@@ -1,5 +1,8 @@
-import { generateThumnailService } from "../service/dashboard.service";
-import { thumpnailPayload } from "../types/dashboard.type";
+import {
+  generateThumnailService,
+  onBoardService,
+} from "../service/dashboard.service";
+import { onBoardPayload, thumpnailPayload } from "../types/dashboard.type";
 import { catchErrors } from "../utils/errorWrapper";
 
 export type ActionResponse = {
@@ -15,6 +18,22 @@ export const generateThumnailAction = catchErrors(
     payload: thumpnailPayload,
   ): Promise<ActionResponse> => {
     const service = await generateThumnailService(payload);
+
+    return {
+      success: service.success,
+      error: service.error,
+      message: service.message,
+      data: service.data,
+    };
+  },
+);
+
+export const onBoardAction = catchErrors(
+  async (
+    prevState: ActionResponse,
+    payload: onBoardPayload,
+  ): Promise<ActionResponse> => {
+    const service = await onBoardService(payload);
 
     return {
       success: service.success,

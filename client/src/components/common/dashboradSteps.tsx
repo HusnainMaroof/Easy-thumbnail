@@ -170,7 +170,7 @@ export const Step3ClickHook = () => {
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="space-y-6 min-h-fit pb-40">
+    <div className="space-y-6 min-h-fit ">
       {" "}
       {/* pb-40 ensures space for dropdowns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -220,7 +220,7 @@ export const Step3ClickHook = () => {
 export const Step4Subject = () => {
   const { generateForm, setGenerateForm } = useAuthContext();
   return (
-    <div className="space-y-6 pb-40">
+    <div className="space-y-6 ">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex flex-col gap-2 md:col-span-2">
           <DashboardDropdown
@@ -231,6 +231,7 @@ export const Step4Subject = () => {
           {generateForm.subjectSource === "user-upload" && (
             <PhotoUploader
               value={generateForm.uploadedImage ?? null}
+              label="person pic"
               onChange={(file) =>
                 setGenerateForm((prev: any) => ({
                   ...prev,
@@ -277,7 +278,7 @@ export const Step5Focus = () => {
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="space-y-6 pb-40">
+    <div className="space-y-6 ">
       <div className="grid grid-cols-1 gap-4">
         <DashboardDropdown
           label="Focal Point"
@@ -320,7 +321,7 @@ export const Step6Style = () => {
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="space-y-6 pb-40">
+    <div className="space-y-6 ">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <DashboardDropdown
@@ -339,16 +340,32 @@ export const Step6Style = () => {
           field="sceneComplexity"
           options={Generated_Form_Options.sceneComplexity}
         />
-
         <div className="md:col-span-2 relative mt-2">
-          <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
+          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
             Avoid Elements (Optional)
           </span>
           <textarea
-            placeholder="e.g. No stock photos, no text clutter, avoid blurry faces..."
+            placeholder="e.g. No stock photos, no text clutter..."
             className="w-full border-2 border-zinc-300 focus:border-black rounded-xl p-4 font-bold text-sm outline-none bg-white transition-all h-20 resize-none custom-scrollbar"
             value={generateForm.avoidElements || ""}
             onChange={(e) => updateField("avoidElements", e.target.value)}
+          />
+        </div>
+
+        {/* NEW: Reference Thumbnail Field */}
+        <div className="md:col-span-2 mt-4 pt-4 border-t-2 border-zinc-100">
+          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest  mb-2 ml-1 flex items-center gap-1">
+            Reference Thumbnail (Optional){" "}
+            <Sparkles size={10} className="text-[#B197FC]" />
+          </span>
+          <p className="text-[9px] font-bold text-zinc-400 mb-2 ml-1 uppercase tracking-wider">
+            Upload an existing thumbnail you want the AI to mimic the exact
+            layout and style of.
+          </p>
+          <PhotoUploader
+            value={generateForm.referenceImage}
+            onChange={(file) => updateField("referenceImage", file)}
+            label="Upload Reference Image"
           />
         </div>
       </div>
@@ -362,7 +379,7 @@ export const Step7Highlight = () => {
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="space-y-6 pb-40">
+    <div className="space-y-6 ">
       <div className="grid grid-cols-1 gap-4">
         <DashboardDropdown
           label="Highlight Element"
@@ -400,7 +417,7 @@ export const Step8Text = () => {
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="space-y-6 pb-40">
+    <div className="space-y-6 ">
       <div className="relative">
         <span className="text-[14px] font-black text-black uppercase tracking-widest block mb-2 ml-1">
           Thumbnail Text (Short & Punchy)
@@ -441,7 +458,7 @@ export const Step9Colors = () => {
   };
 
   return (
-    <div className="space-y-6 pb-40">
+    <div className="space-y-6 ">
       <div className="grid grid-cols-1 gap-4">
         <DashboardDropdown
           label="Color Mode"

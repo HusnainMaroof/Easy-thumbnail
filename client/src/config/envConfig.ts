@@ -55,4 +55,6 @@ export const envConfig = {
   ORIGINS: {
     ORIGIN_ONE: process.env.FRONTEND_ORIGIN_ONE,
   } satisfies ORIGINS,
+
+  PAYMENT_APIS: process.env.PAYMENT_APIS,
 };

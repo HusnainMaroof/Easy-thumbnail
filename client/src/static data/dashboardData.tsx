@@ -1,3 +1,5 @@
+import { Briefcase, Crown, Zap } from "lucide-react";
+
 export const Generated_Form_Options = {
   // STEP 2
   category: [
@@ -195,4 +197,63 @@ export const COLOR_PALETTES = [
   { name: "Minimal", p: "#FFFFFF", s: "#27272A" },
   { name: "Danger", p: "#EF4444", s: "#000000" },
   { name: "Warmth", p: "#FDE68A", s: "#78350F" },
+];
+
+export const PRICING_PLANS = [
+  {
+    id: "free",
+    name: "Free",
+    icon: Zap,
+    price: "0",
+    credits: 10,
+    description:
+      "Test the magic. Generate your first batch of eye-catching thumbnails completely on us.",
+    features: [
+      "Standard Speed Generation",
+      "Core YouTube Styles",
+      "Standard Web Resolution",
+      "Contains App Watermark",
+    ],
+    buttonText: "Current Plan",
+    isPopular: false,
+    theme: "light",
+  },
+  {
+    id: "pro",
+    name: "Creator Pro",
+    icon: Crown,
+    price: "15",
+    credits: 45,
+    description:
+      "The sweet spot for serious creators. Uncapped quality, zero watermarks, and full commercial rights.",
+    features: [
+      "Lightning-Fast Rendering",
+      "All Premium Creator Presets",
+      "4K Ultra-HD Exports",
+      "Zero Watermarks",
+      "Full Commercial Rights",
+    ],
+    buttonText: "Upgrade to Pro",
+    isPopular: true,
+    theme: "highlight",
+  },
+  {
+    id: "agency",
+    name: "Agency",
+    icon: Briefcase,
+    price: "Custom",
+    credits: "Custom",
+    description:
+      "For massive channels and creative teams that demand limitless scale and dedicated support.",
+    features: [
+      "Unlimited Credit Pool",
+      "Custom AI Style Training",
+      "Dedicated Success Manager",
+      "Developer API Access",
+      "Multi-User Workspaces",
+    ],
+    buttonText: "Contact Sales",
+    isPopular: false,
+    theme: "dark",
+  },
 ];

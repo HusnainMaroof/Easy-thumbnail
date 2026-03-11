@@ -14,6 +14,8 @@ const page = async () => {
     redirect("/");
   }
 
+  // console.log(user);
+
   return (
     <>
       <div className="w-full h-screen  bg-white">

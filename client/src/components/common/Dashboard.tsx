@@ -17,6 +17,8 @@ import {
   Wand2,
   ArrowRight,
   Sparkles,
+  Zap,
+  LayoutDashboard,
 } from "lucide-react";
 import { MainButton } from "./Buttons";
 import DashboardPreview from "./DashboardPreview";
@@ -27,7 +29,7 @@ import {
   ActionResponse,
   generateThumnailAction,
 } from "@/src/actions/dashboard.actions";
-import { DashboardSideBar } from "./DashboardSideBar";
+import { FloatingWorkspaceToolbar } from "./DashboardTool";
 
 const Dashboard = () => {
   const initialState: ActionResponse = {
@@ -50,6 +52,7 @@ const Dashboard = () => {
     generateForm,
     setThumnail,
     setGenerateForm,
+    user,
   } = useAuthContext();
 
   // Default closed on mobile
@@ -187,134 +190,102 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
     }
   }, [state]);
   return (
-    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden ">
-      {/* 1. TOP NAVIGATION */}
-
-      <div className="flex flex-1 overflow-hidden relative">
-        <DashboardSideBar />
-
-        <div className="flex-1 overflow-y-auto  custom-scrollbar relative ">
-          <div className="flex items-center justify-between  border-b-2 sticky top-0 z-50 bg-white ">
-            <button
-              onClick={() => setDashboardSideBar(!dashboardSideBar)}
-              className="p-2 hover:bg-zinc-50 rounded-lg border border-zinc-100 transition-colors sticky top-0"
-            >
-              {dashboardSideBar ? (
-                <PanelLeftClose
-                  size={25}
-                  className="text-zinc-600 cursor-pointer"
-                />
-              ) : (
-                <PanelLeft size={25} className="text-zinc-600 cursor-pointer" />
-              )}
-            </button>
-
-            <div className="flex bg-zinc-100 p-1 rounded-xl border border-zinc-200 shadow-inner">
-              <button
-                onClick={() => setDashboardActiveTab("generate")}
-                className={`px-4 md:px-6 py-1.5 font-black  cursor-pointer uppercase text-[9px] md:text-[10px] rounded-lg transition-all ${dashboardActiveTab === "generate" ? "bg-white text-black shadow-sm" : "text-zinc-400"}`}
-              >
-                Generate
-              </button>
-              <button
-                onClick={() => setDashboardActiveTab("review")}
-                className={`px-4 md:px-6 py-1.5 font-black cursor-pointer  uppercase text-[9px] md:text-[10px] rounded-lg transition-all ${dashboardActiveTab === "review" ? "bg-white text-black shadow-sm" : "text-zinc-400"}`}
-              >
-                Review
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="text-[9px] font-black text-zinc-400 hidden md:block uppercase">
-                Credits: 480
-              </div>
-              <div className="w-8 h-8 md:w-9 md:h-9 border-2 border-black rounded-lg bg-[#B197FC] shadow-[2px_2px_0px_0px_#000] flex items-center justify-center text-white">
-                <User size={16} />
-              </div>
-            </div>
+    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden">
+      <div
+        className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)`,
+          backgroundSize: "40px 40px",
+        }}
+      ></div>
+      {/* Top Workspace Header (Replaces Sidebar Toggle) */}
+      <div className="flex items-center justify-between place  md:px-8   relative z-50  w-full!">
+        {/* Left: Project Branding */}
+        <div className="flex items-center  gap-4 bg">
+          <div className="p-2 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] bg-[#F4E041]">
+            <LayoutDashboard
+              size={20}
+              strokeWidth={2.5}
+              className="text-black"
+            />
           </div>
-          <AnimatePresence mode="wait">
-            {dashboardActiveTab === "generate" ? (
-              <div className="min-h-full relative pb-40 ">
-                <div
-                  className="absolute inset-0 z-0 opacity-[0.05]"
-                  style={{
-                    backgroundImage: `linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)`,
-                    backgroundSize: "40px 40px",
-                  }}
-                ></div>
-                ;
-                <motion.div
-                  key="generate"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="max-w-3xl mx-auto py-4 md:py-6 px-3 md:px-6 relative flex flex-col h-full"
-                >
-                  <DashboardCard
-                    currentIndex={currentCardIndex}
-                    onIndexChange={setCurrentCardIndex}
-                  />
-
-                  <div className="fixed bottom-4  left-1/2 -translate-x-1/2 w-full max-w-3xl px-3 md:px-4 z-100 pointer-events-none flex justify-center">
-                    <motion.div
-                      initial={{ y: 50, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      className="pointer-events-auto w-full bg-white border-2 border-black p-3 md:p-4 rounded-2xl md:rounded-3xl flex items-center gap-3 md:gap-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                    >
-                      <div className="flex-1 pl-1 md:pl-4">
-                        <p className="text-[8px] md:text-[9px] font-black uppercase text-zinc-400 tracking-widest mb-1 flex items-center gap-1">
-                          Readiness Target{" "}
-                          <Sparkles size={10} className="text-[#B197FC]" />
-                        </p>
-                        <div className="flex items-center gap-2 md:gap-3">
-                          <span className="text-[10px] md:text-xs font-black italic">
-                            {completionPercentage}%
-                          </span>
-                          <div className="flex-1 h-1.5 md:h-2 bg-zinc-100 rounded-full overflow-hidden">
-                            <motion.div
-                              className="h-full bg-[#A7F3D0]"
-                              animate={{ width: `${completionPercentage}%` }}
-                              transition={{ ease: "easeInOut", duration: 0.5 }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <MainButton
-                        onClick={handleGenerate}
-                        disabled={completionPercentage < 100}
-                        variant="yellow"
-                        className="max-w- px-4"
-                      >
-                        {Ispending ? (
-                          "Rendering..."
-                        ) : (
-                          <span className="hidden sm:inline">
-                            Generate Thumbnail
-                          </span>
-                        )}
-                        {!Ispending && (
-                          <span className="sm:hidden">Generate</span>
-                        )}
-                      </MainButton>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              </div>
-            ) : (
-              <DashboardPreview />
-            )}
-          </AnimatePresence>
+          <div className=" flex-col hidden sm:flex">
+            <span className="font-black tracking-widest text-xs uppercase leading-tight">
+              Workspace
+            </span>
+            <span className="font-bold text-[9px] text-zinc-400 uppercase tracking-widest leading-tight">
+              Unsaved Project
+            </span>
+          </div>
         </div>
+
+        {/* Center: Generator/Review Toggle */}
+        <div className="flex bg-zinc-100 p-1.5 rounded-xl border-[3px] border-black shadow-inner jus">
+          <button
+            onClick={() => setDashboardActiveTab("generate")}
+            className={`px-4 md:px-8 py-2 font-black cursor-pointer uppercase text-[10px] md:text-xs rounded-lg transition-all ${dashboardActiveTab === "generate" ? "bg-white text-black shadow-sm border border-zinc-200" : "text-zinc-500 hover:text-black"}`}
+          >
+            Generate
+          </button>
+          <button
+            onClick={() => setDashboardActiveTab("review")}
+            className={`px-4 md:px-8 py-2 font-black cursor-pointer uppercase text-[10px] md:text-xs rounded-lg transition-all ${dashboardActiveTab === "review" ? "bg-white text-black shadow-sm border border-zinc-200" : "text-zinc-500 hover:text-black"}`}
+          >
+            Review
+          </button>
+        </div>
+
+        <motion.div
+          whileHover={{ scale: 1.05, rotate: -2 }}
+          className="hidden sm:flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-[#F4E041] border-[3px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] cursor-pointer"
+        >
+          <Zap size={16} strokeWidth={3} className="text-black" />
+          <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">
+            {user?.credits} Credits
+          </span>
+        </motion.div>
+      </div>
+
+      {/* Main Workspace Area */}
+      <div className="flex-1 overflow-y-auto  custom-scrollbar relative rounded-2xl00">
+        {/* Background Grid Pattern */}
+
+        {/* Floating Command Palette (Desktop Only) */}
+        <FloatingWorkspaceToolbar />
+
+        <AnimatePresence mode="wait">
+          {dashboardActiveTab === "generate" ? (
+            <div className="min-h-full relative flex flex-col items-center ">
+              <motion.div
+                key="generate"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="w-full max-w-3xl mx-auto py-8 md:py-10 px-4 md:px-6 relative flex flex-col pb-24"
+              >
+                <DashboardCard
+                  currentIndex={currentCardIndex}
+                  onIndexChange={setCurrentCardIndex}
+                  completionPercentage={completionPercentage}
+                  handleGenerate={handleGenerate}
+                  isGeneratingImage={Ispending}
+                />
+              </motion.div>
+            </div>
+          ) : (
+            <DashboardPreview />
+          )}
+        </AnimatePresence>
       </div>
 
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 6px;  } 
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #D4D4D8; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; } 
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #D4D4D8; border-radius: 10px; } 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #A1A1AA; }
-        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-in { animation: fade-in 0.4s ease-out forwards; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `,
         }}
       />

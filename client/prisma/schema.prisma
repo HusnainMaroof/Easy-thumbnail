@@ -71,7 +71,6 @@ enum UserStatus {
 }
 enum SubPlans {
   FREE
-  BASIC
   PRO
   CUSTOM
 }

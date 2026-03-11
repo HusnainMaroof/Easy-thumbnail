@@ -47,7 +47,7 @@ export type GenrateFormType = {
   colorMode: string;
   brandPrimaryColor: string;
   brandSecondaryColor: string;
-
+  referenceImage: File | null;
   // AI Logic
   aiAutoAdjust: boolean;
 };

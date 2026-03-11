@@ -7,9 +7,10 @@ import { Upload, X, Image as ImageIcon } from "lucide-react";
 type PhotoUploaderProps = {
   value?: File | null;
   onChange: (file: File | null) => void;
+  label: string;
 };
 
-export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
+export function PhotoUploader({ value, onChange, label }: PhotoUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);

@@ -29,7 +29,6 @@ export const ProfileDropdown = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // event.target is of type EventTarget, so we need to assert it's a Node
       if (
         dropdownRef.current &&
         event.target instanceof Node &&
@@ -38,50 +37,40 @@ export const ProfileDropdown = () => {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const menuItems = [
-    {
-      label: "Dashboard",
-      icon: <LayoutDashboard size={16} />,
-      href: "/dashboard/home",
-    },
-    {
-      label: "Profile Settings",
-      icon: <Settings size={16} />,
-      href: "/settings",
-    },
-  ];
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2);
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
       <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={{
+          scale: 1.02,
+          translateY: -2,
+          boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)",
+        }}
+        whileTap={{
+          scale: 0.98,
+          translateY: 0,
+          boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
+        }}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center cursor-pointer gap-2 px-3 py-2 bg-white border-4 text-black border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1  hover:translate-y-0.5 transition-all"
+        className={`flex items-center cursor-pointer gap-2 sm:gap-3 p-1 bg-white border-[3px] text-black border-black rounded-xl transition-all duration-200
+          ${isOpen ? "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-1" : "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"}`}
       >
-        <div className="w-6 h-6 rounded-full bg-[#B197FC] border-2 border-black flex items-center justify-center overflow-hidden">
-          {user?.displayName ? (
-            <img
-              src={user.displayName}
-              alt="pfp"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <User size={14} className="text-white" />
-          )}
+        <div className="w-8 h-8 rounded-lg bg-[#B197FC] border-2 border-black flex items-center justify-center overflow-hidden">
+          <span className="font-black text-white text-[11px] tracking-widest">
+            {getInitials(user?.displayName!)}
+          </span>
         </div>
-        <span className="hidden lg:block font-black text-[10px] uppercase tracking-wider truncate max-w-20">
-          {user?.displayName || "Creator"}
-        </span>
-        <ChevronDown
-          size={14}
-          className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-        />
       </motion.button>
 
       <AnimatePresence>
@@ -90,25 +79,38 @@ export const ProfileDropdown = () => {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute right-0 mt-3 w-56 bg-white border-4 text-black border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-60 overflow-hidden rounded-xl"
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 mt-4 w-72 bg-white border-[3px] text-black border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-[120] overflow-hidden rounded-2xl"
           >
-            <div className="p-4 border-b-4 border-black bg-gray-50 font-black text-[10px] uppercase text-black">
-              Account Menu
-            </div>
-            <div className="p-2">
-              {menuItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="flex items-center gap-3 p-3 font-black text-xs uppercase hover:bg-[#B197FC] hover:text-white transition-colors rounded-lg group"
-                >
-                  <span className="p-1.5 border-2 border-black bg-white group-hover:bg-white text-black rounded-md">
-                    {item.icon}
-                  </span>
-                  {item.label}
-                </a>
-              ))}
-              <LogoutButton />
+            {/* Dropdown Header (Includes Credits for Mobile visibility) */}
+         
+
+            <div className="p-3 flex flex-col gap-1">
+              <a
+                href="#"
+                className="flex items-center gap-3 p-3 font-black text-xs uppercase tracking-widest hover:bg-[#F4E041] rounded-xl group border-2 border-transparent hover:border-black transition-all cursor-pointer"
+              >
+                <span className="p-1.5 border-2 border-black bg-white text-black rounded-lg shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none transition-all">
+                  <LayoutDashboard size={14} strokeWidth={3} />
+                </span>
+                Dashboard
+              </a>
+              <a
+                href="#"
+                className="flex items-center gap-3 p-3 font-black text-xs uppercase tracking-widest hover:bg-[#88AAEE] rounded-xl group border-2 border-transparent hover:border-black transition-all cursor-pointer"
+              >
+                <span className="p-1.5 border-2 border-black bg-white text-black rounded-lg shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none transition-all">
+                  <Settings size={14} strokeWidth={3} />
+                </span>
+                Settings
+              </a>
+
+              <div className="h-1 w-full bg-zinc-100 my-2 rounded-full" />
+
+              <button className="w-full flex items-center justify-center gap-2 p-3 font-black text-xs uppercase tracking-widest bg-black text-white hover:bg-zinc-800 rounded-xl group border-2 border-black transition-all cursor-pointer shadow-[3px_3px_0px_0px_#B197FC] active:translate-y-1 active:shadow-none">
+                <LogOut size={14} strokeWidth={3} />
+                Sign Out
+              </button>
             </div>
           </motion.div>
         )}

@@ -6,7 +6,11 @@ type UserType = {
   userToken: string;
   displayName: string;
   email: string;
+  SubPlans: string;
+  isOnboard: boolean;
+  credits: number | null;
 } | null;
+
 type DashboardTab = "generate" | "review";
 
 type AuthContextType = {
@@ -29,6 +33,7 @@ type AuthContextType = {
   setDashboardActiveTab: React.Dispatch<React.SetStateAction<DashboardTab>>;
   thumbnail: string;
   setThumnail: React.Dispatch<React.SetStateAction<string>>;
+  resetgenerateForm: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -77,6 +82,7 @@ export const AuthProvider = ({
     colorMode: "",
     brandPrimaryColor: "#000000",
     brandSecondaryColor: "#ffffff",
+    referenceImage: null,
     aiAutoAdjust: true,
   });
 
@@ -85,6 +91,44 @@ export const AuthProvider = ({
     "generate" | "review"
   >("generate");
   const [thumbnail, setThumnail] = useState("");
+
+  const resetgenerateForm = () => {
+    setGenerateForm({
+      platform: "",
+      aspectRatio: "",
+      thumbnailPreset: "none",
+      title: "",
+      category: "",
+      thumbnailStory: "",
+      extraPrompt: "",
+      hookType: "",
+      desiredEmotion: "",
+      visualContrastType: "",
+      contrastTarget: "",
+      subjectSource: "",
+      peopleCount: "1",
+      mainObject: "",
+      facialEmotionLevel: "",
+      cameraFraming: "",
+      uploadedImage: null,
+      viewerFocus: "",
+      comparisonTarget: "",
+      visualEnergy: "",
+      thumbnailStyle: "",
+      backgroundScene: "",
+      sceneComplexity: "",
+      avoidElements: "",
+      highlightType: "",
+      highlightTarget: "",
+      thumbnailText: "",
+      textStyle: "",
+      colorMode: "",
+      brandPrimaryColor: "#000000",
+      brandSecondaryColor: "#ffffff",
+      aiAutoAdjust: true,
+      referenceImage: null,
+    });
+  };
 
   return (
     <AuthContext.Provider
@@ -108,6 +152,7 @@ export const AuthProvider = ({
         setshowEmailPopUp,
         emailVeriferAction,
         setEmailVeriferAction,
+        resetgenerateForm,
       }}
     >
       {children}

@@ -29,7 +29,6 @@ import {
   ActionResponse,
   generateThumnailAction,
 } from "@/src/actions/dashboard.actions";
-import { FloatingWorkspaceToolbar } from "./DashboardTool";
 
 const Dashboard = () => {
   const initialState: ActionResponse = {
@@ -73,19 +72,11 @@ const Dashboard = () => {
     "platform",
     "title",
     "category",
-    "thumbnailStory",
     "hookType",
-    "desiredEmotion",
-    "visualContrastType",
     "subjectSource",
     "cameraFraming",
-    "viewerFocus",
-    "visualEnergy",
     "thumbnailStyle",
     "backgroundScene",
-    "sceneComplexity",
-    "highlightType",
-    "thumbnailText",
     "colorMode",
   ];
 
@@ -96,84 +87,53 @@ const Dashboard = () => {
     (filledFields / requiredFields.length) * 100,
   );
 
-  const updateField = (field: keyof GenrateFormType, value: any) => {
-    setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
-  };
-
   const handleGenerate = () => {
-    // console.log(generateForm);
-    const thumbnailPrompt = `
-You are a world-class social media thumbnail designer who understands click psychology, cinematic composition, and high-CTR thumbnails.
+    console.log(generateForm);
 
-Your task is to generate a highly clickable thumbnail.
+    const prompt = `
+MASTER DIRECTIVE:
+You are a world-class, multi-million subscriber YouTube thumbnail designer and behavioral psychologist. Your singular goal is to generate a hyper-optimized, ultra-high CTR (Click-Through Rate) thumbnail image that immediately arrests the viewer's attention and stops them from scrolling on ${generateForm.platform || "social media"}.
 
-THUMBNAIL SPECIFICATIONS
-Platform: ${generateForm.platform}
-Aspect Ratio: ${generateForm.aspectRatio}
-Style: ${generateForm.thumbnailStyle}
-Visual Energy: ${generateForm.visualEnergy}
-Scene Complexity: ${generateForm.sceneComplexity}
+CORE VISUAL SCENE:
+Primary Topic: ${generateForm.title}
+Niche Context: ${generateForm.category}
+The Action / Story: ${generateForm.thumbnailStory}
+${generateForm.extraPrompt ? `Additional Details: ${generateForm.extraPrompt}` : ""}
 
-VIDEO CONTEXT
-Title: ${generateForm.title}
-Category: ${generateForm.category}
-Story Context: ${generateForm.thumbnailStory}
+COMPOSITION & SUBJECT:
+Camera Angle & Framing: ${generateForm.cameraFraming}. Utilize the rule of thirds for cinematic balance.
+Subjects: ${generateForm.subjectSource === "none" ? "Focus purely on the environment and objects. NO people." : `${generateForm.peopleCount} highly expressive, hyper-detailed human subject(s).`}
+Main Prop/Object: ${generateForm.mainObject ? generateForm.mainObject : "Relevant contextual object scaled up for mobile visibility"}.
+Viewer Eye-Tracking Focus: Drive the viewer's immediate visual attention directly to: ${generateForm.viewerFocus}.
 
-VISUAL STORY
-Create a cinematic scene that visually represents the topic rather than repeating the title literally.
+AESTHETICS & LIGHTING:
+Overall Art Style: ${generateForm.thumbnailStyle}. 
+Energy Level: ${generateForm.visualEnergy}.
+Background Environment: ${generateForm.backgroundScene}. Apply a slight depth-of-field bokeh blur to separate the foreground subject from the background.
+Color Grading & Mood: ${generateForm.colorMode}. Use striking complementary colors, high contrast, and rim lighting to create massive visual pop.
 
-MAIN SUBJECTS
-People Count: ${generateForm.peopleCount}
-Subject Source: ${generateForm.subjectSource}
-Facial Emotion Level: ${generateForm.facialEmotionLevel}
-Camera Framing: ${generateForm.cameraFraming}
+PSYCHOLOGICAL HOOK & HIGHLIGHTS:
+Click Strategy: ${generateForm.hookType}. The image must visually invoke this specific psychological trigger without needing a voiceover.
+${generateForm.highlightType !== "none" && generateForm.highlightTarget ? `Visual Highlight: Render a striking ${generateForm.highlightType} drawing massive attention to the ${generateForm.highlightTarget}.` : ""}
 
-OBJECTS TO INCLUDE
-Main Object: ${generateForm.mainObject}
-Highlighted Objects: ${generateForm.highlightTarget}
+${
+  generateForm.thumbnailText
+    ? `TYPOGRAPHY / TEXT OVERLAY:
+Include the following exact text rendered in massive, bold, highly legible, high-contrast 3D sans-serif font: "${generateForm.thumbnailText}".
+Text Placement: Strictly position this text in the ${generateForm.textPlacement || "empty space"} area of the image. Do not cover the main focal point.`
+    : "STRICT RULE: DO NOT INCLUDE ANY TEXT, LETTERS, OR WORDS IN THIS IMAGE."
+}
 
-BACKGROUND
-Scene Environment: ${generateForm.backgroundScene}
-Viewer Focus Area: ${generateForm.viewerFocus}
+STRICT NEGATIVE CONSTRAINTS:
+Avoid visual clutter, flat lighting, dull grayscale colors, low contrast, and overly complex details that fail on small mobile screens. ${generateForm.avoidElements ? `Specifically avoid rendering: ${generateForm.avoidElements}.` : ""}
 
-VISUAL CONTRAST
-Contrast Type: ${generateForm.visualContrastType}
-Contrast Target: ${generateForm.contrastTarget}
-Comparison Target: ${generateForm.comparisonTarget}
+FINAL RENDER QUALITY:
+Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-sharp foreground focus, hyper-detailed textures, and vibrant color saturation perfectly optimized for mobile screen viewing.
+    `.trim();
 
-EMOTIONAL HOOK
-Hook Type: ${generateForm.hookType}
-Desired Viewer Emotion: ${generateForm.desiredEmotion}
+    console.log(prompt);
 
-EXTRA CREATIVE DIRECTION
-${generateForm.extraPrompt}
-
-TEXT OVERLAY
-Thumbnail Text: "${generateForm.thumbnailText}"
-Text Style: ${generateForm.textStyle}
-
-COLOR & BRANDING
-Color Mode: ${generateForm.colorMode}
-Primary Brand Color: ${generateForm.brandPrimaryColor}
-Secondary Brand Color: ${generateForm.brandSecondaryColor}
-
-DESIGN RULES
-• Faces must be large and expressive
-• High contrast lighting
-• Strong cinematic composition
-• Important objects highlighted clearly
-• Easy to understand even at small size
-• Balanced layout
-• No overlapping elements
-
-NEGATIVE RULES
-Avoid: ${generateForm.avoidElements}
-
-OUTPUT
-Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum click-through rate on ${generateForm.platform}.
-`;
-    console.log(thumbnailPrompt);
-
+    // console.log(thumbnailPrompt);
     // startTransition(() => {
     //   dispatcher({ prompt, aspect_ratio: generateForm.aspectRatio });
     // });
@@ -201,7 +161,7 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
       {/* Top Workspace Header (Replaces Sidebar Toggle) */}
       <div className="flex items-center justify-between place  md:px-8   relative z-50  w-full!">
         {/* Left: Project Branding */}
-        <div className="flex items-center  gap-4 bg">
+        <div className="md:flex items-center  gap-4 bg hidden">
           <div className="p-2 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] bg-[#F4E041]">
             <LayoutDashboard
               size={20}
@@ -209,7 +169,7 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
               className="text-black"
             />
           </div>
-          <div className=" flex-col hidden sm:flex">
+          <div className=" flex-col hidden md:flex">
             <span className="font-black tracking-widest text-xs uppercase leading-tight">
               Workspace
             </span>
@@ -237,7 +197,7 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
 
         <motion.div
           whileHover={{ scale: 1.05, rotate: -2 }}
-          className="hidden sm:flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-[#F4E041] border-[3px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-[#F4E041] border-[3px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] cursor-pointer"
         >
           <Zap size={16} strokeWidth={3} className="text-black" />
           <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">
@@ -248,11 +208,6 @@ Create a dramatic, cinematic, high-contrast thumbnail optimized for maximum clic
 
       {/* Main Workspace Area */}
       <div className="flex-1 overflow-y-auto  custom-scrollbar relative rounded-2xl00">
-        {/* Background Grid Pattern */}
-
-        {/* Floating Command Palette (Desktop Only) */}
-        <FloatingWorkspaceToolbar />
-
         <AnimatePresence mode="wait">
           {dashboardActiveTab === "generate" ? (
             <div className="min-h-full relative flex flex-col items-center ">

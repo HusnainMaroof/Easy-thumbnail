@@ -3,9 +3,9 @@ import AuthPopUp from "../components/common/AuthPopUp";
 import EmailPopUp from "../components/common/EmailPopUp";
 import { LogInPopUp } from "../components/common/LogInPopUp";
 import MainHeroSection from "../components/common/MainHeroSection";
-import Navbar from "../components/common/Navbar";
 import { useAuthContext } from "../context/AuthContext";
 import { getCurrentUser } from "../lib/auth";
+import { NavBar } from "../components/common/NavBar";
 
 const page = async () => {
   const user = await getCurrentUser();
@@ -20,7 +20,7 @@ const page = async () => {
       <EmailPopUp />
       <AuthPopUp />
       <LogInPopUp />
-      <Navbar />
+      <NavBar />
       <MainHeroSection />
     </div>
   );

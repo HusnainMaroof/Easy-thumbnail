@@ -25,7 +25,7 @@ export default function PricingDashboard() {
   const calculateThumbnails = (credits: number) =>
     Math.floor(credits / COST_PER_THUMBNAIL);
   return (
-    <div className="min-h-screen bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col relative overflow-hidden pb-16 md:pb-24">
+    <div className="min-h-screen bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col relative overflow-hidden pb-16 md:pb-24 overflow-y-scroll">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"

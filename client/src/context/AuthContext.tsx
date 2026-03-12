@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { GenrateFormType } from "../types/dashboard.type";
+import { GenrateFormType, INITIAL_FORM_STATE } from "../types/dashboard.type";
 
 type UserType = {
   userToken: string;
@@ -50,41 +50,8 @@ export const AuthProvider = ({
   const [LoginView, setLoginView] = useState("login");
   const [showEmailPopUp, setshowEmailPopUp] = useState(false);
   const [emailVeriferAction, setEmailVeriferAction] = useState("");
-  const [generateForm, setGenerateForm] = useState<GenrateFormType>({
-    platform: "",
-    aspectRatio: "",
-    thumbnailPreset: "none",
-    title: "",
-    category: "",
-    thumbnailStory: "",
-    extraPrompt: "",
-    hookType: "",
-    desiredEmotion: "",
-    visualContrastType: "",
-    contrastTarget: "",
-    subjectSource: "",
-    peopleCount: "1",
-    mainObject: "",
-    facialEmotionLevel: "",
-    cameraFraming: "",
-    uploadedImage: null,
-    viewerFocus: "",
-    comparisonTarget: "",
-    visualEnergy: "",
-    thumbnailStyle: "",
-    backgroundScene: "",
-    sceneComplexity: "",
-    avoidElements: "",
-    highlightType: "",
-    highlightTarget: "",
-    thumbnailText: "",
-    textStyle: "",
-    colorMode: "",
-    brandPrimaryColor: "#000000",
-    brandSecondaryColor: "#ffffff",
-    referenceImage: null,
-    aiAutoAdjust: true,
-  });
+  const [generateForm, setGenerateForm] =
+    useState<GenrateFormType>(INITIAL_FORM_STATE);
 
   const [dashboardSideBar, setDashboardSideBar] = useState(true);
   const [dashboardActiveTab, setDashboardActiveTab] = useState<
@@ -93,41 +60,7 @@ export const AuthProvider = ({
   const [thumbnail, setThumnail] = useState("");
 
   const resetgenerateForm = () => {
-    setGenerateForm({
-      platform: "",
-      aspectRatio: "",
-      thumbnailPreset: "none",
-      title: "",
-      category: "",
-      thumbnailStory: "",
-      extraPrompt: "",
-      hookType: "",
-      desiredEmotion: "",
-      visualContrastType: "",
-      contrastTarget: "",
-      subjectSource: "",
-      peopleCount: "1",
-      mainObject: "",
-      facialEmotionLevel: "",
-      cameraFraming: "",
-      uploadedImage: null,
-      viewerFocus: "",
-      comparisonTarget: "",
-      visualEnergy: "",
-      thumbnailStyle: "",
-      backgroundScene: "",
-      sceneComplexity: "",
-      avoidElements: "",
-      highlightType: "",
-      highlightTarget: "",
-      thumbnailText: "",
-      textStyle: "",
-      colorMode: "",
-      brandPrimaryColor: "#000000",
-      brandSecondaryColor: "#ffffff",
-      aiAutoAdjust: true,
-      referenceImage: null,
-    });
+    setGenerateForm(INITIAL_FORM_STATE);
   };
 
   return (

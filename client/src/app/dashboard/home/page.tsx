@@ -1,6 +1,6 @@
 import Dashboard from "@/src/components/common/Dashboard";
-import DashboardNavBar from "@/src/components/common/DashboardNav";
 import MainHeroSection from "@/src/components/common/MainHeroSection";
+import { NavBar } from "@/src/components/common/NavBar";
 import Onboarding from "@/src/components/common/OnBoarding";
 import { getCurrentUser } from "@/src/lib/auth";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,7 +19,7 @@ const page = async () => {
   return (
     <>
       <div className="w-full h-screen  bg-white">
-        <DashboardNavBar />
+        <NavBar />
         <Dashboard />
       </div>
     </>

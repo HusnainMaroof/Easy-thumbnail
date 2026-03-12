@@ -12,11 +12,11 @@ const BrandLogo = () => {
               className="flex flex-col group cursor-pointer"
             >
               <div className="flex items-center">
-                <span className="text-sm sm:text-lg lg:text-2xl  font-black uppercase tracking-tighter leading-none text-black">
+                <span className="text-[12px] sm:text-lg lg:text-2xl  font-black uppercase tracking-tighter leading-none text-black">
                   EASY
                 </span>
                 <div className="relative ml-1">
-                  <span className="relative z-10 bg-[#88AAEE] text-black px-2 py-1 border-4 border-black text-md lg:text-xl font-black uppercase italic shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:bg-[#F4E041] transition-colors">
+                  <span className="relative z-10 bg-[#88AAEE] text-black px-2 py-1 border-4 border-black text-[14px] lg:text-xl font-black uppercase italic shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:bg-[#F4E041] transition-colors">
                     THUMBNAIL
                   </span>
                   {/* Shadow Offset Decor */}

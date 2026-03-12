@@ -3,180 +3,246 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Zap,
-  Eye,
-  Star,
-  LifeBuoy,
-  LogIn,
-  Crown,
-  Menu,
+  PanelLeftClose,
+  PanelLeft,
+  User,
   X,
-  Sparkles,
+  Menu,
   ArrowRight,
-  PersonStanding,
+  Zap,
+  Crown,
+  Settings,
+  LogOut,
+  CrownIcon,
+  LogIn,
 } from "lucide-react";
 import BrandLogo from "./BrandLogo";
-import { navItems } from "@/src/static data/navbarData";
+import { dashboardNavItem, navItems } from "@/src/static data/navbarData";
 import { useAuthContext } from "@/src/context/AuthContext";
 import { ProfileDropdown } from "./ProfileDropdown";
+import Link from "next/link";
+import { LogoutButton } from "./Logout";
+import { redirect } from "next/navigation";
 
-const Navbar = () => {
-  const { setShowLoginPopup, user } = useAuthContext();
+export const NavBar = () => {
+  const { user, setShowLoginPopup } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
+
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (navRef.current) {
-        const navHeight = navRef.current.offsetHeight;
-        setScrolled(window.scrollY > navHeight);
+        setScrolled(window.scrollY > 20);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
-  // console.log(scrolled);
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2);
+  };
 
   return (
-    <nav
-      ref={navRef}
-      className={`w-full ${!scrolled && "bg-white"}  border-b-4 border-black sticky top-0 z-50 transition-all duration-300 py-3`}
-    >
-      <div className="max-w-360 mx-auto px-4 sm:px-6 lg:px-10">
-        <div className="flex justify-between items-center h-16">
-          {/* LEFT: BRAND LOGO */}
-          <div className={`${scrolled && " bg-white  text-black"} `}>
-            <BrandLogo />
+    <>
+      <nav
+        ref={navRef}
+        className={`fixed w-full top-0 z-100 transition-all duration-300 bg-white ${
+          scrolled
+            ? " backdrop-blur-md border-b-[3px] border-black shadow-[0_4px_20px_rgba(0,0,0,0.05)] py-2"
+            : "bg-transparent py-4"
+        }`}
+      >
+        <div className=" mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          {/* LEFT: Brand Logo */}
+          <div className="flex items-center gap-6 lg:gap-10">
+            <div
+              className={`transition-all duration-300 ${scrolled ? "scale-95" : "scale-100"}`}
+            >
+              <BrandLogo />
+            </div>
           </div>
 
-          {/* MIDDLE: NAV ITEMS */}
-          {!scrolled && (
-            <div className="hidden lg:flex items-center gap-1 bg-gray-100/80 backdrop-blur-sm border-2 border-black p-1 rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-              {navItems.map((item) => (
-                <a key={item.name} href={item.href} className="no-underline">
-                  <motion.div
-                    whileHover={{ y: -2 }}
-                    className="relative px-4 py-2 font-black text-[11px] uppercase flex items-center gap-2 text-black hover:bg-black rounded-md hover:text-white transition-all group  cursor-pointer"
-                  >
-                    {item.icon}
-                    <span className="hidden lg:inline">{item.name}</span>
-
-                    {item.badge && (
-                      <span className="absolute -top-3 -right-2 bg-[#FF6B6B] text-white text-[9px] px-1.5 py-0.5 border-2 border-black font-black   rotate-12 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                        {item.badge}
-                      </span>
-                    )}
-                  </motion.div>
-                </a>
-              ))}
-            </div>
-          )}
-
-          {/* RIGHT: ACTIONS */}
-          <div className="flex items-center gap-2 lg:gap-4">
-            {!user && (
-              <a
-                onClick={() => setShowLoginPopup(true)}
-                className="hidden md:block no-underline text-black"
+          {/* RIGHT: Credits & Unified User Menu Toggle */}
+          <div className="flex items-center gap-3 sm:gap-5">
+            {/* Credits Pill (Hidden on tiny mobile, visible on sm+) */}
+            {/* Mobile Go Pro Button */}
+            <Link href={"/dashboard/pricing"}>
+              {" "}
+              <motion.button
+                whileHover={{
+                  scale: 1.02,
+                  translateY: -2,
+                  boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)",
+                }}
+                whileTap={{
+                  scale: 0.98,
+                  translateY: 0,
+                  boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
+                }}
+                className={`flex  bg-blue-300 relative cursor-pointer items-center justify-center gap-1.5 p-2 font-black uppercase text-[14px]  border-[3px] text-black border-black transition-colors rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}
               >
-                <motion.div
-                  whileHover={{ x: -3 }}
-                  className="flex items-center gap-2 font-black uppercase text-xs px-4 py-2 hover:underline cursor-pointer"
-                >
-                  <LogIn size={16} />
-                  Login
-                </motion.div>
-              </a>
-            )}
+                <Crown size={18} strokeWidth={3} />
+                <span className="whitespace-nowrap">Go Pro</span>
+              </motion.button>
+            </Link>{" "}
+            {!user && (
+              <motion.button
+                whileHover={{
+                  scale: 1.02,
+                  translateY: -2,
+                  boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)",
+                }}
+                whileTap={{
+                  scale: 0.98,
+                  translateY: 0,
+                  boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
+                }}
+                onClick={() => setShowLoginPopup(true)}
+                className={`flex  bg-blue-300 relative cursor-pointer items-center justify-center gap-1.5 p-2 font-black uppercase text-[14px]  border-[3px] text-black border-black transition-colors rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}
+              >
+                <LogIn size={18} strokeWidth={3} />
 
+                <span className="whitespace-nowrap">Login</span>
+              </motion.button>
+            )}
+            {/* Unified User Menu Toggle */}
             <motion.button
               whileHover={{
-                translateX: -4,
-                translateY: -4,
-                boxShadow: "8px 8px 0px 0px rgba(0,0,0,1)",
+                scale: 1.02,
+                translateY: -2,
+                boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)",
               }}
               whileTap={{
-                translateX: 2,
-                translateY: 2,
+                scale: 0.98,
+                translateY: 0,
                 boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
               }}
-              className={` hidden md:flex secondary-var relative cursor-pointer items-center justify-center gap-2 px-5 py-2.5 font-black uppercase text-xs md:text-sm border-4 border-black transition-colors text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
-            >
-              <Crown size={18} className="hidden lg:block" />
-              <span className="whitespace-nowrap">Go Pro</span>
-            </motion.button>
-
-            {user && <ProfileDropdown />}
-
-            {/* MOBILE TOGGLE */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 border-4 cursor-pointer border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-2  hover:translate-y-0.5 transition-all duration-150 rounded-lg"
+              className={`flex items-center cursor-pointer gap-2 sm:gap-3 pl-1 pr-3 py-1 bg-white border-[3px] text-black border-black rounded-xl transition-all duration-200 z-120 relative
+                ${isOpen ? "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-1" : "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"}`}
             >
+              <div className="w-8 h-8 rounded-lg bg-[#B197FC] border-2 border-black flex items-center justify-center overflow-hidden shrink-0">
+                <span className="font-black text-white text-[11px] tracking-widest">
+                  {getInitials(user?.displayName!)}
+                </span>
+              </div>
+
               {isOpen ? (
-                <X size={24} color="black" />
+                <X size={16} strokeWidth={3} className="ml-1 shrink-0" />
               ) : (
-                <Menu size={24} color="black" />
+                <Menu size={16} strokeWidth={3} className="ml-1 shrink-0" />
               )}
             </motion.button>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* MOBILE MENU */}
+      {/* MASTER UNIFIED MENU OVERLAY */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 top-22 lg:hidden bg-[#FDFDFF] z-40 flex flex-col p-6 border-t-4 border-black"
-          >
-            <div className="flex flex-col gap-5 overflow-y-auto pb-8">
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-gray-400">
-                Navigation
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-white/80 backdrop-blur-sm z-105"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Slide-in Master Drawer */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 right-0 w-full sm:w-100 bg-white border-l-4 border-black shadow-[-8px_0_0_0_rgba(0,0,0,1)] z-110 flex flex-col py-2.5  px-6 overflow-y-auto"
+            >
+              <span
+                onClick={() => setIsOpen(false)}
+                className="text-black py-5  text-xl underline flex items-center gap-2"
+              >
+                <PanelLeftClose /> Back{" "}
+              </span>
+              {/* Top: User Profile Header */}
+              <div className="flex items-center gap-4 mb-8 p-4 bg-zinc-50 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="w-14 h-14 rounded-xl bg-blue-200  text-black border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] shrink-0">
+                  <span className="font-black  text-xl tracking-widest">
+                    {getInitials(user?.displayName!)}
+                  </span>
+                </div>
+                <div className="flex flex-col overflow-hidden text-black!">
+                  <span className="font-black text-sm uppercase tracking-widest truncate">
+                    {user?.displayName!}
+                  </span>
+                  <span className="font-semibold text-[10px] text-black uppercase tracking-widest mb-1.5 truncate">
+                    {user?.email}
+                  </span>
+                  <div className="w-fit flex items-center gap-1 bg-[#F4E041] px-2 py-0.5 rounded border-2 border-black">
+                    <Crown size={10} strokeWidth={3} className="text-black" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-black">
+                      {user?.SubPlans} PLAN
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Middle: Navigation Links */}
+              <p className="text-[12px] font-black uppercase tracking-[0.2em] text-black mb-4 pl-2">
+                Navigation Area
               </p>
-              {navItems.map((item, idx) => (
-                <motion.div
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  key={item.name}
-                >
-                  <a
+
+              <div className="flex flex-col gap-3 text-black!">
+                {dashboardNavItem.map((item, idx) => (
+                  <motion.a
+                    key={item.name}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className="no-underline text-black"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 + 0.1 }}
+                    className="group flex items-center justify-between p-3 text-sm font-black uppercase tracking-widest border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[#F4E041] transition-all cursor-pointer"
                   >
-                    <div className="flex items-center justify-between p-5 text-xl font-black uppercase border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-white active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                      <div className="flex items-center gap-4">
-                        <span className="bg-[#88AAEE] p-2 border-2 border-black">
-                          {item.icon}
-                        </span>
+                    <div className="flex items-center gap-3">
+                      <span className="bg-[#88AAEE] p-2 rounded-xl border-[3px] border-black shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none transition-all">
+                        {item.icon}
+                      </span>
+                      <div className="flex items-center gap-3">
                         {item.name}
+                        {item.badge && (
+                          <span className="bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-md border-2 border-black shadow-[2px_2px_0px_0px_#000] translate-y-1">
+                            {item.badge}
+                          </span>
+                        )}
                       </div>
-                      <ArrowRight size={24} />
                     </div>
-                  </a>
-                </motion.div>
-              ))}
-            </div>
+                    <ArrowRight
+                      size={20}
+                      strokeWidth={3}
+                      className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                    />
+                  </motion.a>
+                ))}
 
-            <div className="mt-auto flex flex-col gap-4 ">
-              {!user && (
+                <div className="h-1 w-full bg-gray-400 my-2 rounded-full" />
+
+                {/* Settings Link */}
+              </div>
+
+              {/* Bottom: Credits & Actions */}
+              <div className="mt-auto pt-8 flex flex-col gap-4">
                 <motion.button
                   whileHover={{
                     translateX: -4,
@@ -188,34 +254,33 @@ const Navbar = () => {
                     translateY: 2,
                     boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
                   }}
-                  onClick={() => setShowLoginPopup(true)}
-                  className={` flex md:hidden outline-va relative cursor-pointer items-center justify-center gap-2 px-5 py-4 font-black uppercase text-xs md:text-sm border-4 border-black transition-colors text-black  rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
+                  onClick={() => redirect("/dashboard/pricing")}
+                  className={`group text-black flex items-center justify-between p-3 text-sm font-black uppercase tracking-widest border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[#F4E041] transition-all cursor-pointer`}
                 >
-                  <LogIn size={20} /> Login
+                  <div className="flex items-center gap-3">
+                    <span className="bg-[#88AAEE] p-2 rounded-xl border-[3px] border-black shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none transition-all">
+                      <CrownIcon />
+                    </span>
+                    <div className="flex items-center gap-3">Go Pro</div>
+                  </div>
+                  <ArrowRight
+                    size={20}
+                    strokeWidth={3}
+                    className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                  />
                 </motion.button>
-              )}
-              <motion.button
-                whileHover={{
-                  translateX: -4,
-                  translateY: -4,
-                  boxShadow: "8px 8px 0px 0px rgba(0,0,0,1)",
-                }}
-                whileTap={{
-                  translateX: 2,
-                  translateY: 2,
-                  boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
-                }}
-                className={` flex md:hidden secondary-var relative cursor-pointer items-center justify-center gap-2 px-5 py-4 font-black uppercase text-xs md:text-sm border-4  text-black  border-black transition-colors rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
-              >
-                <Crown size={18} className="flex md:hidden" />
-                <span className="whitespace-nowrap">Go Pro</span>
-              </motion.button>
-            </div>
-          </motion.div>
+
+                <LogoutButton />
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
-    </nav>
+
+      {/* Spacer to push content down when navbar is fixed at top */}
+      <div className="h-24 w-full bg-transparent" />
+    </>
   );
 };
 
-export default Navbar;
+

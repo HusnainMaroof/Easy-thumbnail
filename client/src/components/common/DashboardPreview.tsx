@@ -128,7 +128,7 @@ const DashboardPreview = () => {
               <p className="text-[11px] font-bold opacity-80 leading-relaxed">
                 Your layout aligns perfectly with the{" "}
                 <span className="text-[#F4E041]">
-                  {generateForm.niche || "selected"}
+                  {generateForm.category || "selected"}
                 </span>{" "}
                 niche. AI suggests keeping the text under 4 words for maximum
                 mobile legibility.

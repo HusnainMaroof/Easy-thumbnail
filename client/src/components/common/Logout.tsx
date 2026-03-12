@@ -28,10 +28,10 @@ export const LogoutButton = () => {
     <form action={dispatcher}>
       <button
         type="submit"
-        className=" cursor-pointer w-full flex items-center gap-3 p-3 font-black text-xs uppercase hover:bg-[#FF6B6B] hover:text-white transition-colors rounded-lg group mt-1"
+        className=" text-black bg-zinc-200  p-4 text-sm font-black uppercase tracking-widest border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer w-full flex items-center gap-3  hover:bg-[#FF6B6B] hover:text-white transition-colors  group mt-1"
       >
-        <span className="p-1.5 border-2 border-black bg-white group-hover:bg-white text-black rounded-md">
-          <LogOut size={16} />
+        <span className="p-1.5 border-2 border-black bg-[#FF6B6B] text-white group-hover:bg-white group-hover:text-black!  rounded-md">
+          <LogOut size={16}  className=""/>
         </span>
         Logout
       </button>

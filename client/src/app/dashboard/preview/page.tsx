@@ -4,7 +4,7 @@ import { NavBar } from "@/src/components/common/NavBar";
 
 const page = () => {
   return (
-    <div className="">
+    <div className="bg-white h-screen">
       <NavBar />
       <Previewer />
     </div>

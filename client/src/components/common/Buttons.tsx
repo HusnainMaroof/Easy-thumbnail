@@ -63,3 +63,18 @@ export const MainButton = ({
     </motion.button>
   );
 };
+
+export const PreviewerIconButton = ({
+  icon: Icon,
+  isActive = false,
+  onClick,
+}: any) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`p-2 rounded-lg transition-all duration-200 flex items-center justify-center ${isActive ? `bg-[#a855f7] text-white shadow-sm` : `bg-transparent text-zinc-500 hover:bg-zinc-100`}`}
+    >
+      <Icon size={18} strokeWidth={2} />
+    </button>
+  );
+};

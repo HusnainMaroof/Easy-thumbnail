@@ -91,7 +91,7 @@ export const NavBar = () => {
                   translateY: 0,
                   boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
                 }}
-                className={`flex  bg-blue-300 relative cursor-pointer items-center justify-center gap-1.5 p-2 font-black uppercase text-[14px]  border-[3px] text-black border-black transition-colors rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}
+                className={`hidden sm:flex  bg-blue-300 relative cursor-pointer items-center justify-center gap-1.5 p-2 font-black uppercase text-[14px]  border-[3px] text-black border-black transition-colors rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]`}
               >
                 <Crown size={18} strokeWidth={3} />
                 <span className="whitespace-nowrap">Go Pro</span>
@@ -282,5 +282,3 @@ export const NavBar = () => {
     </>
   );
 };
-
-

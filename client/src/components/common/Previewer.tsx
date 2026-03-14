@@ -1,74 +1,32 @@
 "use client";
 
-import React, {
-  useState,
-  useMemo,
-  ElementType,
-  InputHTMLAttributes,
-  ReactNode,
-  forwardRef,
-  useRef,
-} from "react";
-import { motion, HTMLMotionProps, AnimatePresence } from "framer-motion";
+import React, { useState, useMemo, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  RotateCcw,
   Plus,
-  Monitor,
   List as ListIcon,
-  Shuffle,
-  ChevronLeft,
   Image as ImageIcon,
   Mic,
   MoreVertical,
   Bell,
-  X,
   Menu,
-  Sparkles,
-  TrendingUp,
-  Loader2,
-  Wand2,
-  Lightbulb,
-  ImagePlus,
-  LayoutGrid,
-  Smartphone,
-  CheckCircle2,
   Video,
-  Eye,
-  EyeClosed,
-  Type,
-  Home,
-  Flame,
-  Tv,
-  Folder,
-  History,
-  Clock,
-  SlidersHorizontal,
 } from "lucide-react";
+import { useAuthContext } from "@/src/context/AuthContext";
 import {
-  CATEGORIES,
   DEFAULT_USER_THUMBNAIL,
   YOUTUBE_DATA,
 } from "@/src/static data/previewData";
 import { MainButton } from "./Buttons";
 import { PreviewerSideBar, YouTubeMiniSidebar } from "./PreviewerSideBar";
 import {
-  containerVariants,
   SizeViewRenderer,
   YouTubeCategories,
   YouTubeCompactListItem,
   YouTubeGridItem,
   YouTubeListItem,
 } from "./PreviewerComponents";
-import { useAuthContext } from "@/src/context/AuthContext";
-
-// ==========================================
-// 5. BIG COMPONENT: SIDEBAR
-// ==========================================
-
-// ==========================================
-// 6. MAIN DASHBOARD APPLICATION
-// ==========================================
 
 export default function PreviewDashboard() {
   const { user } = useAuthContext();
@@ -103,6 +61,7 @@ export default function PreviewDashboard() {
   const handleShuffle = () => {
     const shuffled = [...competitorVideos].sort(() => Math.random() - 0.5);
     setCompetitorVideos(shuffled);
+    setActiveIndex(Math.floor(Math.random() * (shuffled.length + 1)));
   };
 
   const handleReset = () => {
@@ -127,15 +86,16 @@ export default function PreviewDashboard() {
   const combinedFeedData = useMemo(() => {
     const combined = [...competitorVideos];
     // Always insert the active thumbnail at the active index
-    combined.splice(Math.min(activeIndex, combined.length), 0);
+    combined.splice(Math.min(activeIndex, combined.length), 0, {
+      ...activeThumbnail,
+      id: Number(activeThumbnail.id),
+    });
     return combined;
   }, [competitorVideos, activeThumbnail, activeIndex]);
-  // ==========================================
-  // RENDER: LANDING SCREEN
-  // ==========================================
+
   if (isLanding) {
     return (
-      <div className="min-h-fit bg-white text-[#0f0f0f] flex flex-col items-center justify-center pb-6 text-center font-sans relative overflow-hidden">
+      <div className="min-h-dvh bg-white text-[#0f0f0f] flex flex-col items-center justify-center pb-6 text-center font-sans relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
@@ -164,12 +124,12 @@ export default function PreviewDashboard() {
             transition={{ delay: 0.1 }}
             className="text-xl md:text-5xl font-black uppercase tracking-tighter  text-black mb-6"
           >
-            <span className="pr-20  "> FREE AI </span>
+            <span className="pr-20"> FREE AI </span>
             <br />
             <span className="bg-[#F4E041] px-4 border-4 border-black inline-block transform -rotate-2">
               THUMBNAIL
             </span>
-            <br /> <span className="pl-20  ">Visualizer</span>
+            <br /> <span className="pl-20">Visualizer</span>
           </motion.h1>
           <p className="text-base md:text-lg mb-12 max-w-lg mx-auto leading-relaxed text-[#606060] font-semibold">
             A clean, minimalist environment to test your video thumbnail designs
@@ -177,7 +137,7 @@ export default function PreviewDashboard() {
           </p>
 
           <div
-            className="border-2 rounded-4xl p-10 md:p-14 flex flex-col items-center gap-6 transition-all duration-300 cursor-pointer  hover:border-[#cccccc] backdrop-blur-xl bg-white text-black border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] border-dashed"
+            className="border-2 rounded-4xl p-10 md:p-14 flex flex-col items-center gap-6 transition-all duration-300 cursor-pointer hover:border-[#cccccc] backdrop-blur-xl bg-white text-black border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] border-dashed"
             onClick={triggerUpload}
           >
             <div className="relative group">
@@ -217,13 +177,24 @@ export default function PreviewDashboard() {
       </div>
     );
   }
-
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.05 } },
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 400, damping: 30 },
+    },
+  };
   // ==========================================
   // RENDER: MAIN DASHBOARD
   // ==========================================
   return (
     <>
-      <div className="flex h-full w-full bg-[#ffffff] text-zinc-900 font-sans overflow-hidden">
+      <div className="flex h-[90dvh] w-full bg-[#ffffff] text-zinc-900 font-sans overflow-hidden">
         <input
           type="file"
           ref={fileInputRef}
@@ -233,29 +204,41 @@ export default function PreviewDashboard() {
         />
 
         {/* --- LEFT SIDEBAR: CONTROL PANEL --- */}
-        <PreviewerSideBar
-          setIsLanding={setIsLanding}
-          platformView={platformView}
-          setPlatformView={setPlatformView}
-          device={device}
-          setDevice={setDevice}
-          activeThumbnail={activeThumbnail}
-          triggerUpload={triggerUpload}
-          activeTitle={activeTitle}
-          setActiveTitle={setActiveTitle}
-          showOutliers={showOutliers}
-          setShowOutliers={setShowOutliers}
-          handleShuffle={handleShuffle}
-          handleReset={handleReset}
-        />
+        <motion.div
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 350, damping: 30 }}
+          className="z-50 shrink-0 flex"
+        >
+          <PreviewerSideBar
+            setIsLanding={setIsLanding}
+            platformView={platformView}
+            setPlatformView={setPlatformView}
+            device={device}
+            setDevice={setDevice}
+            activeThumbnail={activeThumbnail}
+            triggerUpload={triggerUpload}
+            activeTitle={activeTitle}
+            setActiveTitle={setActiveTitle}
+            showOutliers={showOutliers}
+            setShowOutliers={setShowOutliers}
+            handleShuffle={handleShuffle}
+            handleReset={handleReset}
+          />
+        </motion.div>
 
         {/* --- RIGHT MAIN AREA: PREVIEW SIMULATION (DARK UI) --- */}
-        <main className="flex-1 min-h-fit flex flex-col relative bg-[#0f0f0f] overflow-hidden!">
+        <motion.main
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex-1 min-h-0 flex flex-col relative bg-[#0f0f0f] overflow-hidden"
+        >
           {/* STATIC YOUTUBE TOP NAV (NO FUNCTIONALITY) */}
           {device !== "mobile" && (
             <div className="h-14 flex items-center px-4 justify-between shrink-0 bg-[#0f0f0f]">
               <div className="flex items-center gap-4">
-                <div className="p-2 rounded-full text-[#f1f1f1] opacity-80 cursor-default">
+                <div className="p-2 rounded-full text-[#f1f1f1] opacity-80 cursor-default hidden md:block">
                   <Menu size={24} strokeWidth={1.5} />
                 </div>
                 <div className="flex items-center gap-1 opacity-90 cursor-default">
@@ -268,7 +251,7 @@ export default function PreviewDashboard() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 flex-1 max-w-175 px-8 ml-8">
+              <div className="hidden md:flex items-center gap-3 flex-1 max-w-175 px-8 ml-8">
                 <div className="flex w-full group relative">
                   <div className="flex items-center flex-1 h-10 rounded-l-full px-4 border bg-[#121212] border-[#303030] ml-8 cursor-text">
                     <Search
@@ -324,13 +307,13 @@ export default function PreviewDashboard() {
 
               {/* Feed Content Scroll Area */}
               <div
-                className={`flex-1  p-6 lg:px-8 lg:py-6 custom-scrollbar bg relative ${device === "mobile" ? "flex justify-center items-start" : ""}`}
+                className={`flex-1 overflow-y-auto p-6 lg:px-8 lg:py-6 custom-scrollbar bg-[#0f0f0f] relative ${device === "mobile" ? "flex justify-center items-start" : ""}`}
               >
                 {platformView === "size" ? (
                   <SizeViewRenderer activeThumbnail={activeThumbnail} />
                 ) : device === "mobile" ? (
                   /* Mobile Simulator Container */
-                  <div className="w-97.5 h-211 rounded-[3rem] border-12  relative flex flex-col shadow-2xl my-4 shrink-0 border-zinc-800 bg-[#0f0f0f]">
+                  <div className="w-70 md:w-100 h-150 md:h-211 rounded-[3rem] border-12 overflow-hidden relative flex flex-col shadow-2xl my-4 shrink-0 border-zinc-800 bg-[#0f0f0f]">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-50"></div>
 
                     {/* MOBILE TOP NAV (STATIC) */}
@@ -422,7 +405,7 @@ export default function PreviewDashboard() {
               </div>
             </div>
           </div>
-        </main>
+        </motion.main>
       </div>
 
       <style>{`

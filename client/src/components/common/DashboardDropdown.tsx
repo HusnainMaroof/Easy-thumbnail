@@ -31,7 +31,7 @@ export const FieldLabel = ({
   label: string;
   tooltip?: string;
 }) => (
-  <div className="flex items-center gap-2 my-2 ml-1 group relative w-max  ">
+  <div className="flex items-center gap-2 my-2 ml-1 group relative w-max  z-100">
     <span className="text-[10px] md:text-[11px] font-black text-zinc-600 uppercase tracking-widest">
       {label}
     </span>
@@ -163,14 +163,14 @@ export function DashboardDropdown({
             <ChevronDown size={18} strokeWidth={3} />
           ) : (
             <ChevronsUpDown
-            size={16}
-            strokeWidth={3}
-            className="text-zinc-400"
+              size={16}
+              strokeWidth={3}
+              className="text-zinc-400"
             />
           )}
         </motion.div>
       </motion.button>
-          <FieldLabel label={label} tooltip={tooltip} />
+      <FieldLabel label={label} tooltip={tooltip} />
 
       <AnimatePresence>
         {isOpen && (

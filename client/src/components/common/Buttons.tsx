@@ -1,7 +1,8 @@
 "use client";
 
-import React, { ReactNode, ButtonHTMLAttributes } from "react";
+import React, { ReactNode, ButtonHTMLAttributes, JSX } from "react";
 import { motion, HTMLMotionProps } from "framer-motion";
+import { LucideIcon } from "lucide-react";
 
 interface ButtonProps extends HTMLMotionProps<"button"> {
   children: ReactNode;
@@ -64,17 +65,36 @@ export const MainButton = ({
   );
 };
 
+type PreviewerIconButtonProps = {
+  icon: LucideIcon;
+  isActive?: boolean;
+  onClick?: () => void;
+  title?: string;
+  children?: ReactNode;
+};
+
 export const PreviewerIconButton = ({
   icon: Icon,
   isActive = false,
   onClick,
-}: any) => {
+  title,
+}: PreviewerIconButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`p-2 rounded-lg transition-all duration-200 flex items-center justify-center ${isActive ? `bg-[#a855f7] text-white shadow-sm` : `bg-transparent text-zinc-500 hover:bg-zinc-100`}`}
+      className={`relative group z-110 cursor-pointer p-2 rounded-lg transition-all duration-500 flex items-center justify-center ${
+        isActive
+          ? "bg-blue-300 text-white shadow-sm"
+          : "bg-transparent text-black hover:bg-blue-200"
+      }`}
     >
       <Icon size={18} strokeWidth={2} />
+
+       <div className="absolute z-100 bottom-10 text-[8px]   p-1 bg-gray-700 text-white  font-bold leading-relaxed rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all text-center  scale-95 group-hover:scale-100 origin-bottom">
+      {title}
+      <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+    </div>
     </button>
   );
 };
+

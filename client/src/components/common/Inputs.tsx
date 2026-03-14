@@ -40,7 +40,7 @@ export const CustomInput = ({
 
       <div className="relative group">
         <div
-          className={`absolute left-4 top-1/2 -translate-y-1/2  ${err ? "text-red-700" : "text-black group-focus-within:text-[#B197FC]"} transition-colors pointer-events-none`}
+          className={`absolute left-4 top-1/2 -translate-y-1/2  ${err ? "text-red-700" : "text-black group-focus-within:text-[#77abfa]"} transition-colors pointer-events-none`}
         >
           <Icon size={18} />
         </div>
@@ -55,7 +55,7 @@ export const CustomInput = ({
           className={`w-full bg-white border-2  rounded-xl py-3 pl-12 pr-4 font-bold text-sm outline-none transition-all ${
             err
               ? "text-red-700 border-red-700 focus:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] placeholder:text-red-700"
-              : "text-black border-black placeholder:text-gray-700 focus:shadow-[4px_4px_0px_0px_rgba(177,151,252,1)]"
+              : "text-black border-black placeholder:text-gray-700 focus:shadow-[4px_4px_0px_0px_#77abfa]"
           }
 `}
         />

@@ -1,5 +1,8 @@
 import {
+  ArrowBigLeft,
+  ArrowLeft,
   ChevronLeft,
+  Cross,
   Flame,
   Folder,
   Home,
@@ -8,6 +11,7 @@ import {
   ListIcon,
   Menu,
   Monitor,
+  PanelLeftClose,
   PanelLeftOpen,
   Plus,
   RotateCcw,
@@ -26,6 +30,7 @@ import { MainButton, PreviewerIconButton } from "./Buttons";
 import { ThumbnailImage } from "./PreviewerComponents";
 import { CustomInput } from "./Inputs";
 import React, { useState } from "react";
+import { FieldLabel } from "./DashboardDropdown";
 
 interface PreviewerSideBarProps {
   setIsLanding: (val: boolean) => void;
@@ -66,9 +71,9 @@ export const PreviewerSideBar = ({
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       if (mobile) {
-        setIsExpanded(false); // Collapsed on mobile by default
+        setIsExpanded(false);
       } else {
-        setIsExpanded(true); // Expanded on desktop by default
+        setIsExpanded(true);
       }
     };
     handleResize();
@@ -78,7 +83,6 @@ export const PreviewerSideBar = ({
 
   return (
     <>
-      {/* Mobile Overlay Backdrop (Only when expanded) */}
       <AnimatePresence>
         {isExpanded && isMobile && (
           <motion.div
@@ -91,51 +95,44 @@ export const PreviewerSideBar = ({
         )}
       </AnimatePresence>
 
-      {/* Pro UX Trick: Invisible spacer for mobile 
-        This keeps the 80px space reserved when the main sidebar becomes `fixed` 
-        and expands, preventing the main content layout from violently jumping left.
-      */}
       {isExpanded && isMobile && (
-        <div className="w-20 shrink-0 h-100dvh md:hidden bg-[#f8f8f8] border-r border-[#e5e5e5]" />
+        <div className="w-20 shrink-0 h-dvh md:hidden bg-[#f8f8f8] border-r border-[#e5e5e5]" />
       )}
 
       <aside
         className={`
-        ${isExpanded && isMobile ? "fixed shadow-2xl" : "relative"} 
+        ${isExpanded && isMobile ? "fixed shadow-2xl pt-20" : "relative"} 
         ${isExpanded ? "w-70 md:shadow-none" : "w-20"}
-        inset-y-0 left-0 shrink-0 bg-[#f8f8f8] border-[#e5e5e5] border-r flex flex-col z-50 transition-all duration-300 ease-in-out h-fit overflow-hidden
+        inset-y-0 left-0 shrink-0 bg-[#f8f8f8] border-[#e5e5e5] border-r flex flex-col z-50 transition-all duration-300 ease-in-out h-full pb-10 overflow-y-scroll
       `}
       >
-        {/* Sidebar Header */}
         <div
-          className={`h-14 flex items-center border-b shrink-0 border-[#e5e5e5] ${isExpanded ? "px-4" : "px-0 justify-center md:px-0 md:justify-center"}`}
+          className={`h-14 flex items-center border-b shrink-0 border-[#e5e5e5]  px-4 justify-between`}
         >
-          <div
-            className={`flex items-center w-full  ${isExpanded ? "gap-2 justify-between" : "justify-center"}`}
-          >
+          {isExpanded && (
             <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-2 rounded-lg transition-colors text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200 shrink-0 cursor-pointer"
+              onClick={() => setIsLanding(true)}
+              className="p-1.5 cursor-pointer rounded-lg transition-colors text-zinc-500 flex items-center gap-2 hover:text-zinc-900 hover:bg-zinc-200 shrink-0"
+              title="Go back"
             >
-              {isExpanded && isMobile ? <X size={20} /> : <Menu size={20} />}
+              <ArrowLeft size={18} className="m-0 p-0" />
+              <span className="underline text-black"> Back</span>
             </button>
-
-            {isExpanded && (
-              <button
-                onClick={() => setIsLanding(true)}
-                className="p-1.5 rounded-lg transition-colors text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200 shrink-0 cursor-pointer"
-                title="Go back"
-              >
-                <PanelLeftOpen size={18} />
-              </button>
+          )}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-2 rounded-lg cursor-pointer transition-colors text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200 shrink-0"
+          >
+            {isExpanded ? (
+              <PanelLeftClose size={20} />
+            ) : (
+              <PanelLeftOpen size={20} />
             )}
-          </div>
+          </button>
         </div>
-
         <div
           className={`flex-1 overflow-y-auto custom-scrollbar flex flex-col ${isExpanded ? "p-5 gap-8" : "p-3 gap-6 items-center"}`}
         >
-          {/* View Toggle */}
           {isExpanded ? (
             <div className="flex flex-col gap-2.5">
               <span className="text-xs font-semibold text-[#606060]">
@@ -146,7 +143,7 @@ export const PreviewerSideBar = ({
                   onClick={() => {
                     setPlatformView("youtube");
                   }}
-                  className={`flex-1 py-1.5 text-xs font-medium transition-all relative z-10 ${platformView === "youtube" ? "text-zinc-900" : "text-[#606060] hover:text-[#0f0f0f]"}`}
+                  className={` rounded-sm cursor-pointer   flex-1 py-1.5 text-xs font-medium transition-all relative z-10 ${platformView === "youtube" ? "text-zinc-900" : "text-[#606060] hover:bg-gray-200 hover:text-[#0f0f0f]"}`}
                 >
                   Feed
                 </button>
@@ -154,7 +151,7 @@ export const PreviewerSideBar = ({
                   onClick={() => {
                     setPlatformView("size");
                   }}
-                  className={`flex-1 py-1.5 text-xs font-medium transition-all relative z-10 ${platformView === "size" ? "text-zinc-900" : "text-[#606060] hover:text-[#0f0f0f]"}`}
+                  className={` rounded-sm cursor-pointer   flex-1 py-1.5 text-xs font-medium transition-all relative z-10 ${platformView === "size" ? "text-zinc-900" : "text-[#606060] hover:bg-gray-200 hover:text-[#0f0f0f]"}`}
                 >
                   Sizes
                 </button>
@@ -167,15 +164,13 @@ export const PreviewerSideBar = ({
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-2 w-full border-b border-[#e5e5e5] pb-4">
+            <div className="flex flex-col gap-2 w-full border-b border-[#e5e5e5] pb-4 items-center">
               <PreviewerIconButton
                 icon={LayoutGrid}
                 isActive={platformView === "youtube"}
-                onClick={() => {
-                  setPlatformView("youtube");
-                }}
-                title="Feed View"
+                onClick={() => setPlatformView("youtube")}
               />
+
               <PreviewerIconButton
                 icon={Monitor}
                 isActive={platformView === "size"}
@@ -187,7 +182,6 @@ export const PreviewerSideBar = ({
             </div>
           )}
 
-          {/* Device Icons Row */}
           <div
             className={`flex flex-col gap-2.5 transition-opacity duration-300 ${platformView === "size" ? "opacity-40 pointer-events-none" : "opacity-100"} ${isExpanded ? "" : "w-full border-b border-[#e5e5e5] pb-4"}`}
           >
@@ -199,6 +193,7 @@ export const PreviewerSideBar = ({
             <div
               className={`${isExpanded ? "p-1 rounded-xl flex justify-between bg-[#f2f2f2] border border-[#e5e5e5]" : "flex flex-col gap-2"}`}
             >
+              {" "}
               <PreviewerIconButton
                 icon={Monitor}
                 isActive={device === "desktop"}
@@ -234,7 +229,6 @@ export const PreviewerSideBar = ({
             </div>
           </div>
 
-          {/* Active Thumbnail Section */}
           <div
             className={`flex flex-col gap-3 ${isExpanded ? "" : "w-full border-b border-[#e5e5e5] pb-4 items-center"}`}
           >
@@ -248,13 +242,13 @@ export const PreviewerSideBar = ({
             >
               <button
                 onClick={triggerUpload}
-                className={`${isExpanded ? "w-22 h-14" : "w-12 h-12"} rounded-xl border border-dashed flex items-center justify-center shrink-0 transition-all bg-white border-[#cccccc] text-[#606060] hover:bg-[#f2f2f2] hover:text-[#0f0f0f]`}
+                className={`${isExpanded ? "w-22 h-14" : "w-12 h-12"} rounded-xl border border-dashed flex items-center justify-center shrink-0 transition-all bg-white border-[#cccccc] text-[#606060] cursor-pointer hover:bg-[#f2f2f2] hover:text-[#0f0f0f]`}
                 title="Upload Thumbnail"
               >
                 <Plus size={20} />
               </button>
               <div
-                className={`relative ${isExpanded ? "w-24 h-14" : "w-12 h-8"} rounded-lg shrink-0 border overflow-hidden group transition-all cursor-pointer bg-[#e5e5e5] border-[#cccccc] hover:border-[#a855f7] shadow-sm`}
+                className={`relative ${isExpanded ? "w-24 h-14" : "w-12 h-12"} rounded-lg shrink-0 border overflow-hidden group transition-all cursor-pointer bg-[#e5e5e5] border-[#cccccc] hover:border-[#a855f7] shadow-sm `}
                 title="Active Thumbnail"
               >
                 <ThumbnailImage
@@ -277,23 +271,23 @@ export const PreviewerSideBar = ({
             )}
           </div>
 
-          {/* Controls */}
           <div
             className={`flex flex-col gap-2 mt-auto pt-4 ${isExpanded ? "" : "w-full items-center"}`}
           >
             {isExpanded ? (
               <>
                 <div className="h-px w-full bg-[#e5e5e5] mb-2" />
+
                 <button
                   onClick={handleShuffle}
-                  className="flex items-center gap-3 w-full p-2 rounded-lg transition-colors text-sm font-medium text-[#0f0f0f] hover:bg-[#f2f2f2]"
+                  className="flex  items-center cursor-pointer gap-3 w-full p-2 rounded-lg transition-colors text-sm font-medium  hover:bg-blue-300"
                 >
-                  <Shuffle size={16} className="text-[#606060]" /> Randomize
+                  <Shuffle size={16} className=" hover:text-black" /> Randomize
                   Feed
                 </button>
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-3 w-full p-2 rounded-lg transition-colors text-sm font-medium text-red-500 hover:bg-red-50"
+                  className="flex items-center cursor-pointer  gap-3 w-full p-2 rounded-lg transition-colors text-sm font-medium text-red-500 hover:bg-red-50"
                 >
                   <RotateCcw size={16} className="text-red-400" /> Reset
                   Workspace
@@ -319,6 +313,7 @@ export const PreviewerSideBar = ({
     </>
   );
 };
+
 export const YouTubeMiniSidebar = () => {
   const links = [
     { icon: Home, label: "Home", active: true },

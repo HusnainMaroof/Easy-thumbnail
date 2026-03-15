@@ -68,7 +68,7 @@ export const pricingAction = catchErrors(
 
     // todo learn from
     // yt link : https://www.youtube.com/watch?v=G2XuuOiB6fE
-
+    // yt link : https://www.youtube.com/watch?v=dHo7lvpU6gs
     return {
       success: true,
       error: false,

@@ -46,12 +46,14 @@ export const NavBar = () => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | undefined | null): string => {
+    if (!name) return "?";
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .substring(0, 2);
+      .substring(0, 2)
+      .toUpperCase();
   };
 
   return (

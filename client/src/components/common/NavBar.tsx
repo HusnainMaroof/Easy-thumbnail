@@ -132,19 +132,20 @@ export const NavBar = () => {
                 boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
               }}
               onClick={() => setIsOpen(!isOpen)}
-              className={`flex items-center cursor-pointer gap-2 sm:gap-3 pl-1 pr-3 py-1 bg-white border-[3px] text-black border-black rounded-xl transition-all duration-200 z-120 relative
+              className={` ${user ? "pl-1 pr-3 py-1 flex items-center cursor-pointer gap-2 sm:gap-3" : " p-2.5"}  bg-white border-[3px] text-black border-black rounded-xl transition-all duration-200 z-120 relative
                 ${isOpen ? "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-1" : "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"}`}
             >
-              <div className="w-8 h-8 rounded-lg bg-[#B197FC] border-2 border-black flex items-center justify-center overflow-hidden shrink-0">
-                <span className="font-black text-white text-[11px] tracking-widest">
-                  {getInitials(user?.displayName!)}
-                </span>
-              </div>
-
+              {user && (
+                <div className="w-8 h-8 rounded-lg bg-[#B197FC] border-2 border-black flex items-center justify-center overflow-hidden shrink-0">
+                  <span className="font-black text-white text-[11px] tracking-widest">
+                    {getInitials(user?.displayName!)}
+                  </span>
+                </div>
+              )}
               {isOpen ? (
-                <X size={16} strokeWidth={3} className="ml-1 shrink-0" />
+                <X size={18} strokeWidth={3} className={` shrink-0 `} />
               ) : (
-                <Menu size={16} strokeWidth={3} className="ml-1 shrink-0" />
+                <Menu size={20} strokeWidth={3} className={` shrink-0 `} />
               )}
             </motion.button>
           </div>
@@ -274,7 +275,41 @@ export const NavBar = () => {
                     className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                   />
                 </motion.button>
-                <LogoutButton />
+                {!user ? (
+                  <>
+                    <motion.button
+                      onClick={() => {
+                        setShowLoginPopup(true);
+                        setIsOpen(false);
+                      }}
+                      whileHover={{
+                        translateX: -4,
+                        translateY: -4,
+                        boxShadow: "8px 8px 0px 0px rgba(0,0,0,1)",
+                      }}
+                      whileTap={{
+                        translateX: 2,
+                        translateY: 2,
+                        boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
+                      }}
+                      className={`group text-black flex items-center justify-between p-3 text-sm font-black w-full uppercase tracking-widest border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-blue-300 active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[#F4E041] transition-all cursor-pointer`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="bg-[#88AAEE] p-2 rounded-xl border-[3px] border-black shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none transition-all">
+                          <LogIn size={18} strokeWidth={3} />
+                        </span>
+                        <div className="flex items-center gap-3">Login</div>
+                      </div>
+                      <ArrowRight
+                        size={20}
+                        strokeWidth={3}
+                        className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                      />
+                    </motion.button>
+                  </>
+                ) : (
+                  <LogoutButton />
+                )}
               </div>
             </motion.div>
           </>

@@ -132,13 +132,15 @@ export const LogInPopUp = () => {
   const handelGoogle = async () => {
     window.location.href = "/api/auth/google";
   };
-
+  useEffect(() => {
+    
+  }, []);
   return (
     <div>
       {" "}
       <AnimatePresence mode="wait">
         {showLoginPopup && (
-          <div className="fixed  inset-0 z-100 flex items-center justify-center p-4 bg-black/10 backdrop-blur-sm min-h-screen">
+          <div className="fixed  inset-0 z-200 flex items-center justify-center p-4 bg-black/10 backdrop-blur-sm min-h-screen">
             {/* OVERLAY */}
             <motion.div
               initial={{ opacity: 0 }}

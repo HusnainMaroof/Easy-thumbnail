@@ -22,7 +22,6 @@
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "cookie": "^1.1.1",
-    "crypto": "^1.0.1",
     "framer-motion": "^12.34.2",
     "ioredis": "^5.9.3",
     "jsonwebtoken": "^9.0.3",

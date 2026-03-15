@@ -3,7 +3,6 @@ import AuthPopUp from "../components/common/AuthPopUp";
 import EmailPopUp from "../components/common/EmailPopUp";
 import { LogInPopUp } from "../components/common/LogInPopUp";
 import MainHeroSection from "../components/common/MainHeroSection";
-import { useAuthContext } from "../context/AuthContext";
 import { getCurrentUser } from "../lib/auth";
 import { NavBar } from "../components/common/NavBar";
 

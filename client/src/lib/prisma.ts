@@ -1,7 +1,8 @@
-import { PrismaClient } from "../generated/client"; // Now this folder exists!
+// Now this folder exists!
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg, { Pool } from "pg";
 import { envConfig } from "../config/envConfig";
+import { PrismaClient } from "../generated/client";
 
 const connectionString = envConfig.DATABASE_URL;
 const pool = new Pool({

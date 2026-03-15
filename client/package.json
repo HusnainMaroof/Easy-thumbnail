@@ -2,6 +2,9 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "@types/pg": "8.11.11"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -37,7 +40,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/nodemailer": "^7.0.11",
-    "@types/pg": "^8.16.0",
+    "@types/pg": "8.11.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

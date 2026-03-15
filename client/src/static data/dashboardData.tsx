@@ -828,7 +828,7 @@ export const COLOR_PALETTES = [
 
 export const PRICING_PLANS = [
   {
-    id: "free",
+    id: "FREE",
     name: "Free",
     icon: Zap,
     price: "0",
@@ -846,7 +846,7 @@ export const PRICING_PLANS = [
     theme: "light",
   },
   {
-    id: "pro",
+    id: "PRO",
     name: "Creator Pro",
     icon: Crown,
     price: "15",
@@ -865,7 +865,7 @@ export const PRICING_PLANS = [
     theme: "highlight",
   },
   {
-    id: "agency",
+    id: "CUSTOM",
     name: "Agency",
     icon: Briefcase,
     price: "Custom",

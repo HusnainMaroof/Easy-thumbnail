@@ -12,6 +12,7 @@
     "@excalidraw/excalidraw": "^0.18.0",
     "@getbrevo/brevo": "^4.0.1",
     "@google/generative-ai": "^0.24.1",
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.1",
     "axios": "^1.13.6",

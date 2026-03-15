@@ -242,8 +242,12 @@ export const NavBar = () => {
               </div>
 
               {/* Bottom: Credits & Actions */}
-              <div className="mt-auto pt-8 flex flex-col gap-4">
+              <div className="mt-auto pt-8 flex flex-col gap-4 w-full">
+                {" "}
                 <motion.button
+                  onClick={() => {
+                    window.location.replace("/dashboard/pricing");
+                  }}
                   whileHover={{
                     translateX: -4,
                     translateY: -4,
@@ -254,8 +258,7 @@ export const NavBar = () => {
                     translateY: 2,
                     boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
                   }}
-                  onClick={() => redirect("/dashboard/pricing")}
-                  className={`group text-black flex items-center justify-between p-3 text-sm font-black uppercase tracking-widest border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[#F4E041] transition-all cursor-pointer`}
+                  className={`group text-black flex items-center justify-between p-3 text-sm font-black w-full uppercase tracking-widest border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white active:translate-x-1 active:translate-y-1 active:shadow-none hover:bg-[#F4E041] transition-all cursor-pointer`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="bg-[#88AAEE] p-2 rounded-xl border-[3px] border-black shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none transition-all">
@@ -269,7 +272,6 @@ export const NavBar = () => {
                     className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                   />
                 </motion.button>
-
                 <LogoutButton />
               </div>
             </motion.div>

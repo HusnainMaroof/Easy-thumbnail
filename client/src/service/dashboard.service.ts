@@ -2,7 +2,11 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { envConfig } from "../config/envConfig";
-import { onBoardPayload, thumpnailPayload } from "../types/dashboard.type";
+import {
+  onBoardPayload,
+  PricingPayload,
+  thumpnailPayload,
+} from "../types/dashboard.type";
 import { getCurrentUser } from "../lib/auth";
 import prisma from "../lib/prisma";
 import { UnauthorizedException } from "../utils/app.error";
@@ -113,6 +117,17 @@ export const onBoardService = async (
     success: true,
     error: false,
     message: "Onboard Successfully",
+    data: {},
+  };
+};
+
+export const ProSubService = async (
+  payload: PricingPayload,
+): Promise<ServiceResponse> => {
+  return {
+    success: true,
+    error: false,
+    message: "thumnail generated",
     data: {},
   };
 };

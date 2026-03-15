@@ -58,3 +58,7 @@ export interface onBoardPayload {
   contentType: string;
   style: string;
 }
+
+export type PricingPayload = {
+  priceModel: "FREE" | "PRO" | "CUSTOM";
+};

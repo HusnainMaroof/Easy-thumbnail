@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useActionState } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -11,21 +11,51 @@ import {
   Briefcase,
   Coins,
   ImagePlus,
+  PanelLeftClose,
 } from "lucide-react";
 import { PRICING_PLANS } from "@/src/static data/dashboardData";
-import { MainButton } from "./Buttons";
+import { useAuthContext } from "@/src/context/AuthContext";
+import { ActionResponse } from "@/src/actions/auth.actions";
+import { PricingPayload } from "@/src/types/dashboard.type";
+import { pricingAction } from "@/src/actions/dashboard.actions";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
 // ==========================================
 // 1. DATA & CALCULATIONS
 // ==========================================
-
+const initialState: ActionResponse = {
+  success: false,
+  error: false,
+  message: null,
+  data: null,
+};
 export default function PricingDashboard() {
+  const { user } = useAuthContext();
+
+  const [state, dispatcher, Ispending] = useActionState<
+    ActionResponse,
+    PricingPayload
+  >(pricingAction, initialState);
+
   const COST_PER_THUMBNAIL = 0.8;
+
+  const handelSubmit = async (plain: string) => {
+    // Todo fix the pricing
+    // if (plain === "PRO") {
+    //   dispatcher({ priceModel: plain });
+    // }
+    if (plain === "PRO") {
+      redirect(
+        "https://easythumnail.lemonsqueezy.com/checkout/buy/e4f06bbd-1fff-4840-9e47-85f99a1b5a60",
+      );
+    }
+  };
 
   const calculateThumbnails = (credits: number) =>
     Math.floor(credits / COST_PER_THUMBNAIL);
   return (
-    <div className="min-h-screen bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col relative overflow-hidden pb-16 md:pb-24 overflow-y-scroll">
+    <div className="h-full md:min-h-screen bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col relative overflow-hidden pb-16 md:pb-24 overflow-y-scroll!">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
@@ -36,12 +66,18 @@ export default function PricingDashboard() {
       ></div>
 
       {/* Header Section */}
-      <div className="relative z-10 pt-16 md:pt-24 pb-10 md:pb-16 px-4 text-center">
+      <div className="relative z-10 pt-10 md:pt-16 pb-10 md:pb-16 px-4 ">
+        <Link href={"/dashboard/home"}>
+          {" "}
+          <span className="text-left underline flex items-center gap-2 cursor-pointer hover:bg-gray-200 w-fit border border-gray-400   rounded-lg p-1.5">
+            <PanelLeftClose size={22} /> Back
+          </span>
+        </Link>
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9] text-black mb-6"
+          className="text-xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9] text-black mb-6 text-center"
         >
           FREE AI <br />
           <span className="bg-[#F4E041] px-4 border-4 border-black inline-block transform -rotate-2">
@@ -66,6 +102,7 @@ export default function PricingDashboard() {
           {PRICING_PLANS.map((plan, index) => {
             const isHighlight = plan.theme === "highlight";
             const isDark = plan.theme === "dark";
+            let IsDisabled = user?.SubPlans === plan.id;
 
             return (
               <motion.div
@@ -194,12 +231,16 @@ export default function PricingDashboard() {
 
                   {/* CTA Button */}
                   <button
+                    disabled={IsDisabled}
+                    onClick={() => handelSubmit(plan.id)}
                     className={`w-full py-4 px-6 rounded-xl border-2 font-black text-[10px] sm:text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all cursor-pointer mt-auto ${
-                      isHighlight
-                        ? "bg-blue-300 border-black text-black shadow-[4px_4px_0px_0px_#000] hover:bg-blue-400 hover:text-white active:translate-y-1 active:shadow-none"
-                        : isDark
-                          ? "bg-white border-white text-black shadow-[4px_4px_0px_0px_#F4E041] hover:bg-zinc-200 active:translate-y-1 active:shadow-none"
-                          : "bg-zinc-900 border-transparent text-white hover:bg-zinc-700  cursor-not-allowed!"
+                      IsDisabled
+                        ? "cursor-not-allowed! opacity-60"
+                        : isHighlight
+                          ? "bg-blue-300 border-black text-black shadow-[4px_4px_0px_0px_#000] hover:bg-blue-400 hover:text-white active:translate-y-1 active:shadow-none"
+                          : isDark
+                            ? "bg-white border-white text-black shadow-[4px_4px_0px_0px_#F4E041] hover:bg-zinc-200 active:translate-y-1 active:shadow-none"
+                            : "bg-zinc-900 border-transparent text-white hover:bg-zinc-700  cursor-not-allowed!"
                     }`}
                   >
                     {plan.buttonText}

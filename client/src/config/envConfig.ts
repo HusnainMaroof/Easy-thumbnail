@@ -20,6 +20,12 @@ type GoogleConfig = {
   GOOGLE_CLIENT_SECRETS?: string;
   GOOGLE_NANO_API_KEY?: string;
 };
+type PAYMENT_KEYS = {
+  LEMON_API?: string;
+  LEMON_STORE_ID?: string;
+  LEMON_VARIANT_ID?: string;
+  LEMON_PRODUCT_ID?: string;
+};
 type ORIGINS = {
   ORIGIN_ONE?: string;
 };
@@ -55,6 +61,10 @@ export const envConfig = {
   ORIGINS: {
     ORIGIN_ONE: process.env.FRONTEND_ORIGIN_ONE,
   } satisfies ORIGINS,
-
-  PAYMENT_APIS: process.env.PAYMENT_APIS,
+  PAYMENT_KEYS: {
+    LEMON_VARIANT_ID: process.env.LEMON_VARIANT_ID,
+    LEMON_STORE_ID: process.env.LEMON_STORE_ID,
+    LEMON_API: process.env.LEMON_API,
+    LEMON_PRODUCT_ID: process.env.LEMON_PRODUCT_ID,
+  } satisfies PAYMENT_KEYS,
 };

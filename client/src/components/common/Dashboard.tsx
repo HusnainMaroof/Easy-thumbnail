@@ -152,7 +152,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
   return (
     <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden">
       <div
-        className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
+        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
         style={{
           backgroundImage: `linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)`,
           backgroundSize: "40px 40px",

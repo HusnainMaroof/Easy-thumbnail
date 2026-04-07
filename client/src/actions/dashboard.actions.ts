@@ -55,25 +55,25 @@ export const pricingAction = catchErrors(
     prevState: ActionResponse,
     payload: PricingPayload,
   ): Promise<ActionResponse> => {
-    let service;
 
-    // const res = await fetch("/api/pricing/create-checkout", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ plainId: envConfig.PAYMENT_KEYS.LEMON_STORE_ID }),
-    // });
-    // if (!res.ok) throw new Error("Checkout creation failed");
+    const res = await fetch("/api/pricing/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plainId: envConfig.PAYMENT_KEYS.LEMON_STORE_ID }),
+    });
+    if (!res.ok) throw new Error("Checkout creation failed");
 
-    // console.log(res);
+const result = await res.json();
 
-    // todo learn from
-    // yt link : https://www.youtube.com/watch?v=G2XuuOiB6fE
-    // yt link : https://www.youtube.com/watch?v=dHo7lvpU6gs
+console.log(result);
+
+
+
     return {
-      success: true,
+      success: false,
       error: false,
       message: "redirect",
-      data: {},
+      data: { url: result.checkoutUrl },
     };
   },
 );

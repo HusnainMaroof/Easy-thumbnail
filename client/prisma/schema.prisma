@@ -55,7 +55,7 @@ model CreditTransaction {
   id        String   @id @default(uuid())
   userId    String
   amount    Int
-  type      String   // purchase, usage, bonus
+  type      String   
   createdAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id])

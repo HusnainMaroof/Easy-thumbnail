@@ -13,6 +13,7 @@ type RedisConfig = {
 
 type SecretConfig = {
   SESSION_SECRET?: string;
+  LEMON_WEBHOOK_SECRET?: string;
 };
 
 type GoogleConfig = {
@@ -50,6 +51,7 @@ export const envConfig = {
 
   SECRET: {
     SESSION_SECRET: process.env.SESSION_SECRET,
+    LEMON_WEBHOOK_SECRET: process.env.LEMON_WEBHOOK_SECRET,
   } satisfies SecretConfig,
 
   GOOGLE_CONFIG: {

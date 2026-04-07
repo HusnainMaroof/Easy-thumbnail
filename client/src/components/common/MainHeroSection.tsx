@@ -26,12 +26,12 @@ const MainHeroSection = () => {
   };
   const isDisabled = prompt.trim().length === 0;
   return (
-    <section className="relative  w-full bg-[#FFFFFF] overflow-hidden">
+    <section className="relative  w-full h-full bg-[#FFFFFF] overflow-hidden">
       {/* NEO-BRUTAL GRID BACKGROUND */}
-      <div
-        className="absolute inset-0 z-0 opacity-[0.05]"
+     <div
+        className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
         style={{
-          backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)`,
           backgroundSize: "40px 40px",
         }}
       ></div>

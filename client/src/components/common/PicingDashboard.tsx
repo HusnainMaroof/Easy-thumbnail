@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useActionState } from "react";
+import React, { startTransition, useActionState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -42,15 +42,18 @@ export default function PricingDashboard() {
 
   const handelSubmit = async (plain: string) => {
     // Todo fix the pricing
-    // if (plain === "PRO") {
-    //   dispatcher({ priceModel: plain });
-    // }
     if (plain === "PRO") {
-      redirect(
-        "https://easythumnail.lemonsqueezy.com/checkout/buy/e4f06bbd-1fff-4840-9e47-85f99a1b5a60",
-      );
+      startTransition(() => {
+        dispatcher({ priceModel: plain });
+      });
     }
   };
+
+  useEffect(() => {
+    if (state.success || state.message === "redirect") {
+      redirect(state.data.url);
+    }
+  }, [state]);
 
   const calculateThumbnails = (credits: number) =>
     Math.floor(credits / COST_PER_THUMBNAIL);
@@ -243,9 +246,15 @@ export default function PricingDashboard() {
                             : "bg-zinc-900 border-transparent text-white hover:bg-zinc-700  cursor-not-allowed!"
                     }`}
                   >
-                    {plan.buttonText}
-                    {(isHighlight || isDark) && (
-                      <ArrowRight size={14} strokeWidth={3} />
+                    {Ispending ? (
+                      <> Configring</>
+                    ) : (
+                      <>
+                        {plan.buttonText}
+                        {(isHighlight || isDark) && (
+                          <ArrowRight size={14} strokeWidth={3} />
+                        )}
+                      </>
                     )}
                   </button>
                 </div>

@@ -19,6 +19,8 @@ import {
   Sparkles,
   Zap,
   LayoutDashboard,
+  GalleryHorizontal,
+  GalleryHorizontalEnd,
 } from "lucide-react";
 import { MainButton } from "./Buttons";
 import DashboardPreview from "./DashboardPreview";
@@ -29,6 +31,7 @@ import {
   ActionResponse,
   generateThumnailAction,
 } from "@/src/actions/dashboard.actions";
+import { redirect } from "next/navigation";
 
 const Dashboard = () => {
   const initialState: ActionResponse = {
@@ -161,21 +164,16 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
       {/* Top Workspace Header (Replaces Sidebar Toggle) */}
       <div className="flex items-center justify-between place  md:px-8   relative z-50  w-full!">
         {/* Left: Project Branding */}
-        <div className="md:flex items-center  gap-4 bg hidden">
-          <div className="p-2 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] bg-[#F4E041]">
-            <LayoutDashboard
+        <div onClick={()=>{redirect("/dashboard/gallery")}} className="md:flex items-center  gap-2 bg hidden cursor-pointer">
+          <div className="p-2 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] bg-blue-300 cursor-pointer">
+            <GalleryHorizontalEnd
               size={20}
               strokeWidth={2.5}
               className="text-black"
             />
           </div>
-          <div className=" flex-col hidden md:flex">
-            <span className="font-black tracking-widest text-xs uppercase leading-tight">
-              Workspace
-            </span>
-            <span className="font-bold text-[9px] text-zinc-400 uppercase tracking-widest leading-tight">
-              Unsaved Project
-            </span>
+          <div className=" flex-col hidden md:flex font-black tracking-widest text-sm uppercase leading-tight underline">
+            Gallery
           </div>
         </div>
 
@@ -197,7 +195,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
 
         <motion.div
           whileHover={{ scale: 1.05, rotate: -2 }}
-          className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-[#F4E041] border-[3px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-blue-300 border-[3px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] cursor-pointer"
         >
           <Zap size={16} strokeWidth={3} className="text-black" />
           <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">

@@ -1,4 +1,4 @@
-import { Eye, LifeBuoy, Pen, Star, Zap } from "lucide-react";
+import { Eye, GalleryHorizontalEnd, LifeBuoy, Pen, Star, Zap } from "lucide-react";
 
 export const navItems = [
   {
@@ -14,6 +14,7 @@ export const navItems = [
 export const dashboardNavItem = [
   { name: "Sketch", icon: <Pen size={18} />, href: "/dashboard/sketch", badge: "Hot" },
   { name: "Previewer", icon: <Eye size={18} />, href: "/dashboard/preview" },
+  { name: "Gallery", icon: <GalleryHorizontalEnd size={18} />, href: "/dashboard/gallery" },
   { name: "Rater", icon: <Star size={18} />, href: "#" },
   { name: "Support", icon: <LifeBuoy size={18} />, href: "#" },
 ];

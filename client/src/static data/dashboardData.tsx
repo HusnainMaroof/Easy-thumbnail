@@ -841,7 +841,7 @@ export const PRICING_PLANS = [
       "Standard Web Resolution",
       "Contains App Watermark",
     ],
-    buttonText: "Current Plan",
+    buttonText: "Basic Plan",
     isPopular: false,
     theme: "light",
   },

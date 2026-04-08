@@ -41,7 +41,10 @@ export default function PricingDashboard() {
   const COST_PER_THUMBNAIL = 0.8;
 
   const handelSubmit = async (plain: string) => {
-    // Todo fix the pricing
+    if (plain === "CUSTOM") {
+      redirect("/dashboard/pricing/sales");
+    }
+
     if (plain === "PRO") {
       startTransition(() => {
         dispatcher({ priceModel: plain });
@@ -250,7 +253,10 @@ export default function PricingDashboard() {
                       <> Configring</>
                     ) : (
                       <>
-                        {plan.buttonText}
+                        {plan.id === user?.SubPlans
+                          ? "Current Plan"
+                          : plan.buttonText}
+
                         {(isHighlight || isDark) && (
                           <ArrowRight size={14} strokeWidth={3} />
                         )}

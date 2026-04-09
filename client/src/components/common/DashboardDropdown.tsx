@@ -31,7 +31,7 @@ export const FieldLabel = ({
   label: string;
   tooltip?: string;
 }) => (
-  <div className="flex items-center gap-2 my-2 ml-1 group relative w-max  z-100">
+  <div className="flex items-center gap-2 my-2 ml-1 group relative w-max  ">
     <span className="text-[10px] md:text-[11px] font-black text-zinc-600 uppercase tracking-widest">
       {label}
     </span>
@@ -41,7 +41,7 @@ export const FieldLabel = ({
           <HelpCircle size={14} strokeWidth={3} />
         </div>
         {/* Tooltip Popup */}
-        <div className="absolute z-100  bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black text-white text-[10px] font-bold leading-relaxed rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all  text-center shadow-[4px_4px_0px_0px_rgba(177,151,252,1)] scale-95 group-hover:scale-100 origin-bottom">
+        <div className="absolute   bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black text-white text-[10px] font-bold leading-relaxed rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all  text-center shadow-[4px_4px_0px_0px_rgba(177,151,252,1)] scale-95 group-hover:scale-100 origin-bottom">
           {tooltip}
           <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
         </div>
@@ -136,7 +136,7 @@ export function DashboardDropdown({
 
   return (
     <div
-      className={`relative w-full group  ${isOpen ? "z-80" : "z-10"}`}
+      className={`relative w-full   ${isOpen ? "z-80" : "z-10"}`}
       ref={dropdownRef}
     >
       <motion.button
@@ -179,7 +179,7 @@ export function DashboardDropdown({
             animate={{ opacity: 1, y: 4 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 max- right-0 bg-white border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-1 overflow-hidden z-100"
+            className="absolute top-full left-0  right-0 bg-white border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-1 overflow-hidden z-110"
           >
             <div className="p-2 bg-white flex flex-col">
               <input

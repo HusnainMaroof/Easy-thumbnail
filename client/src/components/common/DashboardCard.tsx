@@ -265,15 +265,9 @@ export const DashboardCard = ({
                 onClick={handleGenerate}
                 disabled={completionPercentage < 50}
                 variant="blue"
-                className=""
+                className="flex items-center justify-center gap-2 px-4 cursor-pointer "
               >
-                {isGeneratingImage ? (
-                  "Rendering..."
-                ) : (
-                  <span className="flex items-center justify-center gap-2 px-4 cursor-pointer ">
-                    Generate
-                  </span>
-                )}
+                {isGeneratingImage ? "Rendering..." : "Generate"}
               </MainButton>
             </div>
           )}

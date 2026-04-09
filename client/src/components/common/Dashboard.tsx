@@ -32,6 +32,7 @@ import {
   generateThumnailAction,
 } from "@/src/actions/dashboard.actions";
 import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const initialState: ActionResponse = {
@@ -91,7 +92,7 @@ const Dashboard = () => {
   );
 
   const handleGenerate = () => {
-    console.log(generateForm);
+    // console.log(generateForm);
 
     const prompt = `
 MASTER DIRECTIVE:
@@ -134,16 +135,17 @@ FINAL RENDER QUALITY:
 Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-sharp foreground focus, hyper-detailed textures, and vibrant color saturation perfectly optimized for mobile screen viewing.
     `.trim();
 
-    console.log(prompt);
 
-    // console.log(thumbnailPrompt);
-    // startTransition(() => {
-    //   dispatcher({ prompt, aspect_ratio: generateForm.aspectRatio });
-    // });
+
+    
+    startTransition(() => {
+      dispatcher({ prompt, aspect_ratio : generateForm.platform });
+    });
   };
 
   useEffect(() => {
     if (state.error) {
+      toast.error(state.message)
       console.log(state.data);
     }
 
@@ -164,7 +166,12 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
       {/* Top Workspace Header (Replaces Sidebar Toggle) */}
       <div className="flex items-center justify-between place  md:px-8   relative z-50  w-full!">
         {/* Left: Project Branding */}
-        <div onClick={()=>{redirect("/dashboard/gallery")}} className="md:flex items-center  gap-2 bg hidden cursor-pointer">
+        <div
+          onClick={() => {
+            redirect("/dashboard/gallery");
+          }}
+          className="md:flex items-center  gap-2 bg hidden cursor-pointer"
+        >
           <div className="p-2 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] bg-blue-300 cursor-pointer">
             <GalleryHorizontalEnd
               size={20}

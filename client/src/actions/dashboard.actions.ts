@@ -25,11 +25,16 @@ export const generateThumnailAction = catchErrors(
   ): Promise<ActionResponse> => {
     const service = await generateThumnailService(payload);
 
+if (service.success) {
+  
+}
+
+
     return {
-      success: service.success,
-      error: service.error,
-      message: service.message,
-      data: service.data,
+      success: false,
+      error: true,
+      message: "to many request please try again letter",
+      data: {},
     };
   },
 );
@@ -55,7 +60,6 @@ export const pricingAction = catchErrors(
     prevState: ActionResponse,
     payload: PricingPayload,
   ): Promise<ActionResponse> => {
-
     const res = await fetch("/api/pricing/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -63,11 +67,9 @@ export const pricingAction = catchErrors(
     });
     if (!res.ok) throw new Error("Checkout creation failed");
 
-const result = await res.json();
+    const result = await res.json();
 
-console.log(result);
-
-
+    console.log(result);
 
     return {
       success: false,

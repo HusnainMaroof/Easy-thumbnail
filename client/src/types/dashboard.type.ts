@@ -50,7 +50,7 @@ export const INITIAL_FORM_STATE: GenrateFormType = {
 
 export interface thumpnailPayload {
   prompt: string;
-  aspect_ratio: string;
+  ThumbnailConfig: Object;
 }
 
 export interface onBoardPayload {

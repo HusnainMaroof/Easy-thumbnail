@@ -4,11 +4,12 @@ import { redirect } from "next/navigation";
 
 const page = async () => {
   const user = await getCurrentUser();
-  if (!user) {
-    console.log("un authrozied");
+    if (!user.authsuccess.success || !user.authsuccess.data.isOnboard) {
+    console.log("un authrozied sss");
 
     redirect("/");
   }
+
   return (
     <div>
       <Onboarding />

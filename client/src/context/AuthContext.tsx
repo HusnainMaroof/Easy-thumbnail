@@ -1,14 +1,17 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { GenrateFormType, INITIAL_FORM_STATE } from "../types/dashboard.type";
+import { AuthSuccess } from "../types/authType";
 
 type UserType = {
+  
   userToken: string;
   displayName: string;
   email: string;
   SubPlans: string;
   isOnboard: boolean;
   credits: number | null;
+  
 } | null;
 
 type DashboardTab = "generate" | "review";

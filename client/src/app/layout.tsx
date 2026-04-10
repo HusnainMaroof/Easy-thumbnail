@@ -27,15 +27,18 @@ export default async function RootLayout({
 }>) {
   const user = await getCurrentUser();
 
-  // console.log(user);
-
+  
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider user={user}>{children}</AuthProvider>
-         <Toaster position="top-center" reverseOrder={false} containerClassName="#B197FC" />
+        <AuthProvider user={user.authsuccess.data}>{children}</AuthProvider>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          containerClassName="#B197FC"
+        />
       </body>
     </html>
   );

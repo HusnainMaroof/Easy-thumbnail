@@ -87,12 +87,14 @@ export const onBoardService = async (
 
   const user = await getCurrentUser();
 
-  let getCachedUser = await redisClient?.get(`auth_session:${user.userToken}`);
+  let getCachedUser = await redisClient?.get(
+    `auth_session:${user.authsuccess.data.userToken}`,
+  );
   const sessionData = JSON.parse(getCachedUser!);
   if (!getCachedUser) throw new UnauthorizedException();
 
   const updated = await prisma.user.updateMany({
-    where: { userToken: user?.userToken! },
+    where: { userToken: user?.authsuccess.data.userToken! },
     data: { is_Onboard: true, credits: 10 },
   });
 
@@ -108,7 +110,7 @@ export const onBoardService = async (
   sessionData.isOnboard! = true;
   sessionData.credits = sessionData.credits + 10;
   await redisClient?.set(
-    `auth_session:${user.userToken}`,
+    `auth_session:${user.authsuccess.data.userToken}`,
     JSON.stringify(sessionData),
     "EX",
     60 * 60 * 24 * 7,

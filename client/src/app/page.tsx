@@ -10,7 +10,7 @@ const page = async () => {
   const user = await getCurrentUser();
 
 
-  if (user) {
+  if (user.authsuccess.success) {
     redirect("/dashboard/home");
   }
 

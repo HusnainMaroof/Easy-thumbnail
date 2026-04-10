@@ -135,17 +135,14 @@ FINAL RENDER QUALITY:
 Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-sharp foreground focus, hyper-detailed textures, and vibrant color saturation perfectly optimized for mobile screen viewing.
     `.trim();
 
-
-
-    
     startTransition(() => {
-      dispatcher({ prompt, aspect_ratio : generateForm.platform });
+      dispatcher({ prompt, ThumbnailConfig: generateForm });
     });
   };
 
   useEffect(() => {
     if (state.error) {
-      toast.error(state.message)
+      toast.error(state.message);
       console.log(state.data);
     }
 

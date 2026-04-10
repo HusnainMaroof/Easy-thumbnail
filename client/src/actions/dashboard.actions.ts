@@ -1,4 +1,9 @@
+"use server";
+
 import { envConfig } from "../config/envConfig";
+import { Prisma } from "../generated/client";
+import { getCurrentUser } from "../lib/auth";
+import prisma from "../lib/prisma";
 import {
   generateThumnailService,
   onBoardService,
@@ -23,12 +28,17 @@ export const generateThumnailAction = catchErrors(
     prevState: ActionResponse,
     payload: thumpnailPayload,
   ): Promise<ActionResponse> => {
+    const user = await getCurrentUser();
     const service = await generateThumnailService(payload);
 
-if (service.success) {
-  
-}
-
+    if (service.success) {
+      let saveThumbnail = await prisma.gallery.create({
+        data: {
+          generationConfig: payload.ThumbnailConfig as Prisma.InputJsonValue,
+          userId: user.authsuccess.data.userToken!,
+        },
+      });
+    }
 
     return {
       success: false,

@@ -10,6 +10,7 @@ import {
   hashValueHelper,
 } from "../utils/helper";
 import bcrypt from "bcryptjs";
+import { form } from "framer-motion/client";
 
 interface RegisterForm {
   email: string;
@@ -107,7 +108,7 @@ export const sendOtpService = async (
 };
 
 export const verifyOtpService = async (
-  code: string,
+  code: number,
   userToken: string,
 ): Promise<ServiceResponse> => {
   let checkRecored = await prisma.emailVerification.findFirst({
@@ -122,13 +123,18 @@ export const verifyOtpService = async (
 
   let updatedUser = await prisma.user.update({
     where: { id: checkRecored.userId },
-    data: { status: "ACTIVE", emailVerified: true },
+    data: { status: "ACTIVE", emailVerified: true, credits: 10 },
   });
   let DelEmailRow = await prisma.emailVerification.delete({
     where: { id: checkRecored.id },
   });
 
-  return { success: true, error: false, message: "Otp Verified", data: "" };
+  return {
+    success: true,
+    error: false,
+    message: "Otp Verified",
+    data: updatedUser,
+  };
 };
 
 export const reSendOtpService = async (
@@ -175,7 +181,10 @@ export const passLinkService = async (
   let link = `${origin}/auth/reset-password/${resetToken}`;
 
   let main = await sendResetPassEmail(email, link, "ReSet Password");
-
+  const updateUser = await prisma.user.updateMany({
+    where: { email },
+    data: { resetPasswordToken: resetToken, resetPasswordExpiresAt: expiresAt },
+  });
   return { success: true, error: false, message: "email sended", data: {} };
 };
 
@@ -185,7 +194,9 @@ export const ResetPasswordService = async (
   const getUser = await prisma.user.findFirst({
     where: { resetPasswordToken: formData.token },
   });
-  console.log(getUser);
+
+  console.log(" token", formData);
+  console.log("res set pass token", getUser);
   if (!getUser) throw new Error("Unauthrized User");
 
   let isExpried = new Date() > getUser.resetPasswordExpiresAt!;

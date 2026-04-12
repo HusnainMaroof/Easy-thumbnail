@@ -5,14 +5,21 @@ import { LogInPopUp } from "../components/common/LogInPopUp";
 import MainHeroSection from "../components/common/MainHeroSection";
 import { getCurrentUser } from "../lib/auth";
 import { NavBar } from "../components/common/NavBar";
+import { log } from "console";
 
 const page = async () => {
   const user = await getCurrentUser();
 
-
   if (user.authsuccess.success) {
-    redirect("/dashboard/home");
+    if (!user.authsuccess.data.isOnboard) {
+      log("not onboarded");
+      redirect("/dashboard/onboarding");
+    } else {
+      redirect("/dashboard/home");
+    }
   }
+
+  console.log(" user Data", user);
 
   return (
     <div className="w-full h-screen bg-white">

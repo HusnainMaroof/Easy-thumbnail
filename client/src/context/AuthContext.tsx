@@ -11,6 +11,7 @@ type UserType = {
   SubPlans: string;
   isOnboard: boolean;
   credits: number | null;
+  galleryData: any[] | null;
   
 } | null;
 

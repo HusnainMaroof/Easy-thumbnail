@@ -44,6 +44,7 @@ export async function GET(req: Request) {
 
   let expiresAt = 60 * 60 * 24 * 7;
 
+  // while google login
   if (userExist) {
     if (userExist?.status === "PENDING") {
       const updateStatus = await prisma.user.update({
@@ -51,6 +52,12 @@ export async function GET(req: Request) {
         data: { status: "ACTIVE", emailVerified: true },
       });
     }
+    const getgalleryData = await prisma.gallery.findFirst({
+      where: {
+        userId: userExist.id,
+      },
+    });
+
     let UserData = {
       userId: userExist.userId,
       userToken: userExist.userToken!,
@@ -59,6 +66,7 @@ export async function GET(req: Request) {
       SubPlans: userExist.subscriptionPlan,
       isOnboard: userExist.is_Onboard,
       credits: userExist.credits,
+      galleryData: getgalleryData || null,
     };
     await setRedis.set(
       `auth_session:${userExist.userToken!}`,
@@ -69,7 +77,7 @@ export async function GET(req: Request) {
     const cookie = serialize("auth_sessionId", userExist.userToken!, {
       path: "/",
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: envConfig.NODE_ENV === "production" ? "none" : "lax",
       secure: process.env.NODE_ENV === "production",
       maxAge: expiresAt,
     });
@@ -89,6 +97,8 @@ export async function GET(req: Request) {
     return res;
   }
 
+  // is the user is totally new then create a new user
+
   const createUser = await prisma.user.create({
     data: {
       email: user.email,
@@ -98,6 +108,7 @@ export async function GET(req: Request) {
       emailVerified: true,
       password: "",
       google_id: user.sub,
+      credits: 10,
     },
   });
   let UserData = {
@@ -108,6 +119,7 @@ export async function GET(req: Request) {
     SubPlans: createUser.subscriptionPlan,
     isOnboard: createUser.is_Onboard,
     credits: createUser.credits,
+    galleryData: null,
   };
   await setRedis.set(
     `auth_session:${createUser.userToken!}`,
@@ -118,7 +130,7 @@ export async function GET(req: Request) {
   const cookie = serialize("auth_sessionId", createUser.userToken!, {
     path: "/",
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: envConfig.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
     maxAge: expiresAt,
   });

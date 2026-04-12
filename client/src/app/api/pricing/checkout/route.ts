@@ -15,7 +15,7 @@ export async function POST(req: Response) {
 
     let storeId = envConfig.PAYMENT_KEYS.LEMON_STORE_ID?.toString();
     let variantsId = envConfig.PAYMENT_KEYS.LEMON_VARIANT_ID?.toString();
-    let userToken = getuser?.userToken;
+    let userToken = getuser?.authsuccess.data.userToken;
 
     const checkoutToken = await generateToken(32);
     await setRedis.set(
@@ -27,7 +27,7 @@ export async function POST(req: Response) {
     const { data, error } = await createCheckout(storeId!, variantsId!, {
       checkoutData: {
         custom: { userToken: userToken, checkoutToken }, // Hidden metadata
-        email: getuser?.email! ?? "",
+        email: getuser?.authsuccess.data.email ,
       },
       productOptions: {
         redirectUrl: `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/home`,

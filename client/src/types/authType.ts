@@ -1,5 +1,5 @@
 export interface VerifyOtpPayload {
-  code: null;
+  code: number;
   userToken: string;
   sender: string;
 }
@@ -33,6 +33,7 @@ export interface AuthError {
 export interface AuthPayload {
   autherror: AuthError;
   authsuccess: AuthSuccess;
+  sessionId?: string;
 }
 
 export const authFalse: AuthSuccess = {

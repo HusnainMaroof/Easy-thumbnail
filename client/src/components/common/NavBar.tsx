@@ -56,6 +56,8 @@ export const NavBar = () => {
       .toUpperCase();
   };
 
+
+
   return (
     <>
       <nav
@@ -99,7 +101,7 @@ export const NavBar = () => {
                 <span className="whitespace-nowrap">Go Pro</span>
               </motion.button>
             </Link>{" "}
-            {!user && (
+            {!user?.userToken && (
               <motion.button
                 whileHover={{
                   scale: 1.02,
@@ -132,10 +134,10 @@ export const NavBar = () => {
                 boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)",
               }}
               onClick={() => setIsOpen(!isOpen)}
-              className={` ${user ? "pl-1 pr-3 py-1 flex items-center cursor-pointer gap-2 sm:gap-3" : " p-2.5"}  bg-white border-[3px] text-black border-black rounded-xl transition-all duration-200 z-120 relative
+              className={` ${user?.userToken ? "pl-1 pr-3 py-1 flex items-center cursor-pointer gap-2 sm:gap-3" : " p-2.5"}  bg-white border-[3px] text-black border-black rounded-xl transition-all duration-200 z-120 relative
                 ${isOpen ? "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-1" : "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"}`}
             >
-              {user && (
+              {user?.userToken && (
                 <div className="w-8 h-8 rounded-lg bg-[#B197FC] border-2 border-black flex items-center justify-center overflow-hidden shrink-0">
                   <span className="font-black text-white text-[11px] tracking-widest">
                     {getInitials(user?.displayName!)}
@@ -180,27 +182,29 @@ export const NavBar = () => {
                 <PanelLeftClose /> Back{" "}
               </span>
               {/* Top: User Profile Header */}
-              <div className="flex items-center gap-4 mb-8 p-4 bg-zinc-50 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <div className="w-14 h-14 rounded-xl bg-blue-200  text-black border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] shrink-0">
-                  <span className="font-black  text-xl tracking-widest">
-                    {getInitials(user?.displayName!)}
-                  </span>
-                </div>
-                <div className="flex flex-col overflow-hidden text-black!">
-                  <span className="font-black text-sm uppercase tracking-widest truncate">
-                    {user?.displayName!}
-                  </span>
-                  <span className="font-semibold text-[10px] text-black uppercase tracking-widest mb-1.5 truncate">
-                    {user?.email}
-                  </span>
-                  <div className="w-fit flex items-center gap-1 bg-[#F4E041] px-2 py-0.5 rounded border-2 border-black">
-                    <Crown size={10} strokeWidth={3} className="text-black" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-black">
-                      {user?.SubPlans} PLAN
+              {user?.userToken && (
+                <div className="flex items-center gap-4 mb-8 p-4 bg-zinc-50 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="w-14 h-14 rounded-xl bg-blue-200  text-black border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] shrink-0">
+                    <span className="font-black  text-xl tracking-widest">
+                      {getInitials(user?.displayName!)}
                     </span>
                   </div>
+                  <div className="flex flex-col overflow-hidden text-black!">
+                    <span className="font-black text-sm uppercase tracking-widest truncate">
+                      {user?.displayName!}
+                    </span>
+                    <span className="font-semibold text-[10px] text-black uppercase tracking-widest mb-1.5 truncate">
+                      {user?.email}
+                    </span>
+                    <div className="w-fit flex items-center gap-1 bg-[#F4E041] px-2 py-0.5 rounded border-2 border-black">
+                      <Crown size={10} strokeWidth={3} className="text-black" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-black">
+                        {user?.SubPlans} PLAN
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Middle: Navigation Links */}
               <p className="text-[12px] font-black uppercase tracking-[0.2em] text-black mb-4 pl-2">
@@ -275,7 +279,7 @@ export const NavBar = () => {
                     className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                   />
                 </motion.button>
-                {!user ? (
+                {!user?.userToken ? (
                   <>
                     <motion.button
                       onClick={() => {
@@ -317,7 +321,7 @@ export const NavBar = () => {
       </AnimatePresence>
 
       {/* Spacer to push content down when navbar is fixed at top */}
-      <div className="h-24 w-full bg-transparent" />
+      <div className="h-24 w-full  bg-white" />
     </>
   );
 };

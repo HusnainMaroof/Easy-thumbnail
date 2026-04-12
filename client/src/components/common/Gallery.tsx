@@ -14,74 +14,9 @@ import {
   Wand2,
   X,
 } from "lucide-react";
+import { useAuthContext } from "@/src/context/AuthContext";
 
 // --- Mock Data ---
-const MOCK_THUMBNAILS = [
-  {
-    id: 1,
-    title: "How to Build a SaaS in 2024",
-    date: "Oct 24, 2024",
-    category: "Tech",
-    color: "#F4E041",
-    views: "1.2k",
-  },
-  {
-    id: 2,
-    title: "The Truth About AI Agents",
-    date: "Oct 22, 2024",
-    category: "AI",
-    color: "#a855f7",
-    views: "850",
-  },
-  {
-    id: 3,
-    title: "My Minimalist Desk Setup",
-    date: "Oct 18, 2024",
-    category: "Vlog",
-    color: "#10b981",
-    views: "3.4k",
-  },
-  {
-    id: 4,
-    title: "React vs Next.js: Which is better?",
-    date: "Oct 15, 2024",
-    category: "Tech",
-    color: "#3b82f6",
-    views: "2.1k",
-  },
-  {
-    id: 5,
-    title: "I Tried Quitting Coffee for 30 Days",
-    date: "Oct 10, 2024",
-    category: "Vlog",
-    color: "#ef4444",
-    views: "5.6k",
-  },
-  {
-    id: 6,
-    title: "Mastering Framer Motion",
-    date: "Oct 05, 2024",
-    category: "Design",
-    color: "#f97316",
-    views: "920",
-  },
-  {
-    id: 7,
-    title: "Is Devin the ultimate AI?",
-    date: "Oct 01, 2024",
-    category: "AI",
-    color: "#a855f7",
-    views: "4.2k",
-  },
-  {
-    id: 8,
-    title: "Figma Tips & Tricks 2024",
-    date: "Sep 28, 2024",
-    category: "Design",
-    color: "#ec4899",
-    views: "1.8k",
-  },
-];
 
 const CATEGORIES = ["All", "Tech", "AI", "Vlog", "Design"];
 
@@ -97,14 +32,14 @@ const containerVariants = {
   },
 };
 
-
-
 export default function ThumbnailGallery() {
+  const { user } = useAuthContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 
+  let galleryData = user?.galleryData || [];
   // Filter Logic
-  const filteredThumbnails = MOCK_THUMBNAILS.filter((thumb) => {
+  const filteredThumbnails = galleryData.filter((thumb) => {
     const matchesSearch = thumb.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -114,12 +49,8 @@ export default function ThumbnailGallery() {
   });
 
   return (
-    <div className="min-h- h-full w-full bg-[#fafafa] text-black font-sans selection:bg-[#F4E041] relative flex flex-col overflow-x-hidden pb-20 ">
-      {/* --- TOP NAV --- */}
-  
-
-      {/* --- HEADER & CONTROLS --- */}
-      <div className="relative z-10 px-4 md:px-8 mx-auto w-full mt-12 mb-8">
+    <div className=" w-full bg-[#fafafa] text-black font-sans selection:bg-[#F4E041] relative flex flex-col overflow-x-hidden  pb-20 ">
+      <div className="relative z-10 px-4 md:px-8 mx-auto w-full  mb-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -130,7 +61,7 @@ export default function ThumbnailGallery() {
               My Gallery
             </h1>
             <div className="inline-flex items-center justify-center border px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest mt-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
-              {MOCK_THUMBNAILS.length} Total Generations
+              {galleryData.length} Total Generations
             </div>
           </div>
 
@@ -174,7 +105,7 @@ export default function ThumbnailGallery() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="flex gap-3 mt-10 overflow-x-auto pb-4 scrollbar-hide snap-x"
+          className="flex gap-3 pt-10 overflow-x-auto pb-4 scrollbar-hide snap-x"
         >
           {CATEGORIES.map((cat) => (
             <button
@@ -193,132 +124,158 @@ export default function ThumbnailGallery() {
       </div>
 
       {/* --- GRID GALLERY --- */}
-      <main className="relative z-10 px-4 md:px-8  mx-auto w-full">
-        <AnimatePresence mode="wait">
-          {filteredThumbnails.length > 0 ? (
-            <motion.div
-              key="grid"
-              variants={containerVariants}
-              initial="hidden"
-              animate="show"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
-            >
-              {filteredThumbnails.map((thumb) => (
+
+      {galleryData.length > 0 ? (
+        <>
+          <main className="relative z-10 px-4 md:px-8  mx-auto w-full">
+            <AnimatePresence mode="wait">
+              {filteredThumbnails.length > 0 ? (
                 <motion.div
-                  key={thumb.id}
-                  layout
-                  className="group relative bg-white border-[3px] border-black rounded-2xl p-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] hover:-translate-y-1.5 hover:-translate-x-1.5 hover:shadow-[10px_10px_0px_0px_#000] transition-all duration-300 flex flex-col"
+                  key="grid"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
                 >
-                  {/* Thumbnail Image Container */}
-                  <div
-                    className="w-full aspect-video rounded-xl border-2 border-black relative overflow-hidden flex items-center justify-center mb-4 transition-transform duration-300"
-                    style={{
-                      background: `linear-gradient(135deg, ${thumb.color}aa, ${thumb.color})`,
-                    }}
-                  >
-                    {/* Mock Content inside Thumbnail */}
+                  {filteredThumbnails.map((thumb) => (
+                    <motion.div
+                      key={thumb.id}
+                      layout
+                      className="group relative bg-white border-[3px] border-black rounded-2xl p-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] hover:-translate-y-1.5 hover:-translate-x-1.5 hover:shadow-[10px_10px_0px_0px_#000] transition-all duration-300 flex flex-col"
+                    >
+                      {/* Thumbnail Image Container */}
+                      <div
+                        className="w-full aspect-video rounded-xl border-2 border-black relative overflow-hidden flex items-center justify-center mb-4 transition-transform duration-300"
+                        style={{
+                          background: `linear-gradient(135deg, ${thumb.color}aa, ${thumb.color})`,
+                        }}
+                      >
+                        {/* Mock Content inside Thumbnail */}
+                        <ImageIcon
+                          size={56}
+                          className="text-black opacity-30 mix-blend-overlay group-hover:scale-110 transition-transform duration-500"
+                          strokeWidth={1.5}
+                        />
+                        <div className="absolute bottom-3 left-3 right-3 bg-black/80 backdrop-blur-md text-white font-black text-[11px] p-2.5 rounded-lg truncate text-center border border-white/10 shadow-lg">
+                          {thumb.title}
+                        </div>
+
+                        {/* Hover Overlay Actions */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-sm z-10">
+                          <button
+                            className="w-12 h-12 rounded-full bg-[#F4E041] border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
+                            title="Download"
+                          >
+                            <Download
+                              size={20}
+                              strokeWidth={2.5}
+                              className="text-black"
+                            />
+                          </button>
+                          <button
+                            className="w-12 h-12 rounded-full bg-white border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
+                            title="Preview"
+                          >
+                            <ExternalLink
+                              size={20}
+                              strokeWidth={2.5}
+                              className="text-black"
+                            />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Thumbnail Meta Info */}
+                      <div className="px-1 pb-1 flex flex-col flex-1">
+                        <div className="flex justify-between items-start gap-3 mb-3">
+                          <h3 className="font-black text-sm text-black line-clamp-2 leading-snug group-hover:text-[#a855f7] transition-colors">
+                            {thumb.title}
+                          </h3>
+                          <button className="text-zinc-400 hover:text-black transition-colors shrink-0 bg-zinc-100 hover:bg-zinc-200 p-1.5 rounded-md">
+                            <MoreVertical size={16} strokeWidth={2.5} />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between mt-auto pt-3 border-t-2 border-dashed border-zinc-100">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 bg-zinc-100 border border-zinc-200 px-2.5 py-1.5 rounded-md">
+                            {thumb.category}
+                          </span>
+                          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                            {thumb.date}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Quick Delete action */}
+                      <button className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-red-500 border-2 border-black flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 hover:bg-red-600 shadow-[2px_2px_0px_0px_#000] z-20">
+                        <Trash2 size={14} strokeWidth={3} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="w-full py-24 flex flex-col items-center justify-center border-[3px] border-dashed border-zinc-300  bg-white shadow-sm"
+                >
+                  <div className="w-24 h-24 bg-zinc-50 border-2 border-zinc-200 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
                     <ImageIcon
-                      size={56}
-                      className="text-black opacity-30 mix-blend-overlay group-hover:scale-110 transition-transform duration-500"
-                      strokeWidth={1.5}
+                      size={40}
+                      className="text-zinc-300"
+                      strokeWidth={2}
                     />
-                    <div className="absolute bottom-3 left-3 right-3 bg-black/80 backdrop-blur-md text-white font-black text-[11px] p-2.5 rounded-lg truncate text-center border border-white/10 shadow-lg">
-                      {thumb.title}
-                    </div>
-
-                    {/* Hover Overlay Actions */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-sm z-10">
-                      <button
-                        className="w-12 h-12 rounded-full bg-[#F4E041] border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
-                        title="Download"
-                      >
-                        <Download
-                          size={20}
-                          strokeWidth={2.5}
-                          className="text-black"
-                        />
-                      </button>
-                      <button
-                        className="w-12 h-12 rounded-full bg-white border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
-                        title="Preview"
-                      >
-                        <ExternalLink
-                          size={20}
-                          strokeWidth={2.5}
-                          className="text-black"
-                        />
-                      </button>
-                    </div>
                   </div>
-
-                  {/* Thumbnail Meta Info */}
-                  <div className="px-1 pb-1 flex flex-col flex-1">
-                    <div className="flex justify-between items-start gap-3 mb-3">
-                      <h3 className="font-black text-sm text-black line-clamp-2 leading-snug group-hover:text-[#a855f7] transition-colors">
-                        {thumb.title}
-                      </h3>
-                      <button className="text-zinc-400 hover:text-black transition-colors shrink-0 bg-zinc-100 hover:bg-zinc-200 p-1.5 rounded-md">
-                        <MoreVertical size={16} strokeWidth={2.5} />
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between mt-auto pt-3 border-t-2 border-dashed border-zinc-100">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 bg-zinc-100 border border-zinc-200 px-2.5 py-1.5 rounded-md">
-                        {thumb.category}
-                      </span>
-                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                        {thumb.date}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Quick Delete action */}
-                  <button className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-red-500 border-2 border-black flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 hover:bg-red-600 shadow-[2px_2px_0px_0px_#000] z-20">
-                    <Trash2 size={14} strokeWidth={3} />
+                  <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-800 mb-3">
+                    No Thumbnails Found
+                  </h3>
+                  <p className="text-zinc-500 font-bold text-sm text-center max-w-md leading-relaxed">
+                    We couldn't find any creations matching{" "}
+                    <span className="text-black bg-zinc-100 px-1 rounded">
+                      "{searchQuery}"
+                    </span>{" "}
+                    in the{" "}
+                    <span className="text-black bg-zinc-100 px-1 rounded">
+                      {activeCategory}
+                    </span>{" "}
+                    category.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setActiveCategory("All");
+                    }}
+                    className="mt-8 bg-black text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] border-[3px] border-black shadow-[4px_4px_0px_0px_#a855f7] hover:translate-y-1 hover:translate-x-1 hover:shadow-[0px_0px_0px_0px_#a855f7] transition-all"
+                  >
+                    Clear All Filters
                   </button>
                 </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="w-full py-24 flex flex-col items-center justify-center border-[3px] border-dashed border-zinc-300  bg-white shadow-sm"
-            >
-              <div className="w-24 h-24 bg-zinc-50 border-2 border-zinc-200 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
-                <ImageIcon
-                  size={40}
-                  className="text-zinc-300"
-                  strokeWidth={2}
-                />
-              </div>
-              <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-800 mb-3">
-                No Thumbnails Found
-              </h3>
-              <p className="text-zinc-500 font-bold text-sm text-center max-w-md leading-relaxed">
-                We couldn't find any creations matching{" "}
-                <span className="text-black bg-zinc-100 px-1 rounded">
-                  "{searchQuery}"
-                </span>{" "}
-                in the{" "}
-                <span className="text-black bg-zinc-100 px-1 rounded">
-                  {activeCategory}
-                </span>{" "}
-                category.
-              </p>
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setActiveCategory("All");
-                }}
-                className="mt-8 bg-black text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] border-[3px] border-black shadow-[4px_4px_0px_0px_#a855f7] hover:translate-y-1 hover:translate-x-1 hover:shadow-[0px_0px_0px_0px_#a855f7] transition-all"
-              >
-                Clear All Filters
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
+              )}
+            </AnimatePresence>
+          </main>
+        </>
+      ) : (
+        <div className="relative z-10 px-4 md:px-8   mx-auto ">
+          {" "}
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="rounded-2xl   py-24  px-14 flex flex-col items-center justify-center border-[3px] border-dashed border-zinc-300  bg-white shadow-sm"
+          >
+            <div className="w-24 h-24 bg-zinc-50 border-2 border-zinc-200 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
+              <ImageIcon size={40} className="text-zinc-300" strokeWidth={2} />
+            </div>
+            <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-800 mb-3">
+              No Thumbnails Found
+            </h3>
+            <p className="text-zinc-500 font-bold text-sm text-center max-w-md leading-relaxed">
+              We couldn't find any creations matching your gallery. Start
+              creating stunning thumbnails to see them here!
+            </p>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

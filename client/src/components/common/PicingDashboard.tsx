@@ -17,9 +17,9 @@ import { PRICING_PLANS } from "@/src/static data/dashboardData";
 import { useAuthContext } from "@/src/context/AuthContext";
 import { ActionResponse } from "@/src/actions/auth.actions";
 import { PricingPayload } from "@/src/types/dashboard.type";
-import { pricingAction } from "@/src/actions/dashboard.actions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { envConfig } from "@/src/config/envConfig";
 
 // ==========================================
 // 1. DATA & CALCULATIONS
@@ -33,10 +33,7 @@ const initialState: ActionResponse = {
 export default function PricingDashboard() {
   const { user } = useAuthContext();
 
-  const [state, dispatcher, Ispending] = useActionState<
-    ActionResponse,
-    PricingPayload
-  >(pricingAction, initialState);
+  const [IsPending, setIsPending] = React.useState(false);
 
   const COST_PER_THUMBNAIL = 0.8;
 
@@ -46,17 +43,27 @@ export default function PricingDashboard() {
     }
 
     if (plain === "PRO") {
-      startTransition(() => {
-        dispatcher({ priceModel: plain });
-      });
+      try {
+        setIsPending(true);
+        const res = await fetch("/api/pricing/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            plainId: envConfig.PAYMENT_KEYS.LEMON_STORE_ID,
+          }),
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          console.log(result.checkoutUrl);
+          window.location.href = result.checkoutUrl;
+        }
+      } catch (error) {
+        console.log("error while makeing checkout", error);
+      }
     }
   };
-
-  useEffect(() => {
-    if (state.success || state.message === "redirect") {
-      redirect(state.data.url);
-    }
-  }, [state]);
 
   const calculateThumbnails = (credits: number) =>
     Math.floor(credits / COST_PER_THUMBNAIL);
@@ -249,7 +256,7 @@ export default function PricingDashboard() {
                             : "bg-zinc-900 border-transparent text-white hover:bg-zinc-700  cursor-not-allowed!"
                     }`}
                   >
-                    {Ispending ? (
+                    {IsPending ? (
                       <> Configring</>
                     ) : (
                       <>

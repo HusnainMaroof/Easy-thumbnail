@@ -10,6 +10,7 @@ import {
 import { getCurrentUser } from "../lib/auth";
 import prisma from "../lib/prisma";
 import { UnauthorizedException } from "../utils/app.error";
+import setRedis from "../lib/redis";
 
 export type ServiceResponse = {
   success: boolean;
@@ -87,10 +88,9 @@ export const onBoardService = async (
 
   const user = await getCurrentUser();
 
-  let getCachedUser = await redisClient?.get(
-    `auth_session:${user.authsuccess.data.userToken}`,
-  );
+  let getCachedUser = await redisClient?.get(`auth_session:${user.sessionId}`);
   const sessionData = JSON.parse(getCachedUser!);
+  console.log("from onboard service", user);
   if (!getCachedUser) throw new UnauthorizedException();
 
   const updated = await prisma.user.updateMany({
@@ -109,12 +109,15 @@ export const onBoardService = async (
 
   sessionData.isOnboard! = true;
   sessionData.credits = sessionData.credits + 10;
-  await redisClient?.set(
-    `auth_session:${user.authsuccess.data.userToken}`,
+
+  let expiresAt = 60 * 60 * 24 * 7;
+  await setRedis.set(
+    `auth_session:${user.sessionId}`,
     JSON.stringify(sessionData),
     "EX",
-    60 * 60 * 24 * 7,
+    expiresAt,
   );
+
   return {
     success: true,
     error: false,

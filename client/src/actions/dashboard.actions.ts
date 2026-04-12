@@ -65,27 +65,27 @@ export const onBoardAction = catchErrors(
   },
 );
 
-export const pricingAction = catchErrors(
-  async (
-    prevState: ActionResponse,
-    payload: PricingPayload,
-  ): Promise<ActionResponse> => {
-    const res = await fetch("/api/pricing/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plainId: envConfig.PAYMENT_KEYS.LEMON_STORE_ID }),
-    });
-    if (!res.ok) throw new Error("Checkout creation failed");
+// export const pricingAction = catchErrors(
+//   async (
+//     prevState: ActionResponse,
+//     payload: PricingPayload,
+//   ): Promise<ActionResponse> => {
+//     const res = await fetch("/api/pricing/checkout", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ plainId: envConfig.PAYMENT_KEYS.LEMON_STORE_ID }),
+//     });
+//     if (!res.ok) throw new Error("Checkout creation failed");
 
-    const result = await res.json();
+//     const result = await res.json();
 
-    console.log(result);
+//     console.log(result);
 
-    return {
-      success: false,
-      error: false,
-      message: "redirect",
-      data: { url: result.checkoutUrl },
-    };
-  },
-);
+//     return {
+//       success: false,
+//       error: false,
+//       message: "redirect",
+//       data: { url: result.checkoutUrl },
+//     };
+//   },
+// );

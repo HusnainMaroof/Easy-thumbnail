@@ -34,7 +34,7 @@ Gallery                   Gallery[]
 model EmailVerification {
   id           String   @id @default(uuid())
   userId       String
-  code         String
+  code         Int
   expiresAt    DateTime
   attemptCount Int      @default(0)
   otpToken     String?  @unique

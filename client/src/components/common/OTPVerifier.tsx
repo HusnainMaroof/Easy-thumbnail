@@ -67,10 +67,10 @@ const OTPVerifier = () => {
     setOtp(["", "", "", "", "", ""]);
     inputRefs.current[0]?.focus();
     let sender = "otp-resender";
-    const code = otp.join("").toString();
+    const code = otp.join("");
     let userToken = token.token!?.toString();
     startTransition(() => {
-      dispatcher({ code, userToken, sender });
+      dispatcher({ code: parseInt(code), userToken, sender });
     });
   };
 
@@ -104,20 +104,18 @@ const OTPVerifier = () => {
     if (code.length < 6) return;
     let sender = "otp-verifier";
     startTransition(() => {
-      dispatcher({ code, userToken, sender });
+      dispatcher({ code: parseInt(code), userToken, sender });
     });
   };
-  
+
   const IsDisabled = isPending || otp.join("").length <= 5;
-  
-  
+
   useEffect(() => {
     if (state.success && state.message === "Otp Verified") {
-      redirect("/dashboard/home")
+      redirect("/dashboard/home");
     }
-    
+
     console.log(state);
-  
   }, [state]);
 
   return (

@@ -30,25 +30,35 @@ export const FieldLabel = ({
 }: {
   label: string;
   tooltip?: string;
-}) => (
-  <div className="flex items-center gap-2 my-2 ml-1 group relative w-max  ">
-    <span className="text-[10px] md:text-[11px] font-black text-zinc-600 uppercase tracking-widest">
-      {label}
-    </span>
-    {tooltip && (
-      <>
-        <div className="text-zinc-400 group-hover:text-[#B197FC] cursor-help transition-colors">
-          <HelpCircle size={14} strokeWidth={3} />
-        </div>
-        {/* Tooltip Popup */}
-        <div className="absolute   bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black text-white text-[10px] font-bold leading-relaxed rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all  text-center shadow-[4px_4px_0px_0px_rgba(177,151,252,1)] scale-95 group-hover:scale-100 origin-bottom">
-          {tooltip}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
-        </div>
-      </>
-    )}
-  </div>
-);
+}) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <div className="flex items-center gap-2 my-2 ml-1 relative w-max">
+      <span className="text-[10px] md:text-[11px] font-black text-zinc-600 uppercase tracking-widest">
+        {label}
+      </span>
+
+      {tooltip && (
+        <>
+          <div
+            className="text-zinc-400 hover:text-[#B197FC] cursor-pointer transition-colors"
+            onClick={() => setShowTooltip((prev) => !prev)}
+          >
+            <HelpCircle size={14} strokeWidth={3} />
+          </div>
+
+          {showTooltip && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black text-white text-[10px] font-bold leading-relaxed rounded-xl transition-all text-center shadow-[4px_4px_0px_0px_rgba(177,151,252,1)]">
+              {tooltip}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
 // ==========================================
 // 4. DROPDOWN COMPONENT

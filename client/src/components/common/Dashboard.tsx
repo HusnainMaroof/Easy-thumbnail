@@ -152,7 +152,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
     }
   }, [state]);
   return (
-    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden">
+    <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden ">
       <div
         className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
         style={{
@@ -161,7 +161,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
         }}
       ></div>
       {/* Top Workspace Header (Replaces Sidebar Toggle) */}
-      <div className="flex items-center justify-between place  md:px-8   relative z-50  w-full!">
+      <div className="flex items-center justify-between place  px-4 md:px-8   relative z-50  w-full!">
         {/* Left: Project Branding */}
         <div
           onClick={() => {
@@ -182,16 +182,16 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
         </div>
 
         {/* Center: Generator/Review Toggle */}
-        <div className="flex bg-zinc-100 p-1.5 rounded-xl border-[3px] border-black shadow-inner jus">
+        <div className="flex bg-zinc-100 p-1.5 rounded-xl border-[3px] border-black shadow-inner ">
           <button
             onClick={() => setDashboardActiveTab("generate")}
-            className={`px-4 md:px-8 py-2 font-black cursor-pointer uppercase text-[10px] md:text-xs rounded-lg transition-all ${dashboardActiveTab === "generate" ? "bg-white text-black shadow-sm border border-zinc-200" : "text-zinc-500 hover:text-black"}`}
+            className={`px-2 md:px-8 py-1 font-black cursor-pointer uppercase text-[10px] md:text-xs rounded-lg transition-all ${dashboardActiveTab === "generate" ? "bg-white text-black shadow-sm border border-zinc-200" : "text-zinc-500 hover:text-black"}`}
           >
             Generate
           </button>
           <button
             onClick={() => setDashboardActiveTab("review")}
-            className={`px-4 md:px-8 py-2 font-black cursor-pointer uppercase text-[10px] md:text-xs rounded-lg transition-all ${dashboardActiveTab === "review" ? "bg-white text-black shadow-sm border border-zinc-200" : "text-zinc-500 hover:text-black"}`}
+            className={`px-2 md:px-8 py-1 font-black cursor-pointer uppercase text-[10px] md:text-xs rounded-lg transition-all ${dashboardActiveTab === "review" ? "bg-white text-black shadow-sm border border-zinc-200" : "text-zinc-500 hover:text-black"}`}
           >
             Review
           </button>

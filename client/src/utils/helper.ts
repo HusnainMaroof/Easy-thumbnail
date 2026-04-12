@@ -15,7 +15,7 @@ export const generateOtpHelper = async () => {
     digits: true,
   });
 
-  return otp;
+  return Number(otp);
 };
 
 export const generateToken = (length = 32) => {

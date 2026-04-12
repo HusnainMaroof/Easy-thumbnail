@@ -65,30 +65,31 @@ export const verifyOtpAction = catchErrors(
     payload: VerifyOtpPayload,
   ): Promise<ActionResponse> => {
     if (!payload.userToken) throw new Error("Unauthrozied");
-
+    let response;
     if (payload.sender === "otp-resender") {
-      let res = await reSendOtpService(payload.userToken);
+      response = await reSendOtpService(payload.userToken);
       return {
-        success: res.success,
-        message: res.message,
-        error: res.error,
-        data: res.data,
+        success: response.success,
+        message: response.message,
+        error: response.error,
+        data: response.data,
       };
     }
 
-    let res = await verifyOtpService(payload.code, payload.userToken);
+    response = await verifyOtpService(payload.code, payload.userToken);
 
     let UserData = {
-      userId: res.data.id,
-      userToken: res.data.userToken!,
-      email: res.data.email!,
-      displayName: res.data.displayName!,
-      SubPlans: res.data.subscriptionPlan,
-      isOnboard: res.data.is_Onboard,
-      credits: res.data.credits,
+      userId: response.data.id,
+      userToken: response.data.userToken!,
+      email: response.data.email!,
+      displayName: response.data.displayName!,
+      SubPlans: response.data.subscriptionPlan,
+      isOnboard: response.data.is_Onboard,
+      credits: response.data.credits,
+      galleryData: null,
     };
 
-    console.log(UserData);
+    console.log("from auth", UserData);
 
     const cookieStore = await cookies();
     const sessionId = await generateToken(32);
@@ -142,6 +143,7 @@ export const loginAction = catchErrors(
       SubPlans: login.data.subscriptionPlan,
       isOnboard: login.data.is_Onboard,
       credits: login.data.credits,
+      galleryData: null,
     };
 
     let expiresAt = 60 * 60 * 24 * 7;

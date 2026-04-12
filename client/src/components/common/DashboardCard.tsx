@@ -45,7 +45,7 @@ export const DashboardCard = ({
   isGeneratingImage,
 }: any) => {
   const CurrentStepComponent = Dashboard_Card_STEPS[currentIndex].component;
-  const { resetgenerateForm } = useAuthContext();
+  const { resetgenerateForm, user } = useAuthContext();
 
   // History Popover State & Logic
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -86,7 +86,7 @@ export const DashboardCard = ({
       <div className="bg-white border-4 border-black rounded-4xl shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] flex flex-col relative z-20">
         {/* HEADER: Title + Actions */}
         <div className="bg-zinc-50 border-b-4 border-black p-6 md:p-8 flex items-center justify-between rounded-t-[calc(2rem-4px)] relative z-60">
-          <div className="flex items-center gap-4">
+          <div className="flex md:items-center gap-4">
             <div className="w-12 h-12 bg-blue-400 text-white border-[3px] border-black rounded-xl flex items-center justify-center font-black text-lg shadow-[3px_3px_0px_0px_#000] shrink-0">
               {currentIndex + 1}
             </div>
@@ -101,7 +101,7 @@ export const DashboardCard = ({
           </div>
 
           {/* In-Card Workspace Actions */}
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-2">
             {/* RECENT ACTIVITY DROPDOWN */}
             <div className="relative" ref={historyRef}>
               <button
@@ -131,56 +131,70 @@ export const DashboardCard = ({
                         Recent Activity
                       </h3>
                       <span className="text-[9px] font-black text-white bg-black px-2 py-0.5 rounded shadow-[2px_2px_0px_0px_#B197FC]">
-                        3 Items
+                        {user?.galleryData?.length} Items
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-1.5 max-h-62.5 overflow-y-auto custom-scrollbar p-1">
-                      {[
-                        {
-                          name: "Tech Review - iPhone",
-                          type: "Setup Saved",
-                          time: "2 hrs ago",
-                          color: "bg-[#F4E041]",
-                        },
-                        {
-                          name: "Gaming Ext...",
-                          type: "Image Generated",
-                          time: "1 day ago",
-                          color: "bg-[#B197FC]",
-                        },
-                        {
-                          name: "Finance V3",
-                          type: "Setup Saved",
-                          time: "3 days ago",
-                          color: "bg-[#A7F3D0]",
-                        },
-                      ].map((item, i) => (
-                        <button
-                          key={i}
-                          className="w-full p-3 border-[3px] border-transparent hover:border-black rounded-xl text-left transition-all group flex justify-between items-center bg-zinc-50 hover:bg-white cursor-pointer hover:shadow-[3px_3px_0px_0px_#000]"
-                        >
-                          <div className="flex items-center gap-3 overflow-hidden">
-                            <div
-                              className={`w-2.5 h-2.5 rounded-sm border-2 border-black ${item.color} shrink-0`}
-                            />
-                            <div className="truncate">
-                              <div className="text-[10px] font-black uppercase truncate text-zinc-800 group-hover:text-black">
-                                {item.name}
-                              </div>
-                              <div className="text-[8px] font-bold text-zinc-400 mt-0.5 uppercase tracking-wider">
-                                {item.type} • {item.time}
+                    {user?.galleryData && user.galleryData.length > 0 ? (
+                      <div className="flex flex-col gap-1.5 max-h-62.5 overflow-y-auto custom-scrollbar p-1">
+                        {[
+                          {
+                            name: "Tech Review - iPhone",
+                            type: "Setup Saved",
+                            time: "2 hrs ago",
+                            color: "bg-[#F4E041]",
+                          },
+                          {
+                            name: "Gaming Ext...",
+                            type: "Image Generated",
+                            time: "1 day ago",
+                            color: "bg-[#B197FC]",
+                          },
+                          {
+                            name: "Finance V3",
+                            type: "Setup Saved",
+                            time: "3 days ago",
+                            color: "bg-[#A7F3D0]",
+                          },
+                        ].map((item, i) => (
+                          <button
+                            key={i}
+                            className="w-full p-3 border-[3px] border-transparent hover:border-black rounded-xl text-left transition-all group flex justify-between items-center bg-zinc-50 hover:bg-white cursor-pointer hover:shadow-[3px_3px_0px_0px_#000]"
+                          >
+                            <div className="flex items-center gap-3 overflow-hidden">
+                              <div
+                                className={`w-2.5 h-2.5 rounded-sm border-2 border-black ${item.color} shrink-0`}
+                              />
+                              <div className="truncate">
+                                <div className="text-[10px] font-black uppercase truncate text-zinc-800 group-hover:text-black">
+                                  {item.name}
+                                </div>
+                                <div className="text-[8px] font-bold text-zinc-400 mt-0.5 uppercase tracking-wider">
+                                  {item.type} • {item.time}
+                                </div>
                               </div>
                             </div>
+                            <ArrowRight
+                              size={14}
+                              strokeWidth={3}
+                              className="text-black shrink-0 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1.5 max-h-62.5 overflow-y-auto custom-scrollbar p-1">
+                        <div className="text-center py-10 text-zinc-400">
+                          <div className="text-sm font-bold uppercase tracking-widest">
+                            No recent activity
                           </div>
-                          <ArrowRight
-                            size={14}
-                            strokeWidth={3}
-                            className="text-black shrink-0 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                          />
-                        </button>
-                      ))}
-                    </div>
+                          <div className="text-[10px] mt-1">
+                            Your recent projects and generations will appear
+                            here.
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

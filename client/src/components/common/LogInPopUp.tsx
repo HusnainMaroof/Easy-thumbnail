@@ -132,9 +132,10 @@ export const LogInPopUp = () => {
   const handelGoogle = async () => {
     window.location.href = "/api/auth/google";
   };
-  useEffect(() => {
-    
-  }, []);
+  useEffect(() => {}, []);
+
+  console.log(state);
+
   return (
     <div>
       {" "}

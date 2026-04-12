@@ -4,7 +4,7 @@ import { ServiceResponse } from "../service/auth.service";
 
 export const sendOtpEmail = async (
   email: string,
-  otp: string,
+  otp: number,
   subject: string,
 ): Promise<ServiceResponse> => {
   let templet = `<!DOCTYPE html>

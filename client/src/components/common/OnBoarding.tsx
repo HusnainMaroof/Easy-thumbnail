@@ -31,6 +31,7 @@ import {
 import { ActionResponse, onBoardAction } from "@/src/actions/dashboard.actions";
 import { onBoardPayload } from "@/src/types/dashboard.type";
 import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
 // ==========================================
 // 1. DATA & OPTIONS
@@ -440,9 +441,13 @@ export default function Onboarding() {
 
   useEffect(() => {
     if (state.success && state.message === "Onboard Successfully") {
-      redirect("/dashboard/home")
+      redirect("/dashboard/home");
     }
 
+    if (state.error) {
+      console.error(state.message);
+      toast.error(state.message);
+    }
     console.log(state);
   }, [state]);
 

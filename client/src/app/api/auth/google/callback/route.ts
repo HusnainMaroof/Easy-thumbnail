@@ -1,80 +1,122 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { generateToken } from "@/src/utils/helper";
+import prisma from "@/src/lib/prisma";
 import setRedis from "@/src/lib/redis";
 import { serialize } from "cookie";
 import { envConfig } from "@/src/config/envConfig";
-import prisma from "@/src/lib/prisma";
+
 export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const code = url.searchParams.get("code");
+  try {
+    // =========================
+    // 1. GET GOOGLE CODE
+    // =========================
+    const url = new URL(req.url);
+    const code = url.searchParams.get("code");
 
-  if (!code) return NextResponse.json({ error: "No code" }, { status: 400 });
-  const tokenResponse = await axios.post(
-    "https://oauth2.googleapis.com/token",
-    new URLSearchParams({
-      code,
-      client_id: envConfig.GOOGLE_CONFIG.GOOGLE_CLIENT_ID!,
-      client_secret: envConfig.GOOGLE_CONFIG.GOOGLE_CLIENT_SECRETS!,
-      redirect_uri: `${envConfig.ORIGINS.ORIGIN_ONE}/api/auth/google/callback`,
-      grant_type: "authorization_code",
-    }).toString(),
-    { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
-  );
-  const { id_token, access_token } = tokenResponse.data;
+    if (!code) {
+      return NextResponse.json({ error: "No code provided" }, { status: 400 });
+    }
 
-  const userInfoResponse = await axios.get(
-    "https://www.googleapis.com/oauth2/v3/userinfo",
-    { headers: { Authorization: `Bearer ${access_token}` } },
-  );
-  const user = userInfoResponse.data;
-
-  let userExist;
-  userExist = await redisClient?.get(`auth_session:${user.sub}`);
-
-  if (userExist) {
-    userExist = JSON.parse(userExist);
-  } else {
-    userExist = await prisma.user.findUnique({
-      where: {
-        email: user.email,
+    // =========================
+    // 2. EXCHANGE CODE → TOKEN
+    // =========================
+    const tokenResponse = await axios.post(
+      "https://oauth2.googleapis.com/token",
+      new URLSearchParams({
+        code,
+        client_id: envConfig.GOOGLE_CONFIG.GOOGLE_CLIENT_ID!,
+        client_secret: envConfig.GOOGLE_CONFIG.GOOGLE_CLIENT_SECRETS!,
+        redirect_uri: `${envConfig.ORIGINS.ORIGIN_ONE}/api/auth/google/callback`,
+        grant_type: "authorization_code",
+      }).toString(),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       },
+    );
+
+    const { access_token } = tokenResponse.data;
+
+    // =========================
+    // 3. GET USER INFO FROM GOOGLE
+    // =========================
+    const userInfoResponse = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: { Authorization: `Bearer ${access_token}` },
+      },
+    );
+
+    const googleUser = userInfoResponse.data;
+
+    // =========================
+    // 4. CHECK USER IN DATABASE
+    // =========================
+    let dbUser = await prisma.user.findUnique({
+      where: { email: googleUser.email },
     });
-  }
 
-  let expiresAt = 60 * 60 * 24 * 7;
+    let isNewUser = false;
 
-  // while google login
-  if (userExist) {
-    if (userExist?.status === "PENDING") {
-      const updateStatus = await prisma.user.update({
-        where: { id: userExist.id },
+    // =========================
+    // 🆕 CREATE ACCOUNT
+    // =========================
+    if (!dbUser) {
+      isNewUser = true;
+
+      dbUser = await prisma.user.create({
+        data: {
+          email: googleUser.email,
+          displayName: googleUser.name,
+          userToken: googleUser.sub, // stable unique ID
+          status: "ACTIVE",
+          emailVerified: true,
+          password: "",
+          google_id: googleUser.sub,
+          credits: 10,
+        },
+      });
+    }
+
+    // =========================
+    // ✅ LOGIN (EXISTING USER)
+    // =========================
+    if (!isNewUser && dbUser.status === "PENDING") {
+      dbUser = await prisma.user.update({
+        where: { id: dbUser.id },
         data: { status: "ACTIVE", emailVerified: true },
       });
     }
-    const getgalleryData = await prisma.gallery.findFirst({
-      where: {
-        userId: userExist.id,
-      },
+
+    // =========================
+    // 5. FETCH EXTRA DATA
+    // =========================
+    const gallery = await prisma.gallery.findFirst({
+      where: { userId: dbUser.id },
     });
 
-    let UserData = {
-      userId: userExist.userId,
-      userToken: userExist.userToken!,
-      email: userExist.email!,
-      displayName: userExist.displayName!,
-      SubPlans: userExist.subscriptionPlan,
-      isOnboard: userExist.is_Onboard,
-      credits: userExist.credits,
-      galleryData: getgalleryData || null,
+    // =========================
+    // 6. CREATE SESSION (REDIS)
+    // =========================
+    const sessionData = {
+      userId: dbUser.id,
+      userToken: dbUser.userToken,
+      email: dbUser.email,
+      displayName: dbUser.displayName,
+      SubPlans: dbUser.subscriptionPlan,
+      isOnboard: dbUser.is_Onboard,
+      credits: dbUser.credits,
+      galleryData: gallery || null,
     };
-    await setRedis.set(
-      `auth_session:${userExist.userToken!}`,
-      JSON.stringify(UserData),
-      "EX",
-      expiresAt,
-    );
-    const cookie = serialize("auth_sessionId", userExist.userToken!, {
+
+    const expiresAt = 60 * 60 * 24 * 7; // 7 days
+    const redisKey = `auth_session:${dbUser.userToken}`;
+
+    await setRedis.set(redisKey, JSON.stringify(sessionData), "EX", expiresAt);
+
+    // =========================
+    // 7. SET COOKIE
+    // =========================
+    const cookie = serialize("auth_sessionId", dbUser.userToken!, {
       path: "/",
       httpOnly: true,
       sameSite: envConfig.NODE_ENV === "production" ? "none" : "lax",
@@ -82,62 +124,31 @@ export async function GET(req: Request) {
       maxAge: expiresAt,
     });
 
-    if (!userExist.is_Onboard) {
-      const res = NextResponse.redirect(
-        `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/onboarding`,
-      );
-      res.headers.set("Set-cookie", cookie);
-      return res;
+    // =========================
+    // 8. REDIRECT BASED ON FLOW
+    // =========================
+    let redirectPath = "";
+
+    if (isNewUser) {
+      redirectPath = "/dashboard/onboarding";
+    } else {
+      redirectPath = dbUser.is_Onboard
+        ? "/dashboard/home"
+        : "/dashboard/onboarding";
     }
 
     const res = NextResponse.redirect(
-      `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/home`,
+      `${envConfig.ORIGINS.ORIGIN_ONE}${redirectPath}`,
     );
-    res.headers.set("Set-cookie", cookie);
+
+    res.headers.set("Set-Cookie", cookie);
+
     return res;
+  } catch (error) {
+    console.error("GOOGLE AUTH ERROR:", error);
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 500 },
+    );
   }
-
-  // is the user is totally new then create a new user
-
-  const createUser = await prisma.user.create({
-    data: {
-      email: user.email,
-      displayName: user.name,
-      userToken: user.sub,
-      status: "ACTIVE",
-      emailVerified: true,
-      password: "",
-      google_id: user.sub,
-      credits: 10,
-    },
-  });
-  let UserData = {
-    userId: createUser.id,
-    userToken: createUser.userToken!,
-    email: createUser.email!,
-    displayName: createUser.displayName!,
-    SubPlans: createUser.subscriptionPlan,
-    isOnboard: createUser.is_Onboard,
-    credits: createUser.credits,
-    galleryData: null,
-  };
-  await setRedis.set(
-    `auth_session:${createUser.userToken!}`,
-    JSON.stringify(UserData),
-    "EX",
-    expiresAt,
-  );
-  const cookie = serialize("auth_sessionId", createUser.userToken!, {
-    path: "/",
-    httpOnly: true,
-    sameSite: envConfig.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: expiresAt,
-  });
-
-  const res = NextResponse.redirect(
-    `${envConfig.ORIGINS.ORIGIN_ONE}/dashboard/onboarding`,
-  );
-  res.headers.set("Set-cookie", cookie);
-  return res;
 }

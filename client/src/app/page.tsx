@@ -19,7 +19,7 @@ const page = async () => {
     }
   }
 
-  console.log(" user Data", user);
+
 
   return (
     <div className="w-full h-screen bg-white">

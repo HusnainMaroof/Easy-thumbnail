@@ -22,6 +22,7 @@ export interface AuthSuccess {
     SubPlans: string;
     isOnboard: boolean;
     credits: number;
+    galleryData: [] | null;
   };
 }
 
@@ -46,5 +47,6 @@ export const authFalse: AuthSuccess = {
     SubPlans: "",
     isOnboard: false,
     credits: 0,
+    galleryData: null,
   },
 };

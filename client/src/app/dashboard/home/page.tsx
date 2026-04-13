@@ -17,7 +17,7 @@ const page = async () => {
     redirect("/");
   }
 
-  console.log(user);
+
 
   return (
     <>

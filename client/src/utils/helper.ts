@@ -21,3 +21,10 @@ export const generateOtpHelper = async () => {
 export const generateToken = (length = 32) => {
   return crypto.randomBytes(length).toString("hex"); // hex string, length*2 chars
 };
+
+
+export const fileToBuffer = async (file: File): Promise<Buffer> => {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  return buffer;
+};

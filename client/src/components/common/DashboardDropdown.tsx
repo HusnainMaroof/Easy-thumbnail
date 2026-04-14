@@ -34,7 +34,7 @@ export const FieldLabel = ({
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className="flex items-center gap-2 my-2 ml-1 relative w-max">
+    <div className="group flex items-center gap-2 my-2 ml-1 relative w-max">
       <span className="text-[10px] md:text-[11px] font-black text-zinc-600 uppercase tracking-widest">
         {label}
       </span>
@@ -48,18 +48,29 @@ export const FieldLabel = ({
             <HelpCircle size={14} strokeWidth={3} />
           </div>
 
-          {showTooltip && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-black text-white text-[10px] font-bold leading-relaxed rounded-xl transition-all text-center shadow-[4px_4px_0px_0px_rgba(177,151,252,1)]">
-              {tooltip}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
-            </div>
-          )}
+          <div
+            className={`
+              absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3
+              bg-black text-white text-[10px] font-bold leading-relaxed
+              rounded-xl text-center
+              shadow-[4px_4px_0px_0px_rgba(177,151,252,1)]
+              transition-all duration-200
+              
+              opacity-0 scale-95 pointer-events-none
+              group-hover:opacity-100 group-hover:scale-100
+              
+              ${showTooltip ? "opacity-100 scale-100 pointer-events-auto" : ""}
+            `}
+          >
+            {tooltip}
+
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
+          </div>
         </>
       )}
     </div>
   );
 };
-
 // ==========================================
 // 4. DROPDOWN COMPONENT
 // ==========================================

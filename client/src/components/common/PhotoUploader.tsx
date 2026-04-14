@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Upload, X } from "lucide-react";
 
 type PhotoUploaderProps = {
   value?: File | null;
@@ -12,13 +12,25 @@ type PhotoUploaderProps = {
 
 export function PhotoUploader({ value, onChange, label }: PhotoUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const [preview, setPreview] = useState<string | null>(null);
+
+  // ✅ single source of truth (value → preview)
+  useEffect(() => {
+    if (!value) {
+      setPreview(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(value);
+    setPreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [value]);
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
-
-    setPreview(URL.createObjectURL(file));
     onChange(file);
   };
 
@@ -26,20 +38,18 @@ export function PhotoUploader({ value, onChange, label }: PhotoUploaderProps) {
     e.preventDefault();
     setIsDragging(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
-    }
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
   };
 
   const handleRemove = () => {
-    setPreview(null);
     onChange(null);
   };
 
   return (
     <div className="w-full">
       <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">
-        Upload Photo
+        {label}
       </label>
 
       <motion.div
@@ -52,8 +62,8 @@ export function PhotoUploader({ value, onChange, label }: PhotoUploaderProps) {
         className={`relative w-full border-2 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-200
           ${
             isDragging
-              ? "border-black bg-[#F4E041]/20 shadow-[6px_6px_0px_0px_#000]"
-              : "border-zinc-200 bg-white hover:border-black hover:shadow-[6px_6px_0px_0px_#000]"
+              ? "border-black bg-[#F4E041]/20"
+              : "border-zinc-200 bg-white hover:border-black"
           }`}
       >
         <input
@@ -61,7 +71,10 @@ export function PhotoUploader({ value, onChange, label }: PhotoUploaderProps) {
           type="file"
           accept="image/*"
           hidden
-          onChange={(e) => e.target.files && handleFile(e.target.files[0])}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleFile(file);
+          }}
         />
 
         <AnimatePresence mode="wait">
@@ -75,7 +88,6 @@ export function PhotoUploader({ value, onChange, label }: PhotoUploaderProps) {
             >
               <img
                 src={preview}
-                alt="Preview"
                 className="w-full h-48 object-cover rounded-xl border-2 border-black"
               />
 
@@ -85,30 +97,18 @@ export function PhotoUploader({ value, onChange, label }: PhotoUploaderProps) {
                   e.stopPropagation();
                   handleRemove();
                 }}
-                className="absolute top-3 right-3 bg-black text-[#F4E041] p-2 rounded-full shadow-md hover:scale-105 transition"
+                className="absolute top-3 right-3 bg-black text-white p-2 rounded-full"
               >
-                <X size={14} strokeWidth={3} />
+                <X size={14} />
               </button>
             </motion.div>
           ) : (
             <motion.div
               key="placeholder"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center gap-3 text-center"
+              className="flex flex-col items-center gap-3"
             >
-              <div className="p-4 rounded-full bg-[#F4E041] text-black shadow-[4px_4px_0px_0px_#000]">
-                <Upload size={22} strokeWidth={3} />
-              </div>
-
-              <div>
-                <p className="text-xs font-black uppercase tracking-wide text-black">
-                  Drag & Drop Image
-                </p>
-                <p className="text-[10px] text-zinc-500 mt-1 font-semibold">
-                  or click to browse
-                </p>
-              </div>
+              <Upload size={22} />
+              <p className="text-xs font-bold">Upload Image</p>
             </motion.div>
           )}
         </AnimatePresence>

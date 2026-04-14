@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForDev: true,
   },
+  images: {
+    domains: ["res.cloudinary.com"],
+  },
 };
 
 export default nextConfig;

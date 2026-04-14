@@ -33,6 +33,8 @@ import {
 } from "@/src/actions/dashboard.actions";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
+import { is } from "zod/v4/locales";
+import { set } from "zod";
 
 const Dashboard = () => {
   const initialState: ActionResponse = {
@@ -56,12 +58,12 @@ const Dashboard = () => {
     setThumnail,
     setGenerateForm,
     user,
+    setUser,
   } = useAuthContext();
 
-  // Default closed on mobile
-
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  // Responsive sidebar handling
+  const toastId = useRef<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) setDashboardSideBar(true);
@@ -90,10 +92,12 @@ const Dashboard = () => {
   const completionPercentage = Math.round(
     (filledFields / requiredFields.length) * 100,
   );
+  // const completionPercentage = 100; // For testing purposes, set to 100% to enable the button
 
   const handleGenerate = () => {
-    // console.log(generateForm);
-
+    setIsGeneratingImage(true);
+    console.log(generateForm);
+    toastId.current = toast.loading("Generating thumbnail...");
     const prompt = `
 MASTER DIRECTIVE:
 You are a world-class, multi-million subscriber YouTube thumbnail designer and behavioral psychologist. Your singular goal is to generate a hyper-optimized, ultra-high CTR (Click-Through Rate) thumbnail image that immediately arrests the viewer's attention and stops them from scrolling on ${generateForm.platform || "social media"}.
@@ -144,13 +148,26 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
     if (state.error) {
       toast.error(state.message);
       console.log(state.data);
+      setIsGeneratingImage(false);
+      toast.dismiss(toastId.current!);
     }
 
     if (state.success && state.message === "thumnail generated") {
       setDashboardActiveTab("review");
-      setThumnail(state.data);
+
+      if (state.data?.imgUrl!) {
+        setThumnail(state.data.imgUrl!);
+      }
+      setUser(state.data?.userData!);
+      setIsGeneratingImage(false);
+      toast.dismiss(toastId.current!);
+      toast.success("Thumbnail generated successfully!");
     }
+    console.log(state);
   }, [state]);
+
+  console.log("USERdATA", user);
+
   return (
     <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden ">
       <div
@@ -160,7 +177,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
           backgroundSize: "40px 40px",
         }}
       ></div>
-      {/* Top Workspace Header (Replaces Sidebar Toggle) */}
+
       <div className="flex items-center justify-between place  px-4 md:px-8   relative z-50  w-full!">
         {/* Left: Project Branding */}
         <div
@@ -203,7 +220,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
         >
           <Zap size={16} strokeWidth={3} className="text-black" />
           <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">
-            {user?.credits} Credits
+            {user?.credits?.toString().slice(0, 4)}Credits
           </span>
         </motion.div>
       </div>
@@ -225,7 +242,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
                   onIndexChange={setCurrentCardIndex}
                   completionPercentage={completionPercentage}
                   handleGenerate={handleGenerate}
-                  isGeneratingImage={Ispending}
+                  isGeneratingImage={isGeneratingImage}
                 />
               </motion.div>
             </div>

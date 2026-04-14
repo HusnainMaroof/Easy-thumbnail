@@ -50,3 +50,19 @@ export const authFalse: AuthSuccess = {
     galleryData: null,
   },
 };
+
+
+
+export type UserType = {
+  
+  userToken: string;
+  displayName: string;
+  email: string;
+  SubPlans: string;
+  isOnboard: boolean;
+  credits: number | null;
+  galleryData: any[] | null;
+  
+} | null;
+
+export type DashboardTab = "generate" | "review";

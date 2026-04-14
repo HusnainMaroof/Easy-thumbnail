@@ -40,6 +40,7 @@ export const getCurrentUser = async (): Promise<AuthPayload> => {
         userToken: parsed.userToken,
         SubPlans: parsed.SubPlans,
         isOnboard: parsed.isOnboard,
+        galleryData: parsed.galleryData || [],
       },
     },
   };

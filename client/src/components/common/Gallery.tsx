@@ -1,9 +1,9 @@
 "use client";
+"use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  PanelLeftClose,
   Search,
   Download,
   Trash2,
@@ -11,35 +11,64 @@ import {
   Filter,
   Image as ImageIcon,
   MoreVertical,
-  Wand2,
   X,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useAuthContext } from "@/src/context/AuthContext";
-
-// --- Mock Data ---
-
-const CATEGORIES = ["All", "Tech", "AI", "Vlog", "Design"];
-
-// --- Animation Variants ---
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.1,
-    },
-  },
-};
 
 export default function ThumbnailGallery() {
   const { user } = useAuthContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  let galleryData = user?.galleryData || [];
+  // Prompt Popover State
+  const [openPromptId, setOpenPromptId] = useState<string | null>(null);
+  const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
+
+  const galleryData = user?.galleryData || [];
+  let CATEGORIES = ["All"];
+
+  // Close prompt dropdown when clicking outside
+  useEffect(() => {
+    const handleDocClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // Close only if the click didn't happen inside any prompt container
+      if (!target.closest(".prompt-container")) {
+        setOpenPromptId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleDocClick);
+    return () => document.removeEventListener("mousedown", handleDocClick);
+  }, []);
+
+  const normalizedData = useMemo(
+    () =>
+      galleryData.map((item: any) => ({
+        id: item.id,
+        title: item.generationConfig?.title || "Untitled",
+        category: item.generationConfig?.category || "other",
+        hookType: item.generationConfig?.hookType || "other",
+        prompt: item.generationConfig?.prompt || "No prompt provided.",
+        date: new Date(item.createdAt).toLocaleDateString(),
+        image: item.uploadedImage,
+      })),
+    [galleryData],
+  );
+
+  if (galleryData.length > 0) {
+    CATEGORIES = useMemo(
+      () => [
+        "All",
+        ...Array.from(new Set(normalizedData.map((i) => i.category))),
+      ],
+      [normalizedData],
+    );
+  }
+
   // Filter Logic
-  const filteredThumbnails = galleryData.filter((thumb) => {
+  const filteredThumbnails = normalizedData.filter((thumb) => {
     const matchesSearch = thumb.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
@@ -48,9 +77,56 @@ export default function ThumbnailGallery() {
     return matchesSearch && matchesCategory;
   });
 
+  const handleDownload = async (url: string, title: string) => {
+    if (!url) return;
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `${title || "thumbnail"}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Download failed:", err);
+      window.open(url, "_blank");
+    }
+  };
+
+  const handleCopyPrompt = (e: React.MouseEvent, text: string) => {
+    e.preventDefault();
+
+    // Fallback for iframe environments
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    // Prevent scrolling to bottom of page in some browsers
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand("copy");
+      setCopiedPrompt(text);
+      setTimeout(() => setCopiedPrompt(null), 2000);
+    } catch (err) {
+      console.error("Unable to copy", err);
+    } finally {
+      textArea.remove();
+    }
+  };
+
   return (
-    <div className=" w-full bg-[#fafafa] text-black font-sans selection:bg-[#F4E041] relative flex flex-col overflow-x-hidden  pb-20 ">
-      <div className="relative z-10 px-4 md:px-8 mx-auto w-full  mb-8">
+    <div className="min-h-screen h-full w-full bg-[#fafafa] text-black font-sans selection:bg-[#F4E041] relative flex flex-col overflow-x-hidden pb-24">
+      {/* --- HEADER & CONTROLS --- */}
+      <div className="relative z-10 px-4 md:px-8 max-w-[1400px] mx-auto w-full pt-12 mb-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -60,8 +136,8 @@ export default function ThumbnailGallery() {
             <h1 className="text-4xl md:text-6xl font-black text-black tracking-tighter mb-2 leading-tight uppercase drop-shadow-sm">
               My Gallery
             </h1>
-            <div className="inline-flex items-center justify-center border px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest mt-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
-              {galleryData.length} Total Generations
+            <div className="inline-flex items-center justify-center bg-black text-[#F4E041] px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest mt-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
+              {normalizedData.length} Total Generations
             </div>
           </div>
 
@@ -101,172 +177,275 @@ export default function ThumbnailGallery() {
         </motion.div>
 
         {/* Category Pills */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex gap-3 pt-10 overflow-x-auto pb-4 scrollbar-hide snap-x"
-        >
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`snap-start shrink-0 px-6 py-2.5 rounded-xl border-[3px] border-black font-black text-[11px] uppercase tracking-widest transition-all duration-200 ${
-                activeCategory === cat
-                  ? "bg-[#a855f7] text-white shadow-[4px_4px_0px_0px_#000] -translate-y-1"
-                  : "bg-white text-zinc-600 hover:bg-zinc-100 hover:text-black hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </motion.div>
+        {CATEGORIES.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex gap-3 pt-10 overflow-x-auto pb-4 scrollbar-hide snap-x"
+          >
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat as string)}
+                className={`snap-start shrink-0 px-6 py-2.5 rounded-xl border-[3px] border-black font-black text-[11px] uppercase tracking-widest transition-all duration-200 cursor-pointer ${
+                  activeCategory === cat
+                    ? "bg-[#a855f7] text-white shadow-[4px_4px_0px_0px_#000] -translate-y-1"
+                    : "bg-white text-zinc-600 hover:bg-zinc-100 hover:text-black hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1"
+                }`}
+              >
+                {cat as React.ReactNode}
+              </button>
+            ))}
+          </motion.div>
+        )}
       </div>
 
       {/* --- GRID GALLERY --- */}
-
       {galleryData.length > 0 ? (
-        <>
-          <main className="relative z-10 px-4 md:px-8  mx-auto w-full">
-            <AnimatePresence mode="wait">
-              {filteredThumbnails.length > 0 ? (
-                <motion.div
-                  key="grid"
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="show"
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
-                >
-                  {filteredThumbnails.map((thumb) => (
-                    <motion.div
-                      key={thumb.id}
-                      layout
-                      className="group relative bg-white border-[3px] border-black rounded-2xl p-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] hover:-translate-y-1.5 hover:-translate-x-1.5 hover:shadow-[10px_10px_0px_0px_#000] transition-all duration-300 flex flex-col"
+        <main className="relative z-10 px-4 md:px-8 max-w-[1400px] mx-auto w-full">
+          <AnimatePresence mode="wait">
+            {filteredThumbnails.length > 0 ? (
+              <motion.div
+                key="grid"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: 1,
+                  transition: { staggerChildren: 0.05, delayChildren: 0.1 },
+                }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+              >
+                {filteredThumbnails.map((thumb) => (
+                  <motion.div
+                    key={thumb.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 24,
+                      },
+                    }}
+                    layout
+                    // Elevated z-index when this card's prompt popover is open
+                    className={`group relative bg-white border-[3px] border-black rounded-2xl p-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] hover:-translate-y-1.5 hover:-translate-x-1.5 hover:shadow-[10px_10px_0px_0px_#000] transition-all duration-300 flex flex-col ${
+                      openPromptId === thumb.id ? "z-50" : "z-10"
+                    }`}
+                  >
+                    {/* Thumbnail Image Container */}
+                    <div
+                      className="w-full aspect-video rounded-xl border-2 border-black relative overflow-hidden flex items-center justify-center mb-4 transition-transform duration-300 bg-zinc-100"
+                      style={
+                        thumb.image
+                          ? {
+                              backgroundImage: `url(${thumb.image})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                            }
+                          : {}
+                      }
                     >
-                      {/* Thumbnail Image Container */}
-                      <div
-                        className="w-full aspect-video rounded-xl border-2 border-black relative overflow-hidden flex items-center justify-center mb-4 transition-transform duration-300"
-                        style={{
-                          background: `linear-gradient(135deg, ${thumb.color}aa, ${thumb.color})`,
-                        }}
-                      >
-                        {/* Mock Content inside Thumbnail */}
+                      {/* Fallback Icon if no image */}
+                      {!thumb.image && (
                         <ImageIcon
-                          size={56}
-                          className="text-black opacity-30 mix-blend-overlay group-hover:scale-110 transition-transform duration-500"
+                          size={48}
+                          className="text-zinc-300"
                           strokeWidth={1.5}
                         />
-                        <div className="absolute bottom-3 left-3 right-3 bg-black/80 backdrop-blur-md text-white font-black text-[11px] p-2.5 rounded-lg truncate text-center border border-white/10 shadow-lg">
+                      )}
+
+                      {/* Gradient Overlay for Text Readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+
+                      {/* Hover Overlay Actions */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-sm z-10">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(thumb.image, thumb.title);
+                          }}
+                          className="w-12 h-12 cursor-pointer rounded-full bg-[#F4E041] border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
+                          title="Download"
+                        >
+                          <Download
+                            size={20}
+                            strokeWidth={2.5}
+                            className="text-black"
+                          />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (thumb.image) setPreviewImage(thumb.image);
+                          }}
+                          className="w-12 h-12 cursor-pointer rounded-full bg-white border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
+                          title="Preview"
+                        >
+                          <ExternalLink
+                            size={20}
+                            strokeWidth={2.5}
+                            className="text-black"
+                          />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Thumbnail Meta Info */}
+                    <div className="px-1 pb-1 flex flex-col flex-1 relative">
+                      <div className="flex justify-between items-start gap-3 mb-3 relative">
+                        <h3 className="font-black text-sm text-black line-clamp-2 leading-snug group-hover:text-[#a855f7] transition-colors">
                           {thumb.title}
-                        </div>
+                        </h3>
 
-                        {/* Hover Overlay Actions */}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-sm z-10">
+                        {/* --- PROMPT BUTTON & POPOVER --- */}
+                        <div className="relative shrink-0 prompt-container">
                           <button
-                            className="w-12 h-12 rounded-full bg-[#F4E041] border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
-                            title="Download"
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setOpenPromptId(
+                                openPromptId === thumb.id ? null : thumb.id,
+                              );
+                            }}
+                            className={`cursor-pointer text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-md truncate transition-colors border ${
+                              openPromptId === thumb.id
+                                ? "bg-black text-[#F4E041] border-black"
+                                : "bg-zinc-100 hover:bg-zinc-200 text-zinc-600 border-zinc-200"
+                            }`}
                           >
-                            <Download
-                              size={20}
-                              strokeWidth={2.5}
-                              className="text-black"
-                            />
+                            Prompt
                           </button>
-                          <button
-                            className="w-12 h-12 rounded-full bg-white border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
-                            title="Preview"
-                          >
-                            <ExternalLink
-                              size={20}
-                              strokeWidth={2.5}
-                              className="text-black"
-                            />
-                          </button>
+
+                          <AnimatePresence>
+                            {openPromptId === thumb.id && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                transition={{ duration: 0.15 }}
+                                className="absolute bottom-full right-0 mb-3 w-[260px] sm:w-[300px] bg-white border-[3px] border-black rounded-xl p-4 shadow-[6px_6px_0px_0px_#000] z-50 flex flex-col gap-3"
+                              >
+                                <div className="flex justify-between items-center border-b-2 border-zinc-100 pb-2">
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                    Generation Prompt
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      setOpenPromptId(null);
+                                    }}
+                                    className="text-zinc-400 hover:text-black transition-colors cursor-pointer"
+                                  >
+                                    <X size={14} strokeWidth={3} />
+                                  </button>
+                                </div>
+                                <p className="text-xs font-bold text-black leading-relaxed">
+                                  {thumb.prompt}
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={(e) =>
+                                    handleCopyPrompt(e, thumb.prompt)
+                                  }
+                                  className="mt-1 w-full flex items-center justify-center gap-2 py-2 bg-zinc-100 hover:bg-zinc-200 text-black border-2 border-transparent hover:border-black rounded-lg text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer"
+                                >
+                                  {copiedPrompt === thumb.prompt ? (
+                                    <>
+                                      <Check
+                                        size={14}
+                                        strokeWidth={2.5}
+                                        className="text-green-500"
+                                      />{" "}
+                                      Copied!
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy size={14} strokeWidth={2.5} /> Copy
+                                      Prompt
+                                    </>
+                                  )}
+                                </button>
+                                {/* Little triangle pointing down */}
+                                <div className="absolute -bottom-2 right-4 w-4 h-4 bg-white border-b-[3px] border-r-[3px] border-black transform rotate-45" />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       </div>
 
-                      {/* Thumbnail Meta Info */}
-                      <div className="px-1 pb-1 flex flex-col flex-1">
-                        <div className="flex justify-between items-start gap-3 mb-3">
-                          <h3 className="font-black text-sm text-black line-clamp-2 leading-snug group-hover:text-[#a855f7] transition-colors">
-                            {thumb.title}
-                          </h3>
-                          <button className="text-zinc-400 hover:text-black transition-colors shrink-0 bg-zinc-100 hover:bg-zinc-200 p-1.5 rounded-md">
-                            <MoreVertical size={16} strokeWidth={2.5} />
-                          </button>
-                        </div>
-                        <div className="flex items-center justify-between mt-auto pt-3 border-t-2 border-dashed border-zinc-100">
-                          <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 bg-zinc-100 border border-zinc-200 px-2.5 py-1.5 rounded-md">
-                            {thumb.category}
-                          </span>
-                          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                            {thumb.date}
-                          </span>
-                        </div>
+                      <div className="flex items-center justify-between mt-auto pt-3 border-t-2 border-dashed border-zinc-100">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 bg-zinc-100 border border-zinc-200 px-2.5 py-1.5 rounded-md truncate max-w-[120px]">
+                          {thumb.hookType}
+                        </span>
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                          {thumb.date}
+                        </span>
                       </div>
+                    </div>
 
-                      {/* Quick Delete action */}
-                      <button className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-red-500 border-2 border-black flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 hover:bg-red-600 shadow-[2px_2px_0px_0px_#000] z-20">
-                        <Trash2 size={14} strokeWidth={3} />
-                      </button>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="w-full py-24 flex flex-col items-center justify-center border-[3px] border-dashed border-zinc-300  bg-white shadow-sm"
+                    {/* Quick Delete action */}
+                    <button className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-red-500 border-2 border-black flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110 hover:bg-red-600 shadow-[2px_2px_0px_0px_#000] z-20">
+                      <Trash2 size={14} strokeWidth={3} />
+                    </button>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty-search"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full py-24 flex flex-col items-center justify-center border-[3px] border-dashed border-zinc-300 bg-white shadow-sm rounded-2xl"
+              >
+                <div className="w-24 h-24 bg-zinc-50 border-2 border-zinc-200 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
+                  <ImageIcon
+                    size={40}
+                    className="text-zinc-300"
+                    strokeWidth={2}
+                  />
+                </div>
+                <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-800 mb-3">
+                  No Thumbnails Found
+                </h3>
+                <p className="text-zinc-500 font-bold text-sm text-center max-w-md leading-relaxed">
+                  We couldn't find any creations matching{" "}
+                  <span className="text-black bg-zinc-100 px-1 rounded">
+                    "{searchQuery}"
+                  </span>{" "}
+                  in the{" "}
+                  <span className="text-black bg-zinc-100 px-1 rounded">
+                    {activeCategory}
+                  </span>{" "}
+                  category.
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveCategory("All");
+                  }}
+                  className="mt-8 bg-black text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] border-[3px] border-black shadow-[4px_4px_0px_0px_#a855f7] hover:translate-y-1 hover:translate-x-1 hover:shadow-[0px_0px_0px_0px_#a855f7] transition-all"
                 >
-                  <div className="w-24 h-24 bg-zinc-50 border-2 border-zinc-200 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
-                    <ImageIcon
-                      size={40}
-                      className="text-zinc-300"
-                      strokeWidth={2}
-                    />
-                  </div>
-                  <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-800 mb-3">
-                    No Thumbnails Found
-                  </h3>
-                  <p className="text-zinc-500 font-bold text-sm text-center max-w-md leading-relaxed">
-                    We couldn't find any creations matching{" "}
-                    <span className="text-black bg-zinc-100 px-1 rounded">
-                      "{searchQuery}"
-                    </span>{" "}
-                    in the{" "}
-                    <span className="text-black bg-zinc-100 px-1 rounded">
-                      {activeCategory}
-                    </span>{" "}
-                    category.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setActiveCategory("All");
-                    }}
-                    className="mt-8 bg-black text-white px-8 py-3.5 rounded-xl font-black uppercase tracking-widest text-[11px] border-[3px] border-black shadow-[4px_4px_0px_0px_#a855f7] hover:translate-y-1 hover:translate-x-1 hover:shadow-[0px_0px_0px_0px_#a855f7] transition-all"
-                  >
-                    Clear All Filters
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </main>
-        </>
+                  Clear All Filters
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </main>
       ) : (
-        <div className="relative z-10 px-4 md:px-8   mx-auto ">
-          {" "}
+        <div className="relative z-10 px-4 md:px-8 max-w-[1400px] mx-auto w-full">
           <motion.div
-            key="empty"
+            key="empty-gallery"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-2xl   py-24  px-14 flex flex-col items-center justify-center border-[3px] border-dashed border-zinc-300  bg-white shadow-sm"
+            className="rounded-2xl py-24 px-14 flex flex-col items-center justify-center border-[3px] border-dashed border-zinc-300 bg-white shadow-sm"
           >
             <div className="w-24 h-24 bg-zinc-50 border-2 border-zinc-200 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
               <ImageIcon size={40} className="text-zinc-300" strokeWidth={2} />
             </div>
-            <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-800 mb-3">
+            <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-800 mb-3 text-center">
               No Thumbnails Found
             </h3>
             <p className="text-zinc-500 font-bold text-sm text-center max-w-md leading-relaxed">
@@ -276,6 +455,57 @@ export default function ThumbnailGallery() {
           </motion.div>
         </div>
       )}
+
+      {/* --- FULLSCREEN IMAGE MODAL --- */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[999] p-4"
+            onClick={() => setPreviewImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative max-w-6xl w-full flex flex-col items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute -top-14 right-0 flex gap-3">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(previewImage, "thumbnail-preview");
+                  }}
+                  className="w-10 h-10 cursor-pointer rounded-full bg-[#F4E041] border-[3px] border-black flex items-center justify-center hover:scale-110 transition-transform shadow-[4px_4px_0px_0px_#000]"
+                  title="Download"
+                >
+                  <Download
+                    size={18}
+                    strokeWidth={2.5}
+                    className="text-black"
+                  />
+                </button>
+                <button
+                  onClick={() => setPreviewImage(null)}
+                  className="w-10 h-10 cursor-pointer text-white bg-black border-2 border-white rounded-full flex items-center justify-center hover:scale-110 hover:bg-white hover:text-black transition-all shadow-[4px_4px_0px_0px_#000]"
+                >
+                  <X size={20} strokeWidth={3} />
+                </button>
+              </div>
+
+              <img
+                src={previewImage}
+                className="w-full max-h-[85vh] object-contain border-4 border-black rounded-2xl bg-zinc-900 shadow-[12px_12px_0px_0px_#a855f7]"
+                alt="Thumbnail Preview"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

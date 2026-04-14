@@ -9,15 +9,13 @@ import { redirect } from "next/navigation";
 const page = async () => {
   const user = await getCurrentUser();
 
-
-
   if (!user.authsuccess.success) {
     console.log("un authrozied sss");
 
     redirect("/");
   }
 
-
+  // console.log(user);
 
   return (
     <>

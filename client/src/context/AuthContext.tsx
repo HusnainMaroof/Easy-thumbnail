@@ -1,24 +1,12 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { GenrateFormType, INITIAL_FORM_STATE } from "../types/dashboard.type";
-import { AuthSuccess } from "../types/authType";
-
-type UserType = {
-  
-  userToken: string;
-  displayName: string;
-  email: string;
-  SubPlans: string;
-  isOnboard: boolean;
-  credits: number | null;
-  galleryData: any[] | null;
-  
-} | null;
-
-type DashboardTab = "generate" | "review";
+import { AuthSuccess, DashboardTab, UserType } from "../types/authType";
+import toast from "react-hot-toast";
 
 type AuthContextType = {
   user: UserType;
+  setUser: React.Dispatch<React.SetStateAction<UserType>>;
   showAuthPopup: boolean;
   setShowAuthPopup: React.Dispatch<React.SetStateAction<boolean>>;
   showLoginPopup: boolean;
@@ -44,11 +32,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({
   children,
-  user,
+  user: initialUser,
 }: {
   children: ReactNode;
   user: UserType;
 }) => {
+  const [user, setUser] = useState<UserType>(initialUser);
+
   const [showAuthPopup, setShowAuthPopup] = React.useState(false);
   const [showLoginPopup, setShowLoginPopup] = React.useState(false);
   const [LoginView, setLoginView] = useState("login");
@@ -65,6 +55,7 @@ export const AuthProvider = ({
 
   const resetgenerateForm = () => {
     setGenerateForm(INITIAL_FORM_STATE);
+    toast.success("Form reset successfully!");
   };
 
   return (
@@ -79,6 +70,7 @@ export const AuthProvider = ({
         generateForm,
         setGenerateForm,
         user,
+        setUser,
         showAuthPopup,
         setShowAuthPopup,
         showLoginPopup,

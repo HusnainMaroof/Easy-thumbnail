@@ -4,6 +4,7 @@ import { envConfig } from "../config/envConfig";
 import { Prisma } from "../generated/client";
 import { getCurrentUser } from "../lib/auth";
 import prisma from "../lib/prisma";
+import setRedis from "../lib/redis";
 import {
   generateThumnailService,
   onBoardService,
@@ -30,21 +31,58 @@ export const generateThumnailAction = catchErrors(
   ): Promise<ActionResponse> => {
     const user = await getCurrentUser();
     const service = await generateThumnailService(payload);
+    let userUpdatedData: any = null;
+    if (service.success && service.message === "thumnail generated") {
+      const key = `auth_session:${user.sessionId}`;
+      const cachedData = await setRedis?.get(key);
+      userUpdatedData = JSON.parse(cachedData!);
+      const userId = userUpdatedData.userId;
 
-    if (service.success) {
+      let galleryData = {
+        ...payload.ThumbnailConfig,
+        referenceImage: service.data.refImgUrl,
+      };
+
       let saveThumbnail = await prisma.gallery.create({
         data: {
-          generationConfig: payload.ThumbnailConfig as Prisma.InputJsonValue,
-          userId: user.authsuccess.data.userToken!,
+          generationConfig: galleryData as Prisma.InputJsonValue,
+          userId: userId,
+          uploadedImage: service.data.imgUrl,
+          prompt: payload.prompt,
         },
       });
+
+      let updatedCredits = await prisma.user.updateMany({
+        where: { userToken: user.authsuccess.data.userToken! },
+        data: { credits: { decrement: 0.8 } },
+      });
+
+      userUpdatedData.credits = (userUpdatedData.credits || 0) - 0.8;
+
+      if (!Array.isArray(userUpdatedData.galleryData)) {
+        userUpdatedData.galleryData = [];
+      }
+
+      userUpdatedData.galleryData.unshift(saveThumbnail);
+
+      const ttl = await setRedis.ttl(key);
+
+      if (ttl > 0) {
+        await setRedis.set(key, JSON.stringify(userUpdatedData), "EX", ttl);
+      } else {
+        await setRedis.set(key, JSON.stringify(userUpdatedData));
+      }
     }
 
+
     return {
-      success: false,
-      error: true,
-      message: "to many request please try again letter",
-      data: {},
+      success: service.success,
+      error: service.error,
+      message: service.message,
+      data: {
+        userData: userUpdatedData,
+        imgUrl: service.data.imgUrl,
+      },
     };
   },
 );

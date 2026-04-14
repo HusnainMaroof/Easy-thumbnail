@@ -45,7 +45,7 @@ export const DashboardCard = ({
   isGeneratingImage,
 }: any) => {
   const CurrentStepComponent = Dashboard_Card_STEPS[currentIndex].component;
-  const { resetgenerateForm, user } = useAuthContext();
+  const { resetgenerateForm, user , generateForm , setGenerateForm } = useAuthContext();
 
   // History Popover State & Logic
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -64,8 +64,16 @@ export const DashboardCard = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const IsDisabled = completionPercentage < 50 || isGeneratingImage;
+
+  const handelRestoreFromHistory = (item: any) => {
+    const { generationConfig } = item;
+    console.log(generationConfig);
+    setGenerateForm(generationConfig);
+  };
+
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col pt-6 md:pt-10">
+    <div className="w-full max-w-3xl mx-auto flex flex-col  ">
       {/* Top Floating Progress/Steps Tracker (Outside the main card) */}
       <div className="flex gap-1.5 mb-6 px-2 w-full max-w-[80%] mx-auto">
         {Dashboard_Card_STEPS.map((_, idx) => (
@@ -137,50 +145,38 @@ export const DashboardCard = ({
 
                     {user?.galleryData && user.galleryData.length > 0 ? (
                       <div className="flex flex-col gap-1.5 max-h-62.5 overflow-y-auto custom-scrollbar p-1">
-                        {[
-                          {
-                            name: "Tech Review - iPhone",
-                            type: "Setup Saved",
-                            time: "2 hrs ago",
-                            color: "bg-[#F4E041]",
-                          },
-                          {
-                            name: "Gaming Ext...",
-                            type: "Image Generated",
-                            time: "1 day ago",
-                            color: "bg-[#B197FC]",
-                          },
-                          {
-                            name: "Finance V3",
-                            type: "Setup Saved",
-                            time: "3 days ago",
-                            color: "bg-[#A7F3D0]",
-                          },
-                        ].map((item, i) => (
-                          <button
-                            key={i}
-                            className="w-full p-3 border-[3px] border-transparent hover:border-black rounded-xl text-left transition-all group flex justify-between items-center bg-zinc-50 hover:bg-white cursor-pointer hover:shadow-[3px_3px_0px_0px_#000]"
-                          >
-                            <div className="flex items-center gap-3 overflow-hidden">
-                              <div
-                                className={`w-2.5 h-2.5 rounded-sm border-2 border-black ${item.color} shrink-0`}
-                              />
-                              <div className="truncate">
-                                <div className="text-[10px] font-black uppercase truncate text-zinc-800 group-hover:text-black">
-                                  {item.name}
-                                </div>
-                                <div className="text-[8px] font-bold text-zinc-400 mt-0.5 uppercase tracking-wider">
-                                  {item.type} • {item.time}
+                        {user.galleryData.map((item, i) => {
+                          const { generationConfig, createdAt } = item;
+
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => handelRestoreFromHistory(item)}
+                              className="w-full p-3 border-[3px] border-transparent hover:border-black rounded-xl text-left transition-all group flex justify-between items-center bg-zinc-50 hover:bg-white cursor-pointer hover:shadow-[3px_3px_0px_0px_#000]"
+                            >
+                              <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="truncate">
+                                  {/* TITLE */}
+                                  <div className="text-[10px] font-black uppercase truncate text-zinc-800 group-hover:text-black">
+                                    {generationConfig?.title}
+                                  </div>
+
+                                  {/* HOOK TYPE + TIME */}
+                                  <div className="text-[8px] font-bold text-zinc-400 mt-0.5 uppercase tracking-wider">
+                                    {generationConfig?.hookType} •{" "}
+                                    {new Date(createdAt).toLocaleDateString()}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <ArrowRight
-                              size={14}
-                              strokeWidth={3}
-                              className="text-black shrink-0 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                            />
-                          </button>
-                        ))}
+
+                              <ArrowRight
+                                size={14}
+                                strokeWidth={3}
+                                className="text-black shrink-0 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                              />
+                            </button>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="flex flex-col gap-1.5 max-h-62.5 overflow-y-auto custom-scrollbar p-1">
@@ -277,9 +273,9 @@ export const DashboardCard = ({
             <div className="flex-1 md:flex-none">
               <MainButton
                 onClick={handleGenerate}
-                disabled={completionPercentage < 50}
+                disabled={IsDisabled}
                 variant="blue"
-                className="flex items-center justify-center gap-2 px-4 cursor-pointer "
+                className={`flex items-center justify-center gap-2 px-4 cursor-pointer disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500 disabled:border-transparent ${IsDisabled ? "bg-zinc-300 text-zinc-500 border-transparent cursor-not-allowed" : "bg-blue-300 text-black! border-[3px] border-black hover:bg-blue-200 active:translate-y-1 active:shadow-none"}  `}
               >
                 {isGeneratingImage ? "Rendering..." : "Generate"}
               </MainButton>

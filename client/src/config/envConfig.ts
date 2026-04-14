@@ -30,6 +30,14 @@ type PAYMENT_KEYS = {
 type ORIGINS = {
   ORIGIN_ONE?: string;
 };
+type HUGGING_FACE = {
+  HF_TOKEN?: string;
+};
+type CLOUDINARY = {
+  CLOUD_NAME?: string;
+  API_KEY?: string;
+  API_SECRET?: string;
+};
 
 export const envConfig = {
   DATABASE_URL: process.env.DATABASE_URL,
@@ -69,4 +77,12 @@ export const envConfig = {
     LEMON_API: process.env.LEMON_API,
     LEMON_PRODUCT_ID: process.env.LEMON_PRODUCT_ID,
   } satisfies PAYMENT_KEYS,
+  HUGGING_FACE: {
+    HF_TOKEN: process.env.HUGGING_FACE_API_KEY,
+  } satisfies HUGGING_FACE,
+  CLOUDINARY: {
+    CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+    API_KEY: process.env.CLOUDINARY_API_KEY,
+    API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  } satisfies CLOUDINARY,
 };

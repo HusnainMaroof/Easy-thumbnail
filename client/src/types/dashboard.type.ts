@@ -1,3 +1,5 @@
+import { s } from "framer-motion/client";
+
 export type GenrateFormType = {
   platform: string;
   title: string;
@@ -44,13 +46,13 @@ export const INITIAL_FORM_STATE: GenrateFormType = {
   highlightTarget: "",
   thumbnailText: "",
   colorMode: "",
-  referenceImage: null,
+  referenceImage: "" as unknown as File,
   textPlacement: "",
 };
 
 export interface thumpnailPayload {
   prompt: string;
-  ThumbnailConfig: Object;
+  ThumbnailConfig: any;
 }
 
 export interface onBoardPayload {

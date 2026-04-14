@@ -81,14 +81,7 @@ export const Step2Concept = () => {
   const updateField = (field: keyof GenrateFormType, value: any) =>
     setGenerateForm((prev: any) => ({ ...prev, [field]: value }));
 
-  const handleMagicBrainstorm = async () => {
-    if (!generateForm.title) return;
-    setIsGeneratingStory(true);
-    const prompt = `You are a YouTube thumbnail expert. Describe a highly visual, eye-catching thumbnail scene for a YouTube video titled "${generateForm.title}". Category is ${generateForm.category || "general"}. Focus strictly on what is visually seen in the image. Keep it under 2 sentences. No intro/outro text.`;
-    // const result = await callGemini(prompt);
-    // if (result) updateField("thumbnailStory", result.replace(/"/g, ""));
-    setIsGeneratingStory(false);
-  };
+
 
   return (
     <div className="space-y-6">
@@ -96,7 +89,7 @@ export const Step2Concept = () => {
         <input
           type="text"
           placeholder="e.g. I Built an AI Robot..."
-          className="w-full border-[3px] border-zinc-300 hover:border-black rounded-xl p-4 font-bold text-sm md:text-base outline-none bg-white focus:border-black shadow-sm focus:shadow-[4px_4px_0px_0px_#B197FC] transition-all"
+          className="w-full border-[3px] border-zinc-300 hover:border-black rounded-xl p-4 font-bold text-sm md:text-base outline-none bg-white focus:border-black shadow-sm focus:shadow-[4px_4px_0px_0px_#000000] transition-all"
           value={generateForm.title}
           onChange={(e) => updateField("title", e.target.value)}
         />

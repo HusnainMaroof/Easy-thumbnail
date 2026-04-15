@@ -4,9 +4,9 @@ import { initLemonSqueezy } from "@/src/lib/lemonS";
 import setRedis from "@/src/lib/redis";
 import { generateToken } from "@/src/utils/helper";
 import { createCheckout } from "@lemonsqueezy/lemonsqueezy.js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Response) {
+export async function POST(req: NextRequest) {
   initLemonSqueezy();
   try {
     const getuser = await getCurrentUser();

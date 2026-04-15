@@ -163,7 +163,6 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
       toast.dismiss(toastId.current!);
       toast.success("Thumbnail generated successfully!");
     }
-    console.log(state);
   }, [state]);
 
   // console.log("USERdATA from dashboard", user);

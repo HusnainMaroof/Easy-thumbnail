@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import prisma from "@/src/lib/prisma";
 import setRedis from "@/src/lib/redis";
 import { serialize } from "cookie";
 import { envConfig } from "@/src/config/envConfig";
+import { prisma } from "@/src/lib/prisma";
 
 export async function GET(req: Request) {
   try {

@@ -1,9 +1,10 @@
 "use server";
 
 import { envConfig } from "../config/envConfig";
-import { Prisma } from "../generated/client";
+
 import { getCurrentUser } from "../lib/auth";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
+
 import setRedis from "../lib/redis";
 import {
   generateThumnailService,
@@ -45,7 +46,7 @@ export const generateThumnailAction = catchErrors(
 
       let saveThumbnail = await prisma.gallery.create({
         data: {
-          generationConfig: galleryData as Prisma.InputJsonValue,
+          generationConfig: galleryData as any,
           userId: userId,
           uploadedImage: service.data.imgUrl,
           prompt: payload.prompt,

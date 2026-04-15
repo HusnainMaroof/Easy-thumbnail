@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { envConfig } from "../config/envConfig";
-import prisma from "../lib/prisma";
 import { sendOtpEmail, sendResetPassEmail } from "../lib/sendMails";
 import { ForbiddenException, UnauthorizedException } from "../utils/app.error";
 import { catchErrors } from "../utils/errorWrapper";
@@ -11,6 +10,7 @@ import {
 } from "../utils/helper";
 import bcrypt from "bcryptjs";
 import { form } from "framer-motion/client";
+import { prisma } from "../lib/prisma";
 
 interface RegisterForm {
   email: string;

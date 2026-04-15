@@ -8,12 +8,12 @@ import {
   thumpnailPayload,
 } from "../types/dashboard.type";
 import { getCurrentUser } from "../lib/auth";
-import prisma from "../lib/prisma";
 import { UnauthorizedException } from "../utils/app.error";
 import setRedis from "../lib/redis";
 
 import { uploadToCloudinary } from "../utils/uploadImg";
 import { fileToBuffer } from "../utils/helper";
+import { prisma } from "../lib/prisma";
 
 export type ServiceResponse = {
   success: boolean;

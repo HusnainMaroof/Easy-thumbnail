@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import setRedis from "@/src/lib/redis";
-import prisma from "@/src/lib/prisma";
 import { envConfig } from "@/src/config/envConfig";
+import { prisma } from "@/src/lib/prisma";
 
 export async function POST(req: Request) {
   try {

@@ -1,7 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import prisma from "../lib/prisma";
 import setRedis from "../lib/redis";
 import { sendOtpEmail } from "../lib/sendMails";
 import {
@@ -18,6 +17,7 @@ import { catchErrors } from "../utils/errorWrapper";
 import { generateOtpHelper, generateToken } from "../utils/helper";
 import { envConfig } from "../config/envConfig";
 import { revalidatePath } from "next/cache";
+import { prisma } from "../lib/prisma";
 
 export type ActionResponse = {
   success: boolean;

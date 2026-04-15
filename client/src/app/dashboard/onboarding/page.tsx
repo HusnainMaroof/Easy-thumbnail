@@ -15,7 +15,7 @@ const page = async () => {
   } else {
     redirect("/dashboard/home");
   }
-  console.log(" user Data", user);
+  // console.log(" user Data FROM ON BOARDING PAGE", user);
   return (
     <div>
       <Onboarding />

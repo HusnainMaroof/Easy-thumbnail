@@ -166,7 +166,7 @@ Output in masterpiece quality, 8k resolution, cinematic studio lighting, razor-s
     console.log(state);
   }, [state]);
 
-  console.log("USERdATA", user);
+  // console.log("USERdATA from dashboard", user);
 
   return (
     <div className="h-[90vh] bg-[#FDFDFF] text-black font-sans selection:bg-[#F4E041] flex flex-col overflow-hidden ">

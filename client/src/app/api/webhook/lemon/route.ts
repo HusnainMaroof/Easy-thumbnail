@@ -36,8 +36,9 @@ export async function POST(req: Request) {
 
       const { userToken: redisUserToken } = JSON.parse(storedData);
 
+      let sessionData 
       if (redisUserToken === user_token) {
-        await prisma.user.update({
+        sessionData =  await prisma.user.update({
           where: { userToken: user_token },
           data: {
             subscriptionPlan: "PRO",
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
           // key exists and has TTL → preserve it
           await setRedis.set(
             `auth_session:${user_token}`,
-            JSON.stringify({ credits: 45 }),
+            JSON.stringify(sessionData),
             "EX",
             ttl,
           );
@@ -61,7 +62,7 @@ export async function POST(req: Request) {
           // key has no TTL or doesn't exist → just set without EX
           await setRedis.set(
             `auth_session:${user_token}`,
-            JSON.stringify({ credits: 45 }),
+            JSON.stringify(sessionData),
           );
         }
 

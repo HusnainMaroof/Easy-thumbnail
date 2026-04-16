@@ -268,7 +268,7 @@ export const logoutAction = catchErrors(
 
     revalidatePath("/");
     return {
-      success: false,
+      success: true,
       error: false,
       message: "logout successfully",
       data: {},

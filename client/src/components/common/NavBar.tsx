@@ -56,6 +56,7 @@ export const NavBar = () => {
       .toUpperCase();
   };
 
+console.log(user);
 
 
   return (
